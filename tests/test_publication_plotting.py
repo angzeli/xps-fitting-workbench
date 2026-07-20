@@ -29,9 +29,10 @@ def test_single_plot_layers_residual_and_no_mutation() -> None:
 
 def test_publication_exports(tmp_path) -> None:
     figure, axis = plot_xps_fit(result_fixture(), component_style="lines")
-    paths = export_figure(figure, tmp_path / "figure", formats=("png", "svg", "pdf"), metadata={"Title": "synthetic XPS"})
+    paths = export_figure(figure, tmp_path / "figure", formats=("png", "svg", "pdf", "tiff"), metadata={"Title": "synthetic XPS"})
     assert isinstance(axis, Axes) and all(path.stat().st_size > 100 for path in paths.values())
     assert paths["png"].read_bytes().startswith(b"\x89PNG")
     assert b"<svg" in paths["svg"].read_bytes()[:500]
     assert paths["pdf"].read_bytes().startswith(b"%PDF")
+    assert paths["tiff"].read_bytes()[:2] in {b"II", b"MM"}
     plt.close(figure)

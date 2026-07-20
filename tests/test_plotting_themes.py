@@ -1,6 +1,8 @@
 import matplotlib as mpl
 
 from xps_fitting.plotting import canonical_core_level, component_colour, core_level_colour, load_theme, theme_context
+from xps_fitting.plotting.palettes import COMPONENT_COLOURS
+from xps_fitting.plotting.validation import contrast_ratio
 
 
 def test_themes_aliases_and_deterministic_colours() -> None:
@@ -17,3 +19,7 @@ def test_theme_context_does_not_leak_rcparams() -> None:
     with theme_context("presentation"):
         assert mpl.rcParams["font.size"] == 15
     assert dict(mpl.rcParams) == dict(before)
+
+
+def test_semantic_component_lines_have_white_background_contrast() -> None:
+    assert all(contrast_ratio(colour) >= 3 for colour in COMPONENT_COLOURS.values())

@@ -8,7 +8,7 @@ assignments or endorse a model merely because it has more peaks.
 > Peak fitting requires chemical judgement. Fit statistics alone cannot establish
 > a chemically correct assignment.
 
-## Status
+## Project overview and status
 
 Phase 1 provides the numerical fitting contract. Phase 2 is adding reusable,
 publication-ready rendering while preserving every fitted array exactly.
@@ -225,3 +225,56 @@ xps-fit plot outputs/fit.csv \
 Use recipe files as manuscript/SI provenance and commit them alongside analysis
 configuration. Prefer SVG/PDF for line art, PNG for review, monochrome SI when
 colour reproduction is uncertain, and the presentation recipe only for slides.
+
+## Quick start
+
+Fit a chemically proposed model, then pass its result directly to the plotting API:
+
+```python
+from xps_fitting.optimiser import fit_spectrum
+from xps_fitting.plotting import plot_xps_fit
+
+result = fit_spectrum(spectrum, fit_config)
+figure, axes = plot_xps_fit(result, core_level="C 1s")
+```
+
+The C 1s examples demonstrate PDI-H-COOH, PDI-Me-COOH, and PDI-OMe-COOH series;
+the Cl 2p example preserves its constrained 2:1 doublet. See [the gallery](docs/gallery.md).
+
+## Numerical integrity and scientific cautions
+
+Publication rendering consumes `FitResult`, CSV/XLSX curves plus JSON metadata, or
+a full `FitResult.to_dict()` representation. It checks component/background sums and
+residual identity before plotting. It never calls the optimiser or recalculates,
+smooths, interpolates, renormalises, or edits curves. Good statistics and attractive
+figures still do not establish chemical correctness.
+
+## Data import and policy
+
+DataFrame, CSV, XLSX, and optional legacy VGD imports produce ascending fitting
+arrays while preserving acquisition order in metadata. Raw experimental files are
+excluded from new commits; deterministic synthetic data drive all tests and Phase 2
+examples. See [the data policy](docs/data_policy.md).
+
+## Testing and development
+
+```bash
+MPLBACKEND=Agg MPLCONFIGDIR=/tmp/xps-mpl pytest
+python -m build
+```
+
+Contributions should add no private/raw data or generated galleries, preserve the
+`FitResult` contract, include no-mutation tests for renderers, and update recipes and
+documentation with behavior changes.
+
+## Roadmap and limitations
+
+Next priorities are simultaneous global fitting, weighted residual statistics,
+validated Tougaard/asymmetric line shapes, and optional journal-specific recipe
+packs. Current global fitting remains a two-pass approximation. Figure rasterisation
+can vary slightly with local font/Matplotlib versions, and no automatic chemical
+assignment or unrestricted peak discovery is planned.
+
+Further guidance: [plotting style](docs/plotting_style_guide.md),
+[figure reproducibility](docs/figure_reproducibility.md), and
+[FitResult contract](docs/fitresult_contract.md).
