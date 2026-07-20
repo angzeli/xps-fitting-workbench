@@ -102,3 +102,36 @@ information criterion is not a declaration of chemical truth.
 MPLBACKEND=Agg python examples/fit_pdi_h_cooh_c1s.py
 MPLBACKEND=Agg python examples/fit_cl2p_doublet.py
 ```
+
+## Exports and linked fitting
+
+`export_result(result, directory)` writes a curve CSV, an XLSX workbook with curves,
+parameters, statistics, warnings and metadata, a JSON parameter/configuration
+summary, a Markdown report, and a diagnostic PNG. Generated files belong in the
+ignored `outputs/` directory. The complete result API and schema are documented in
+[`docs/fitresult_contract.md`](docs/fitresult_contract.md).
+
+`fit_shared_shapes` provides limited global-fitting groundwork: it performs separate
+first-pass fits, averages selected FWHM/fraction values, and fixes those consensus
+values during a second pass. Areas, centres, and intensity remain sample-specific;
+configured relative offsets stay exact. This is not simultaneous optimisation,
+does not estimate joint covariance, and does not yet fit a sample-wide charging
+shift or bounded per-sample deviations.
+
+## Reproducibility and development
+
+Use explicit candidate configurations, preserve raw intensity, record crop and
+acquisition metadata, set the multistart seed, inspect warnings/residuals, and export
+the result bundle. Run the full validation and examples with:
+
+```bash
+MPLBACKEND=Agg pytest
+PYTHONPATH=src MPLBACKEND=Agg python examples/load_spectrum.py
+PYTHONPATH=src MPLBACKEND=Agg python examples/fit_pdi_h_cooh_c1s.py
+PYTHONPATH=src MPLBACKEND=Agg python examples/fit_cl2p_doublet.py
+```
+
+Current limitations include an unexercised lmfit dependency in this environment,
+no Tougaard/asymmetric lines, no uncertainty weighting, and approximate rather than
+joint global fitting. See [the methodology](docs/fitting_methodology.md). Phase 2
+will build publication-quality styling strictly on the `FitResult` arrays.

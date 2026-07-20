@@ -103,7 +103,10 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "scipy
     if raw_result.jac.size and raw_result.jac.shape[0] > raw_result.jac.shape[1]:
         try:
             covariance = np.linalg.inv(raw_result.jac.T @ raw_result.jac) * stats["reduced_chi_square"]
-            stderr = np.sqrt(np.diag(covariance)); corr = covariance / np.outer(stderr, stderr)
+            stderr = np.sqrt(np.maximum(np.diag(covariance), 0))
+            with np.errstate(divide="ignore", invalid="ignore"):
+                corr = covariance / np.outer(stderr, stderr)
+            corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
             uncertainties.update(dict(zip(final_names, map(float, stderr))))
             correlations = {a: {b: float(corr[i, j]) for j, b in enumerate(final_names)} for i, a in enumerate(final_names)}
             if np.any(np.abs(corr - np.eye(len(corr))) > 0.95): warnings.append("Parameter correlation exceeds 0.95.")

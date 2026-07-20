@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from typing import Any
+import math
 
 import numpy as np
 
@@ -16,7 +17,9 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, (list, tuple)):
         return [_jsonable(item) for item in value]
     if isinstance(value, np.generic):
-        return value.item()
+        return _jsonable(value.item())
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
     return value
 
 
