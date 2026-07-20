@@ -29,4 +29,18 @@ ignored. Deliberately curated small text fixtures may be committed under
 `tests/data/` or `examples/data/`; see [the data policy](docs/data_policy.md).
 
 The legacy `xps_vgd_utils.py` workflow remains in place while package I/O support
-is developed.
+is developed. CSV and XLSX tables, pandas DataFrames, and VGD through the optional
+legacy adapter are supported. All input is cleaned, duplicate energies are averaged,
+and fitting arrays are ascending regardless of acquisition order; the original order
+is recorded in metadata.
+
+```python
+from xps_fitting.io import read_csv
+spectrum = read_csv("spectrum.csv", region="C 1s", sample_name="sample")
+```
+
+Existing notebooks may continue importing `xps_vgd_utils`. New code can use
+`xps_fitting.io_vgd.read_vgd`; it requires the separately installed `vgd-reader`
+package. Examples and tests use deterministic synthetic data rather than copying
+the tracked experimental files. Run `python examples/load_spectrum.py` after an
+editable install.
