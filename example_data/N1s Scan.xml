@@ -1,0 +1,91 @@
+<Chart PaletteCustomColors="Navy; DarkGoldenrod; ForestGreen; BlueViolet; Brown; Crimson; DarkBlue; DarkOrange; DarkOrchid; DeepPink; Gold; CornflowerBlue; Chocolate; Chartreuse; Indigo; LawnGreen; Blue; MediumVioletRed; OrangeRed; Goldenrod; HotPink; MidnightBlue; SaddleBrown" Palette="None" Size="334, 239">
+  <Series>
+    <Series Name="PeakTableAnnotations" Legend="Legend1" XValueType="Double" YValueType="Double" ChartType="Point" ChartArea="ChartArea1" MarkerSize="0" CustomProperties="YAxis_ScalingMode=Auto, CustomYAxis_Max=41671.27178062, CustomYAxis_Min=23961.0465175893, Type=PeakTableAnnotations" IsVisibleInLegend="False">
+      <SmartLabelStyle Enabled="False" />
+    </Series>
+    <Series Name="ExtraPeakAnnotations" Legend="Legend1" XValueType="Double" YValueType="Double" ChartType="Point" ChartArea="ChartArea1" MarkerSize="0" CustomProperties="Type=ExtraPeakAnnotations" IsVisibleInLegend="False">
+      <SmartLabelStyle Enabled="False" />
+    </Series>
+    <Series Name="ManualIDPeakAnnotations" Legend="Legend1" XValueType="Double" YValueType="Double" ChartType="Point" ChartArea="ChartArea1" MarkerSize="0" CustomProperties="Type=ManualIDPeakAnnotations" IsVisibleInLegend="False">
+      <SmartLabelStyle Enabled="False" />
+    </Series>
+    <Series Name="UserAnnotations" Legend="Legend1" XValueType="Double" YValueType="Double" ChartType="Point" ChartArea="ChartArea1" MarkerSize="0" CustomProperties="Type=UserAnnotations" IsVisibleInLegend="False">
+      <SmartLabelStyle Enabled="False" />
+    </Series>
+    <Series Name="IndicatorPoints" Legend="Legend1" ChartType="Point" ChartArea="ChartArea1" MarkerSize="6" CustomProperties="Type=IndicatorPoints" Enabled="False" Color="Transparent" BorderColor="Navy" MarkerStyle="Square">
+    </Series>
+    <Series Name="1" Legend="Legend1" ChartType="Line" ChartArea="ChartArea1" CustomProperties="Type=DataSeries" Color="DodgerBlue" BorderColor="DodgerBlue" LegendText="No legend">
+    </Series>
+  </Series>
+  <Legends>
+    <Legend Name="Legend1" Enabled="False" IsTextAutoFit="False" MaximumAutoSize="30" Alignment="Center" TextWrapThreshold="50" TitleFont="Microsoft Sans Serif, 8pt, style=Bold, Underline">
+    </Legend>
+  </Legends>
+  <Titles>
+    <Title Name="MainHeader" Text="N1s Scan" IsDockedInsideChartArea="False">
+    </Title>
+    <Title Name="MainFooter" Docking="Bottom" Visible="False">
+    </Title>
+  </Titles>
+  <ChartAreas>
+    <ChartArea Name="ChartArea1">
+      <CursorX Interval="0.01" LineWidth="0" />
+      <CursorY Interval="0.01" LineWidth="0" />
+      <AxisY IsLabelAutoFit="False" LabelAutoFitStyle="StaggeredLabels" Title="Counts / s" TitleFont="Arial, 10pt" IsStartedFromZero="False" IsMarginVisible="False" Maximum="41671.27178062" Minimum="23965.4729672926" Enabled="False">
+        <MajorGrid Enabled="False" />
+        <LabelStyle Font="Arial, 10pt" />
+        <CustomLabels>
+          <CustomLabel GridTicks="TickMark" FromPosition="20000" ToPosition="28000" Text="24000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="22000" ToPosition="30000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="24000" ToPosition="32000" Text="28000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="26000" ToPosition="34000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="28000" ToPosition="36000" Text="32000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="30000" ToPosition="38000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="32000" ToPosition="40000" Text="36000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="34000" ToPosition="42000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="36000" ToPosition="44000" Text="40000" />
+        </CustomLabels>
+        <ScaleView MinSize="0.001" />
+        <ScrollBar Enabled="False" />
+      </AxisY>
+      <AxisX IsLabelAutoFit="False" LabelAutoFitStyle="StaggeredLabels" Title="Binding Energy (eV)" TitleFont="Arial, 10pt" IsReversed="True" IsStartedFromZero="False" IsMarginVisible="False" Maximum="410" Minimum="392">
+        <MajorGrid Enabled="False" />
+        <LabelStyle Font="Arial, 10pt" />
+        <CustomLabels>
+          <CustomLabel GridTicks="TickMark" FromPosition="414" ToPosition="406" Text="410" />
+          <CustomLabel GridTicks="TickMark" FromPosition="412" ToPosition="404" />
+          <CustomLabel GridTicks="TickMark" FromPosition="410" ToPosition="402" Text="406" />
+          <CustomLabel GridTicks="TickMark" FromPosition="408" ToPosition="400" />
+          <CustomLabel GridTicks="TickMark" FromPosition="406" ToPosition="398" Text="402" />
+          <CustomLabel GridTicks="TickMark" FromPosition="404" ToPosition="396" />
+          <CustomLabel GridTicks="TickMark" FromPosition="402" ToPosition="394" Text="398" />
+          <CustomLabel GridTicks="TickMark" FromPosition="400" ToPosition="392" />
+          <CustomLabel GridTicks="TickMark" FromPosition="398" ToPosition="390" Text="394" />
+          <CustomLabel GridTicks="TickMark" FromPosition="396" ToPosition="388" />
+        </CustomLabels>
+        <ScaleView MinSize="0.001" />
+        <ScrollBar Enabled="False" />
+      </AxisX>
+      <AxisX2 Maximum="1" Minimum="0">
+      </AxisX2>
+      <AxisY2 IsLabelAutoFit="False" LabelAutoFitStyle="StaggeredLabels" Title="Counts / s" TitleFont="Arial, 10pt" IsStartedFromZero="False" IsMarginVisible="False" Maximum="41671.27178062" Minimum="23961.046517589268" Enabled="True">
+        <MajorGrid Enabled="False" />
+        <LabelStyle Font="Arial, 10pt" />
+        <CustomLabels>
+          <CustomLabel GridTicks="TickMark" FromPosition="20000" ToPosition="28000" Text="24000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="22000" ToPosition="30000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="24000" ToPosition="32000" Text="28000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="26000" ToPosition="34000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="28000" ToPosition="36000" Text="32000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="30000" ToPosition="38000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="32000" ToPosition="40000" Text="36000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="34000" ToPosition="42000" />
+          <CustomLabel GridTicks="TickMark" FromPosition="36000" ToPosition="44000" Text="40000" />
+        </CustomLabels>
+        <ScaleView MinSize="0.001" />
+        <ScrollBar Enabled="False" />
+      </AxisY2>
+      <Position Y="10" Width="95" Height="88" Auto="False" />
+    </ChartArea>
+  </ChartAreas>
+</Chart>
