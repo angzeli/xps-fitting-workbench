@@ -68,10 +68,10 @@ The VGD reader dependency was available locally.
 
 | Issue | Severity | User impact | Scientific impact | Complexity | Milestone | Disposition |
 |---|---|---|---|---|---|---|
-| Examples lack `main()`, guards, summaries, and full workflow coverage | High | Hard to reuse or automate | Low | Medium | 2 | Fix |
-| SVG/TIFF remain advertised and generated | High | Conflicting output policy | None | Low | 2–3 | Fix |
-| Publication spine default is 1.2 pt | High | Style mismatch | None | Low | 3 | Fix |
-| Assignment palette covers only initial C 1s labels | Medium | Inconsistent O/N/Cl panels | Interpretation risk | Low | 3 | Fix |
+| Examples lack `main()`, guards, summaries, and full workflow coverage | High | Hard to reuse or automate | Low | Medium | 2 | Fixed |
+| Legacy figure formats remain advertised and generated | High | Conflicting output policy | None | Low | 2–3 | Fixed |
+| Publication spine default is 1.2 pt | High | Style mismatch | None | Low | 3 | Fixed |
+| Assignment palette covers only initial C 1s labels | Medium | Inconsistent O/N/Cl panels | Interpretation risk | Low | 3 | Fixed |
 | Compact JSON and curves must be paired manually | High | Fragile reload workflow | Reproducibility risk | Medium | 4 | Fix |
 | CLI is single-input and exposes ordinary tracebacks | High | Blocks non-Python multipanels | None | Medium | 4 | Fix |
 | Output collision behaviour is implicit | Medium | Prior work can be overwritten | Reproducibility risk | Low | 4 | Fix |
@@ -84,6 +84,6 @@ The VGD reader dependency was available locally.
 ## Output-format migration
 
 Recipes, examples, CLI validation, public export validation, tests, and documentation
-will accept only `png` and `pdf`. Requests for `svg`, `tif`, or `tiff` will fail
-before any file is created with an actionable unsupported-format message. Existing
-generated outputs are ignored and will not be committed.
+accept only `png` and `pdf`. Requests for a legacy format fail before any file is
+created with an actionable unsupported-format message. Existing generated outputs
+are ignored and will not be committed.

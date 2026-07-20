@@ -13,6 +13,13 @@ COMPONENT_COLOURS = {
     "imide_N-C=O": "#7C3AED",
     "acid_O-C=O": "#EA580C",
     "pi-pi_star": "#0F766E",
+    "Cl_2p3/2": "#166534",
+    "Cl_2p1/2": "#15803D",
+    "O_1s_carbonyl": "#C2410C",
+    "O_1s_carboxyl": "#B91C1C",
+    "O_1s_hydroxyl": "#9F1239",
+    "N_1s_imide": "#1D4ED8",
+    "N_1s_amine": "#6D28D9",
 }
 FALLBACK_COMPONENT_COLOURS = ("#0F766E", "#B45309", "#4338CA", "#BE123C", "#4D7C0F", "#A21CAF", "#0369A1")
 MONOCHROME_STYLES = ("-", "--", "-.", ":")

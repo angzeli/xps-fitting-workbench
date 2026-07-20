@@ -14,7 +14,7 @@ import numpy as np
 from ..result import FitResult
 from .annotations import PDI_H_C1S_LABELS
 from .palettes import component_colour, core_level_colour
-from .themes import PlotTheme, theme_context
+from .themes import PlotTheme, figure_size_preset, style_axes, theme_context
 from .validation import validate_result_curves
 
 
@@ -49,13 +49,24 @@ def plot_xps_series(
     labels = dict(PDI_H_C1S_LABELS); labels.update(label_map or {})
     with theme_context(theme) as selected:
         height_multiplier = 1.28 if show_residual else 1.0
-        figure, axes = plt.subplots(nrows, ncols, squeeze=False, sharex=sharex, sharey=sharey, figsize=(selected.figure_size[0] * ncols, selected.figure_size[1] * nrows * height_multiplier), layout="constrained")
+        if count == 1:
+            figure_size = selected.figure_size
+        elif selected.name == "presentation":
+            width, height = figure_size_preset("presentation")
+            figure_size = (width, height * nrows * height_multiplier)
+        elif ncols > 1:
+            width, height = figure_size_preset("double-column")
+            figure_size = (width, height * nrows * height_multiplier)
+        else:
+            width, height = figure_size_preset("one-and-a-half-column")
+            figure_size = (width, height * nrows * height_multiplier)
+        figure, axes = plt.subplots(nrows, ncols, squeeze=False, sharex=sharex, sharey=sharey, figsize=figure_size, layout="constrained")
         flat = axes.ravel()
         legend_handles = None
         for index, (result, axis) in enumerate(zip(results, flat)):
             offset = offsets[index]
             energy = np.asarray(result.energy)
-            axis.plot(energy, np.asarray(result.raw_intensity) + offset, linestyle="none", marker=selected.marker, markersize=selected.marker_size, markerfacecolor=selected.raw_face, markeredgecolor=selected.raw_edge, label="Experimental", zorder=5)
+            axis.plot(energy, np.asarray(result.raw_intensity) + offset, linestyle="none", marker=selected.marker, markersize=selected.marker_size, markerfacecolor=selected.raw_face, markeredgecolor=selected.raw_edge, markeredgewidth=selected.marker_edge_width, label="Experimental", zorder=5)
             axis.plot(energy, np.asarray(result.background) + offset, selected.background_line_style, color="#555555", linewidth=selected.background_line_width, label="Background")
             if components_visible[index]:
                 for label, curve in result.components.items():
@@ -67,13 +78,13 @@ def plot_xps_series(
             axis.text(0.03, 0.96, samples[index], transform=axis.transAxes, va="top", fontweight="bold")
             axis.text(0.01, 1.02, selected.panel_label_template.format(label=panels[index]), transform=axis.transAxes, va="bottom", fontweight="bold")
             disclosures = []
-            if normalised: disclosures.append("normalised intensity")
+            if normalised: disclosures.append("normalised")
             if offset: disclosures.append(f"offset {offset:+g}")
-            if disclosures: axis.text(0.03, 0.04, "; ".join(disclosures), transform=axis.transAxes, va="bottom", fontsize=selected.tick_label_size)
+            if disclosures: axis.text(0.03, 0.86, "; ".join(disclosures), transform=axis.transAxes, va="top", fontsize=selected.tick_label_size)
             if x_limits: axis.set_xlim(x_limits)
             if selected.invert_binding_energy and not axis.xaxis_inverted(): axis.invert_xaxis()
             if tick_spacing: axis.xaxis.set_major_locator(MultipleLocator(tick_spacing))
-            axis.spines["top"].set_visible(selected.top_spine); axis.spines["right"].set_visible(selected.right_spine)
+            style_axes(axis, selected)
             if not independent_y: axis.set_ylim(bottom=0)
             if index % ncols == 0: axis.set_ylabel("Normalised intensity" if normalised else "Intensity (a.u.)")
             if index // ncols == nrows - 1: axis.set_xlabel("Binding energy (eV)")
@@ -89,6 +100,7 @@ def plot_xps_series(
                 inset = axis.inset_axes([0.12, -0.34, 0.82, 0.22])
                 inset.plot(result.energy, result.residual, color="#222222", linewidth=0.8); inset.axhline(0, color="#777777", linewidth=0.6)
                 inset.set_ylabel("res.", fontsize=selected.tick_label_size); inset.tick_params(labelsize=selected.tick_label_size)
+                style_axes(inset, selected, top=False, right=False)
                 if x_limits: inset.set_xlim(x_limits)
                 if selected.invert_binding_energy and not inset.xaxis_inverted(): inset.invert_xaxis()
         return figure, axes

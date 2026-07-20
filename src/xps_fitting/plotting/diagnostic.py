@@ -7,6 +7,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 from ..result import FitResult
+from .export import export_figure
 
 
 def plot_fit(result: FitResult, path: str | Path | None = None, *, residual_panel: bool = True):
@@ -25,5 +26,5 @@ def plot_fit(result: FitResult, path: str | Path | None = None, *, residual_pane
         main.set_xlabel("Binding energy (eV)")
     figure.tight_layout()
     if path is not None:
-        figure.savefig(path, dpi=200)
+        export_figure(figure, path, theme="angze_diagnostic", tight=False)
     return figure

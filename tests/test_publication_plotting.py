@@ -5,7 +5,9 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 import numpy as np
 
-from xps_fitting.plotting import export_figure, plot_xps_fit
+import pytest
+
+from xps_fitting.plotting import VISIBLE_SPINE_WIDTH, export_figure, figure_size_preset, plot_xps_fit
 from xps_fitting.result import FitResult
 
 
@@ -24,15 +26,20 @@ def test_single_plot_layers_residual_and_no_mutation() -> None:
     assert len(axes[0].lines) >= 5
     assert result.to_dict() == before
     assert any(label.startswith("aromatic C-C/C=C") for label in axes[0].get_legend_handles_labels()[1])
+    for axis in axes:
+        assert all(spine.get_linewidth() == VISIBLE_SPINE_WIDTH for spine in axis.spines.values() if spine.get_visible())
+    assert tuple(figure.get_size_inches()) == figure_size_preset("single-column")
     plt.close(figure)
 
 
 def test_publication_exports(tmp_path) -> None:
     figure, axis = plot_xps_fit(result_fixture(), component_style="lines")
-    paths = export_figure(figure, tmp_path / "figure", formats=("png", "svg", "pdf", "tiff"), metadata={"Title": "synthetic XPS"})
+    paths = export_figure(figure, tmp_path / "figure", formats=("png", "pdf"), metadata={"Title": "synthetic XPS"})
     assert isinstance(axis, Axes) and all(path.stat().st_size > 100 for path in paths.values())
     assert paths["png"].read_bytes().startswith(b"\x89PNG")
-    assert b"<svg" in paths["svg"].read_bytes()[:500]
     assert paths["pdf"].read_bytes().startswith(b"%PDF")
-    assert paths["tiff"].read_bytes()[:2] in {b"II", b"MM"}
+    with pytest.raises(ValueError, match="No file was written"):
+        export_figure(figure, tmp_path / "unsupported", formats=("png", "svg"))
+    assert not (tmp_path / "unsupported.png").exists()
+    assert not (tmp_path / "unsupported.svg").exists()
     plt.close(figure)

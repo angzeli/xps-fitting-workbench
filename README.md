@@ -152,7 +152,8 @@ builds publication-quality styling strictly on the `FitResult` arrays.
 `load_theme("angze_publication")` returns a validated, immutable theme. Additional
 built-ins are `angze_diagnostic`, `monochrome_publication`, and `presentation`.
 Themes are applied through a local Matplotlib context and never leak global
-`rcParams` changes.
+`rcParams` changes. Every visible spine in publication and presentation themes is
+fixed at 1.8 pt; attempts to override that contract fail theme validation.
 
 ```python
 from xps_fitting.plotting import load_theme, core_level_colour
@@ -163,8 +164,14 @@ colour = core_level_colour("C1s_Scan")  # #8C8C8C
 The core-level palette preserves Survey `#111810`, C 1s `#8C8C8C`, N 1s
 `#2F80ED`, O 1s `#EB5757`, S 2p `#F2C94C`, and Cl 2p `#27AE60`, including compact
 and `_Scan` aliases. Semantic component colours are deterministic across figures;
-monochrome output additionally uses stable line styles. Plotting validates—but
-never changes, smooths, normalises, or refits—the Phase 1 arrays.
+the C 1s assignments, Cl doublet partners, and O 1s/N 1s assignments all have
+stable entries. Monochrome output additionally uses stable line styles. Plotting
+validates—but never changes, smooths, normalises, or refits—the Phase 1 arrays.
+
+Physical presets are `single-column` (3.45 × 2.8 in), `one-and-a-half-column`
+(5.2 × 3.4 in), `double-column` (7.1 × 3.8 in), and `presentation` (8 × 5 in).
+Use `figure_size_preset()` for these dimensions or a validated `figure_size`
+recipe override when a journal specifies different bounds.
 
 ## Publication single-spectrum plots
 
@@ -174,7 +181,7 @@ fig, axes = plot_xps_fit(
     result, theme="angze_publication", core_level="C 1s",
     component_style="filled_to_background", sample_label="PDI-H-COOH",
 )
-export_figure(fig, "outputs/c1s", formats=("png", "svg", "pdf"))
+export_figure(fig, "outputs/c1s", formats=("png", "pdf"))
 ```
 
 `plot_xps_fit` returns the Matplotlib Figure and Axes and never calls `show()`.
@@ -187,8 +194,9 @@ optional. Use `intensity_units="CPS"` or `"a.u."`; `scale_factor=100000` divides
 displayed values and appends the disclosed factor to the axis label. It does not
 normalise areas.
 
-PNG, SVG, PDF, and TIFF exports support physical theme dimensions, DPI, tight
-bounding boxes, metadata where supported, and transparent backgrounds. Run
+PNG and PDF are the only supported figure formats. Exports preserve physical theme
+dimensions, DPI, tight bounding boxes, metadata, and format-appropriate transparent
+backgrounds. Unsupported formats are rejected before any file is written. Run
 `PYTHONPATH=src MPLBACKEND=Agg python examples/plot_single_fit.py` for publication,
 diagnostic-residual, and monochrome synthetic examples.
 
@@ -214,7 +222,8 @@ PYTHONPATH=src MPLBACKEND=Agg python examples/plot_core_level_panel.py
 
 Use shared y axes only when intensities are directly comparable. Independent axes
 are appropriate for different acquisition scales but must not be interpreted as
-absolute intensity comparisons. SVG/PDF are recommended for multipanel manuscripts.
+absolute intensity comparisons. PDF is recommended for multipanel manuscripts and
+PNG for raster review copies.
 
 ## Reproducible plotting recipes
 
@@ -234,7 +243,7 @@ xps-fit plot outputs/fit.csv \
 ```
 
 Use recipe files as manuscript/SI provenance and commit them alongside analysis
-configuration. Prefer SVG/PDF for line art, PNG for review, monochrome SI when
+configuration. Prefer PDF for line art, PNG for review, monochrome SI when
 colour reproduction is uncertain, and the presentation recipe only for slides.
 
 ## Quick start

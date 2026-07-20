@@ -13,7 +13,7 @@ import numpy as np
 from ..result import FitResult
 from .annotations import PDI_H_C1S_LABELS, statistics_text
 from .palettes import component_colour, component_style, core_level_colour
-from .themes import PlotTheme, theme_context
+from .themes import PlotTheme, style_axes, theme_context
 from .validation import validate_result_curves
 
 DISPLAY_MODES = {"lines", "filled", "filled_to_background", "stacked_visualisation", "outline_only", "hidden"}
@@ -51,7 +51,7 @@ def plot_xps_fit(
             axes, residual_axis = main, None
         energy = np.asarray(result.energy); background = np.asarray(result.background) / scale_factor
         raw = np.asarray(result.raw_intensity) / scale_factor; total = np.asarray(result.total_fit) / scale_factor
-        raw_line, = main.plot(energy, raw, linestyle="none", marker=selected.marker, markersize=selected.marker_size, markerfacecolor=selected.raw_face, markeredgecolor=selected.raw_edge, markeredgewidth=0.7, label="Experimental", zorder=5)
+        raw_line, = main.plot(energy, raw, linestyle="none", marker=selected.marker, markersize=selected.marker_size, markerfacecolor=selected.raw_face, markeredgecolor=selected.raw_edge, markeredgewidth=selected.marker_edge_width, label="Experimental", zorder=5)
         background_line, = main.plot(energy, background, selected.background_line_style, color="#555555", linewidth=selected.background_line_width, label="Background", zorder=2)
         component_artists = {}
         cumulative = background.copy()
@@ -89,8 +89,7 @@ def plot_xps_fit(
         if scale_factor != 1:
             ylabel += f" × {scale_factor:g}"
         main.set_ylabel(ylabel, labelpad=selected.axis_padding)
-        main.tick_params(top=selected.top_spine, right=selected.right_spine)
-        main.spines["top"].set_visible(selected.top_spine); main.spines["right"].set_visible(selected.right_spine)
+        style_axes(main, selected)
         if y_start is not None:
             main.set_ylim(bottom=y_start)
         if hide_y_tick_labels:
@@ -105,20 +104,20 @@ def plot_xps_fit(
         if title and selected.show_title:
             main.set_title(title)
         if sample_label:
-            main.text(0.03, 0.96, sample_label, transform=main.transAxes, va="top", fontweight="bold")
+            main.text(0.0, 1.02, sample_label, transform=main.transAxes, va="bottom", fontweight="bold")
         if core_level:
-            main.text(0.97, 0.96, core_level, transform=main.transAxes, va="top", ha="right")
+            main.text(1.0, 1.02, core_level, transform=main.transAxes, va="bottom", ha="right")
         if panel_label:
-            main.text(0.01, 1.02, selected.panel_label_template.format(label=panel_label), transform=main.transAxes, va="bottom", fontweight="bold")
+            main.text(-0.12, 1.02, selected.panel_label_template.format(label=panel_label), transform=main.transAxes, va="bottom", fontweight="bold")
         if fit_statistics:
-            main.text(0.97, 0.72, statistics_text(result), transform=main.transAxes, va="top", ha="right", fontsize=selected.tick_label_size)
+            main.text(0.97, 0.96, statistics_text(result), transform=main.transAxes, va="top", ha="right", fontsize=selected.tick_label_size)
         ordered = [raw_line, total_line, background_line]
         if legend_order:
             component_sequence = [component_artists[label] for label in legend_order if label in component_artists]
         else:
             component_sequence = list(component_artists.values())
         handles = ordered + component_sequence
-        main.legend(handles=handles, frameon=selected.legend_frame, labelspacing=selected.legend_spacing)
+        main.legend(handles=handles, loc="upper left", frameon=selected.legend_frame, labelspacing=selected.legend_spacing)
         if residual_axis is not None:
             residual_axis.plot(energy, np.asarray(result.residual) / scale_factor, color="#222222", linewidth=1)
             zero = selected.residual_zero_line if show_residual_zero is None else show_residual_zero
@@ -126,7 +125,7 @@ def plot_xps_fit(
                 residual_axis.axhline(0, color="#777777", linewidth=0.7)
             residual_axis.set_ylabel("Residual", labelpad=selected.axis_padding)
             residual_axis.set_xlabel("Binding energy (eV)", labelpad=selected.axis_padding)
-            residual_axis.spines["top"].set_visible(False); residual_axis.spines["right"].set_visible(selected.right_spine)
+            style_axes(residual_axis, selected, top=False)
             if tick_spacing:
                 residual_axis.xaxis.set_major_locator(MultipleLocator(tick_spacing))
         else:

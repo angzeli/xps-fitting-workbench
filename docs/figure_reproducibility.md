@@ -1,7 +1,7 @@
 # Figure reproducibility
 
 Archive the fit configuration, numerical CSV/XLSX and JSON metadata, plotting recipe,
-package version, and final vector export. Prefer a full `FitResult.to_dict()` JSON
+package version, and final PDF export. Prefer a full `FitResult.to_dict()` JSON
 when complete standalone reconstruction is required; the compact Phase 1 JSON export
 must be paired with its curve table.
 
@@ -11,6 +11,7 @@ uses the source sample points directly: there is no fitting, smoothing, interpol
 normalisation, background calculation, or replacement envelope. Tests compare every
 plotted y array against in-memory, CSV, XLSX, and full-JSON sources.
 
-Use a committed recipe and run headlessly for repeatable automation. SVG/PDF metadata
+Use a committed recipe and run headlessly for repeatable automation. PDF metadata
 and exact bytes may vary with Matplotlib/font versions; numerical curves, colours,
 layout parameters, and physical dimensions remain controlled by the result and recipe.
+PNG and PDF are the only supported saved figure formats.

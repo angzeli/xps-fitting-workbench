@@ -3,7 +3,7 @@ import copy
 import matplotlib.pyplot as plt
 import numpy as np
 
-from xps_fitting.plotting import export_figure, plot_fit_comparison, plot_xps_series
+from xps_fitting.plotting import VISIBLE_SPINE_WIDTH, export_figure, figure_size_preset, plot_fit_comparison, plot_xps_series
 from xps_fitting.result import FitResult
 
 
@@ -22,7 +22,10 @@ def test_series_consistency_labels_limits_legend_and_no_mutation(tmp_path) -> No
     assert component_colours[0] == component_colours[1] == component_colours[2]
     assert [text.get_text() for text in axes[0, 0].texts][1] == "(a)"
     assert len(figure.legends) == 1 and [result.to_dict() for result in results] == before
-    assert export_figure(figure, tmp_path / "series.svg")["svg"].stat().st_size > 100
+    assert tuple(figure.get_size_inches()) == figure_size_preset("double-column")
+    for axis in axes.ravel():
+        assert all(spine.get_linewidth() == VISIBLE_SPINE_WIDTH for spine in axis.spines.values() if spine.get_visible())
+    assert export_figure(figure, tmp_path / "series.pdf")["pdf"].stat().st_size > 100
     plt.close(figure)
 
 

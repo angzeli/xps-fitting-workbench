@@ -13,6 +13,6 @@
 - Added scoped publication, diagnostic, monochrome, and presentation themes.
 - Added stable core-level and component palettes with alias handling and contrast checks.
 - Added single-spectrum, residual, multipanel, series, and candidate-model figures.
-- Added PNG, SVG, PDF, and TIFF figure export plus validated JSON plotting recipes.
+- Added figure export plus validated JSON plotting recipes; Phase 3 standardises saved figures on PNG and PDF.
 - Added plotting-only CSV/XLSX/full-JSON reconstruction and the `xps-fit plot` CLI.
 - Added end-to-end numerical-integrity coverage and plotting documentation.

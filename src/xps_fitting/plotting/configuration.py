@@ -8,14 +8,14 @@ from pathlib import Path
 from typing import Any
 
 from .single import DISPLAY_MODES
-from .themes import load_theme
+from .themes import load_theme, validate_theme
 
 
 @dataclass(frozen=True)
 class PlotConfig:
     theme: str = "angze_publication"
     figure_size: tuple[float, float] | None = None
-    output_formats: tuple[str, ...] = ("png", "svg", "pdf")
+    output_formats: tuple[str, ...] = ("png", "pdf")
     output_filename: str = "xps_fit"
     core_level: str | None = None
     core_level_colour: str | None = None
@@ -37,11 +37,12 @@ class PlotConfig:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        load_theme(self.theme)
+        theme = load_theme(self.theme)
         if self.component_display_mode not in DISPLAY_MODES:
             raise ValueError(f"invalid component_display_mode {self.component_display_mode!r}")
-        if not self.output_formats or any(item not in {"png", "svg", "pdf", "tiff", "tif"} for item in self.output_formats):
-            raise ValueError("output_formats contains an unsupported format")
+        if not self.output_formats:
+            raise ValueError("output_formats must contain PNG and/or PDF")
+        validate_theme(theme, output_formats=self.output_formats)
         for value in (self.fit_line_width, self.component_line_width, self.marker_size, self.tick_spacing):
             if value is not None and value <= 0:
                 raise ValueError("line widths, marker size, and tick spacing must be positive")
