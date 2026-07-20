@@ -13,6 +13,12 @@ assignments or endorse a model merely because it has more peaks.
 Phase 1 provides the numerical fitting contract. Phase 2 is adding reusable,
 publication-ready rendering while preserving every fitted array exactly.
 
+Phase 3 is in progress on `codex/phase3-polish`: it completes executable examples,
+aligns figures with audited user style, standardises saved figures to PNG/PDF,
+improves bundles and CLI workflows, adds quality gates, and validates tracked
+experimental inputs without claiming automatic chemical validation. See the
+[Phase 3 style and issue audit](docs/figure_style_audit.md).
+
 ## Installation
 
 ```bash
