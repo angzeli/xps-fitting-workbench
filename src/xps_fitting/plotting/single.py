@@ -31,6 +31,7 @@ def plot_xps_fit(
     legend_order: Sequence[str] | None = None, label_map: Mapping[str, str] | None = None,
     component_colours: Mapping[str, str] | None = None, y_start: float | None = 0.0,
     title: str | None = None,
+    fit_colour: str | None = None,
 ) -> tuple[Figure, Axes | np.ndarray]:
     """Render supplied curves without recalculation, interpolation, or mutation."""
     mode = component_style or component_style_mode
@@ -81,7 +82,7 @@ def plot_xps_fit(
             component_artists[label] = artist
             if peak_labels:
                 index = int(np.argmax(source_curve)); main.annotate(display_label.split(" (")[0], (energy[index], plotted[index]), xytext=(0, 5), textcoords="offset points", ha="center", fontsize=selected.tick_label_size)
-        total_line, = main.plot(energy, total, color=core_level_colour(core_level or result.configuration.get("region", "")), linewidth=selected.fit_line_width, label="Total fit", zorder=6)
+        total_line, = main.plot(energy, total, color=fit_colour or core_level_colour(core_level or result.configuration.get("region", "")), linewidth=selected.fit_line_width, label="Total fit", zorder=6)
         if show_baseline:
             main.axhline(0, color="#777777", linewidth=0.7, zorder=0)
         ylabel = y_label or f"Intensity ({intensity_units})"

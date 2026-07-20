@@ -204,3 +204,24 @@ PYTHONPATH=src MPLBACKEND=Agg python examples/plot_core_level_panel.py
 Use shared y axes only when intensities are directly comparable. Independent axes
 are appropriate for different acquisition scales but must not be interpreted as
 absolute intensity comparisons. SVG/PDF are recommended for multipanel manuscripts.
+
+## Reproducible plotting recipes
+
+Validated JSON recipes under `configs/plots/` cover C 1s, O 1s, N 1s, Cl 2p,
+three-sample PDI comparison, residual diagnostics, monochrome SI, and presentations.
+They serialize theme, dimensions, formats, colours, component mode, line/marker
+sizes, labels, legend order, limits, ticks, disclosures, and panel layout. Invalid
+settings fail at load time. `PlotConfig.save()` round-trips custom recipes exactly.
+
+After `pip install -e .`, a Phase 1 curve export can be rendered without refitting:
+
+```bash
+xps-fit plot outputs/fit.csv \
+  --metadata outputs/fit.json \
+  --recipe configs/plots/c1s_publication.json \
+  --output-dir outputs/manuscript
+```
+
+Use recipe files as manuscript/SI provenance and commit them alongside analysis
+configuration. Prefer SVG/PDF for line art, PNG for review, monochrome SI when
+colour reproduction is uncertain, and the presentation recipe only for slides.

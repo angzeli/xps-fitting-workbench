@@ -16,6 +16,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 
+[project.scripts]
+xps-fit = "xps_fitting.cli:main"
+
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
