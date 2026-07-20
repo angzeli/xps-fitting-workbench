@@ -154,3 +154,29 @@ The core-level palette preserves Survey `#111810`, C 1s `#8C8C8C`, N 1s
 and `_Scan` aliases. Semantic component colours are deterministic across figures;
 monochrome output additionally uses stable line styles. Plotting validates—but
 never changes, smooths, normalises, or refits—the Phase 1 arrays.
+
+## Publication single-spectrum plots
+
+```python
+from xps_fitting.plotting import export_figure, plot_xps_fit
+fig, axes = plot_xps_fit(
+    result, theme="angze_publication", core_level="C 1s",
+    component_style="filled_to_background", sample_label="PDI-H-COOH",
+)
+export_figure(fig, "outputs/c1s", formats=("png", "svg", "pdf"))
+```
+
+`plot_xps_fit` returns the Matplotlib Figure and Axes and never calls `show()`.
+Available component modes are `lines`, `filled`, `filled_to_background`,
+`stacked_visualisation`, `outline_only`, and `hidden`. Stacking is explicitly a
+visual device; the strong total-fit line remains the unchanged Phase 1 envelope.
+Residuals, peak labels, component percentages, statistics, sample/core/panel labels,
+legend ordering, x limits, tick spacing, y-origin behavior, and hidden y ticks are
+optional. Use `intensity_units="CPS"` or `"a.u."`; `scale_factor=100000` divides
+displayed values and appends the disclosed factor to the axis label. It does not
+normalise areas.
+
+PNG, SVG, PDF, and TIFF exports support physical theme dimensions, DPI, tight
+bounding boxes, metadata where supported, and transparent backgrounds. Run
+`PYTHONPATH=src MPLBACKEND=Agg python examples/plot_single_fit.py` for publication,
+diagnostic-residual, and monochrome synthetic examples.
