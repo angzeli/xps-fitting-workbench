@@ -62,3 +62,23 @@ KherveFitting source was not found locally. Its named GL/LA functions can use
 product or asymmetric conventions, whereas lmfit's `PseudoVoigtModel` is a linear
 mixture of area-normalised Gaussian and Lorentzian profiles with a shared FWHM.
 No numerical equivalence is claimed and no Kherve-compatible peak shape is exposed.
+
+## Fitting and diagnostics
+
+`fit_spectrum(spectrum, config)` performs staged optimisation: areas, bounded
+centres, bounded FWHMs, then optional mixing fractions. Shirley backgrounds are
+updated between stages. Seeded multistart fitting detects sensitivity to guesses.
+The locally exercised backend is SciPy bounded least squares; `lmfit` remains a
+declared project dependency but is not available in the current validation runtime.
+
+The returned `FitResult` is the Phase 2 contract: ordered energy, raw intensity,
+background, labelled component arrays, total fit, residual, fitted parameters,
+uncertainties, correlation matrix, fit statistics (RSS, reduced chi-square, AIC,
+AICc, BIC, Durbin-Watson, and runs), warnings, configuration, metadata,
+convergence details, and software versions. `to_dict()` is JSON-compatible.
+
+Warnings identify bound hits, high correlations, negligible/unresolved components,
+nonphysical backgrounds, convergence problems, and multistart sensitivity. These
+diagnostics do not prove chemical correctness. `plot_fit` draws raw points,
+background, components, total fit, and an optional residual panel with the binding
+energy axis reversed; it can save a diagnostic PNG.
