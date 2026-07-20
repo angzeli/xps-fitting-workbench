@@ -1,1 +1,1 @@
-{"theme":"angze_publication","output_formats":["svg","pdf"],"output_filename":"pdi_three_sample","core_level":"C 1s","component_display_mode":"filled_to_background","panel_layout":"horizontal","panel_labels":["a","b","c"],"normalisation_disclosure":"normalised independently"}
+{"theme":"angze_publication","output_formats":["png","pdf"],"output_filename":"pdi_three_sample","core_level":"C 1s","component_display_mode":"filled_to_background","panel_layout":"horizontal","panel_labels":["a","b","c"],"normalisation_disclosure":"normalised independently"}

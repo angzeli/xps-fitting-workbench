@@ -19,6 +19,11 @@ improves bundles and CLI workflows, adds quality gates, and validates tracked
 experimental inputs without claiming automatic chemical validation. See the
 [Phase 3 style and issue audit](docs/figure_style_audit.md).
 
+All eight retained examples now expose `main()`, run headlessly and independently,
+identify synthetic versus tracked experimental input, and default to the ignored
+`outputs/examples/` directory. See the [complete example index](examples/README.md)
+or run `python scripts/run_all_examples.py`. Example figures use PNG and PDF only.
+
 ## Installation
 
 ```bash
