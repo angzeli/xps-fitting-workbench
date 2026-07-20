@@ -10,9 +10,8 @@ assignments or endorse a model merely because it has more peaks.
 
 ## Status
 
-Phase 1 is under active development. It establishes numerical models, diagnostics,
-exports, and a stable result interface. Colourful publication figures are deferred
-to Phase 2; Phase 1 plotting is diagnostic only.
+Phase 1 provides the numerical fitting contract. Phase 2 is adding reusable,
+publication-ready rendering while preserving every fitted array exactly.
 
 ## Installation
 
@@ -135,4 +134,23 @@ PYTHONPATH=src MPLBACKEND=Agg python examples/fit_cl2p_doublet.py
 Current limitations include no Tougaard/asymmetric lines, no uncertainty weighting,
 and approximate rather than
 joint global fitting. See [the methodology](docs/fitting_methodology.md). Phase 2
-will build publication-quality styling strictly on the `FitResult` arrays.
+builds publication-quality styling strictly on the `FitResult` arrays.
+
+## Publication themes and colours
+
+`load_theme("angze_publication")` returns a validated, immutable theme. Additional
+built-ins are `angze_diagnostic`, `monochrome_publication`, and `presentation`.
+Themes are applied through a local Matplotlib context and never leak global
+`rcParams` changes.
+
+```python
+from xps_fitting.plotting import load_theme, core_level_colour
+theme = load_theme("angze_publication")
+colour = core_level_colour("C1s_Scan")  # #8C8C8C
+```
+
+The core-level palette preserves Survey `#111810`, C 1s `#8C8C8C`, N 1s
+`#2F80ED`, O 1s `#EB5757`, S 2p `#F2C94C`, and Cl 2p `#27AE60`, including compact
+and `_Scan` aliases. Semantic component colours are deterministic across figures;
+monochrome output additionally uses stable line styles. Plotting validates—but
+never changes, smooths, normalises, or refits—the Phase 1 arrays.
