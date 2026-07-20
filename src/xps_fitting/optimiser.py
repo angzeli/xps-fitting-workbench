@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import platform
 from dataclasses import replace
+from types import SimpleNamespace
 
 import numpy as np
 import scipy
@@ -48,10 +49,10 @@ def _independent_names(peaks: list[PeakConfig], stage: str, release_fraction: bo
     return names
 
 
-def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "scipy") -> FitResult:
+def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit") -> FitResult:
     """Fit a configured chemical hypothesis using deterministic staged optimisation."""
-    if backend != "scipy":
-        raise ValueError("this installation currently provides the exercised scipy backend")
+    if backend not in {"lmfit", "scipy"}:
+        raise ValueError("backend must be 'lmfit' or 'scipy'")
     validate_links(config.peaks)
     x, y = spectrum.binding_energy, spectrum.intensity
     base_background = linear(x, y[0], y[-1]) if config.background == "linear" else shirley(y)
@@ -83,7 +84,24 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "scipy
                     penalty = np.sqrt(config.width_penalty) * (widths[1:] - widths[:-1])
                     return np.concatenate((data_residual, penalty))
                 return data_residual
-            result = least_squares(residual, [trial[name] for name in names], bounds=(lower, upper), loss=config.robust_loss)
+            if backend == "scipy":
+                result = least_squares(residual, [trial[name] for name in names], bounds=(lower, upper), loss=config.robust_loss)
+                result.parameter_names = names
+                result.covar = None
+            else:
+                import lmfit
+                parameters = lmfit.Parameters()
+                for index, name in enumerate(names):
+                    parameters.add(f"v{index}", value=trial[name], min=bounds[name][0], max=bounds[name][1])
+                def lmfit_residual(params):
+                    return residual(np.array([params[f"v{index}"].value for index in range(len(names))]))
+                fitted_result = lmfit.minimize(lmfit_residual, parameters, method="least_squares", loss=config.robust_loss)
+                vector = np.array([fitted_result.params[f"v{index}"].value for index in range(len(names))])
+                result = SimpleNamespace(
+                    x=vector, fun=np.asarray(fitted_result.residual), jac=None,
+                    success=bool(fitted_result.success), message=str(fitted_result.message),
+                    nfev=int(fitted_result.nfev), covar=fitted_result.covar, parameter_names=names,
+                )
             trial.update(zip(names, result.x)); trial = resolve_links(config.peaks, trial)
             if config.background == "shirley":
                 components = sum((evaluate_peak(x, peak, trial) for peak in config.peaks), start=np.zeros_like(x))
@@ -100,15 +118,20 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "scipy
     stats = statistics(residual, len(final_names))
     uncertainties: dict[str, float | None] = {name: None for name in fitted}; correlations: dict[str, dict[str, float]] = {}
     warnings: list[str] = []
-    if raw_result.jac.size and raw_result.jac.shape[0] > raw_result.jac.shape[1]:
+    covariance = raw_result.covar
+    if covariance is None and raw_result.jac is not None and raw_result.jac.size and raw_result.jac.shape[0] > raw_result.jac.shape[1]:
         try:
             covariance = np.linalg.inv(raw_result.jac.T @ raw_result.jac) * stats["reduced_chi_square"]
+        except np.linalg.LinAlgError:
+            covariance = None
+    if covariance is not None:
+        try:
             stderr = np.sqrt(np.maximum(np.diag(covariance), 0))
             with np.errstate(divide="ignore", invalid="ignore"):
                 corr = covariance / np.outer(stderr, stderr)
             corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
-            uncertainties.update(dict(zip(final_names, map(float, stderr))))
-            correlations = {a: {b: float(corr[i, j]) for j, b in enumerate(final_names)} for i, a in enumerate(final_names)}
+            uncertainties.update(dict(zip(raw_result.parameter_names, map(float, stderr))))
+            correlations = {a: {b: float(corr[i, j]) for j, b in enumerate(raw_result.parameter_names)} for i, a in enumerate(raw_result.parameter_names)}
             if np.any(np.abs(corr - np.eye(len(corr))) > 0.95): warnings.append("Parameter correlation exceeds 0.95.")
         except np.linalg.LinAlgError: warnings.append("Covariance matrix is singular; uncertainties are unavailable.")
     for peak in config.peaks:
@@ -125,4 +148,8 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "scipy
     if not raw_result.success: warnings.append(f"Convergence warning: {raw_result.message}")
     if np.any(background < 0): warnings.append("Background contains negative values.")
     if len(solutions) > 1 and (max(solutions) - min(solutions)) / max(min(solutions), 1e-30) > 0.05: warnings.append("Multiple initialisations produced materially different solutions.")
-    return FitResult(x, y, background, components, total, residual, fitted, uncertainties, correlations, stats, warnings, config.to_dict(), dict(spectrum.metadata), {"success": bool(raw_result.success), "message": raw_result.message, "evaluations": raw_result.nfev, "backend": backend, "multistart_rss": solutions}, {"xps_fitting": "0.1.0", "python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__})
+    versions = {"xps_fitting": "0.1.0", "python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__}
+    if backend == "lmfit":
+        import lmfit
+        versions["lmfit"] = lmfit.__version__
+    return FitResult(x, y, background, components, total, residual, fitted, uncertainties, correlations, stats, warnings, config.to_dict(), dict(spectrum.metadata), {"success": bool(raw_result.success), "message": raw_result.message, "evaluations": raw_result.nfev, "backend": backend, "multistart_rss": solutions}, versions)

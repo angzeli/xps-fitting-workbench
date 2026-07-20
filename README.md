@@ -68,8 +68,9 @@ No numerical equivalence is claimed and no Kherve-compatible peak shape is expos
 `fit_spectrum(spectrum, config)` performs staged optimisation: areas, bounded
 centres, bounded FWHMs, then optional mixing fractions. Shirley backgrounds are
 updated between stages. Seeded multistart fitting detects sensitivity to guesses.
-The locally exercised backend is SciPy bounded least squares; `lmfit` remains a
-declared project dependency but is not available in the current validation runtime.
+The primary and default backend is lmfit bounded least squares. SciPy's bounded
+`least_squares` is available with `backend="scipy"`; both support selectable robust
+loss and record the chosen backend in convergence metadata.
 
 The returned `FitResult` is the Phase 2 contract: ordered energy, raw intensity,
 background, labelled component arrays, total fit, residual, fitted parameters,
@@ -131,7 +132,7 @@ PYTHONPATH=src MPLBACKEND=Agg python examples/fit_pdi_h_cooh_c1s.py
 PYTHONPATH=src MPLBACKEND=Agg python examples/fit_cl2p_doublet.py
 ```
 
-Current limitations include an unexercised lmfit dependency in this environment,
-no Tougaard/asymmetric lines, no uncertainty weighting, and approximate rather than
+Current limitations include no Tougaard/asymmetric lines, no uncertainty weighting,
+and approximate rather than
 joint global fitting. See [the methodology](docs/fitting_methodology.md). Phase 2
 will build publication-quality styling strictly on the `FitResult` arrays.

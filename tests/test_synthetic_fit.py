@@ -17,6 +17,7 @@ def test_synthetic_recovery_is_deterministic(tmp_path) -> None:
     assert first.fitted_parameters["C-C.centre"] == pytest.approx(285, abs=0.01)
     assert first.fitted_parameters["C-C.area"] == pytest.approx(1000, rel=0.02)
     assert first.fit_statistics["rss"] == second.fit_statistics["rss"]
+    assert first.convergence["backend"] == "lmfit"
     output = tmp_path / "diagnostic.png"; plot_fit(first, output)
     assert output.stat().st_size > 0 and first.to_dict()["energy"][0] == 280
 
