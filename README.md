@@ -180,3 +180,27 @@ PNG, SVG, PDF, and TIFF exports support physical theme dimensions, DPI, tight
 bounding boxes, metadata where supported, and transparent backgrounds. Run
 `PYTHONPATH=src MPLBACKEND=Agg python examples/plot_single_fit.py` for publication,
 diagnostic-residual, and monochrome synthetic examples.
+
+## Multipanel series and model comparison
+
+`plot_xps_series` supports horizontal, vertical, or explicit row/column grids,
+shared or independent axes, stable assignment colours, shared/per-panel legends,
+automatic panel/sample labels, common energy windows, offsets, and optional exact
+residual insets. Any normalisation or intensity offset must be passed explicitly and
+is disclosed inside each affected panel. `show_components=False` provides an
+unfitted/raw comparison panel without changing its data.
+
+`plot_fit_comparison` places candidate models and residuals side by side, annotates
+AICc/BIC and warning counts, and records common-component centre/FWHM values on the
+Figure as `_xps_component_stability`. Its caption explicitly cautions that
+statistical preference is not chemical proof.
+
+```bash
+PYTHONPATH=src MPLBACKEND=Agg python examples/plot_pdi_c1s_series.py
+PYTHONPATH=src MPLBACKEND=Agg python examples/compare_pdi_h_cooh_models.py
+PYTHONPATH=src MPLBACKEND=Agg python examples/plot_core_level_panel.py
+```
+
+Use shared y axes only when intensities are directly comparable. Independent axes
+are appropriate for different acquisition scales but must not be interpreted as
+absolute intensity comparisons. SVG/PDF are recommended for multipanel manuscripts.
