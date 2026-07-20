@@ -17,3 +17,16 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Experimental and generated data (small curated fixtures remain allowed)
+*.vgd
+*.VGD
+raw_data/
+processed_data/
+processed_xps/
+outputs/
+figures/
+reports/
+build/
+dist/
+*.egg-info/

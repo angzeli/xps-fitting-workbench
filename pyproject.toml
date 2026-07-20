@@ -1,5 +1,29 @@
 [project]
 name = "xps-fitting-workbench"
 version = "0.1.0"
-requires-python = ">=3.14"
-dependencies = []
+description = "Reproducible, chemistry-constrained XPS peak fitting"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "lmfit>=1.2",
+  "matplotlib>=3.7",
+  "numpy>=1.24",
+  "openpyxl>=3.0",
+  "pandas>=2.0",
+  "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+pythonpath = ["src", "."]
