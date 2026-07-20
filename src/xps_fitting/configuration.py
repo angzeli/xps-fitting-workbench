@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+import json
+from pathlib import Path
 from typing import Any
 
 
@@ -48,3 +50,11 @@ class FitConfig:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+def load_config(path: str | Path) -> FitConfig:
+    """Load a JSON candidate-model configuration."""
+    with Path(path).open(encoding="utf-8") as stream:
+        data = json.load(stream)
+    data["peaks"] = [PeakConfig(**peak) for peak in data["peaks"]]
+    return FitConfig(**data)

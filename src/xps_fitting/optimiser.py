@@ -77,14 +77,21 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "scipy
             def residual(vector: np.ndarray) -> np.ndarray:
                 current = dict(trial); current.update(zip(names, vector)); current = resolve_links(config.peaks, current)
                 model = sum((evaluate_peak(x, peak, current) for peak in config.peaks), start=np.zeros_like(x))
-                return y - background - model
+                data_residual = y - background - model
+                if config.width_penalty > 0 and len(config.peaks) > 1:
+                    widths = np.array([current[f"{peak.label}.fwhm"] for peak in config.peaks])
+                    penalty = np.sqrt(config.width_penalty) * (widths[1:] - widths[:-1])
+                    return np.concatenate((data_residual, penalty))
+                return data_residual
             result = least_squares(residual, [trial[name] for name in names], bounds=(lower, upper), loss=config.robust_loss)
             trial.update(zip(names, result.x)); trial = resolve_links(config.peaks, trial)
             if config.background == "shirley":
                 components = sum((evaluate_peak(x, peak, trial) for peak in config.peaks), start=np.zeros_like(x))
                 background = shirley(y - components) + components * 0
         assert result is not None
-        score = float(result.fun @ result.fun); solutions.append(score)
+        current = resolve_links(config.peaks, trial)
+        physical_residual = y - background - sum((evaluate_peak(x, peak, current) for peak in config.peaks), start=np.zeros_like(x))
+        score = float(physical_residual @ physical_residual); solutions.append(score)
         if best is None or score < best[0]: best = (score, result, trial, background, names)
     assert best is not None
     _, raw_result, fitted, background, final_names = best

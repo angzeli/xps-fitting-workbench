@@ -82,3 +82,23 @@ nonphysical backgrounds, convergence problems, and multistart sensitivity. These
 diagnostics do not prove chemical correctness. `plot_fit` draws raw points,
 background, components, total fit, and an optional residual panel with the binding
 energy axis reversed; it can save a diagnostic PNG.
+
+## Candidate models
+
+JSON configuration files in `configs/` define the four- and five-component
+PDI-H-COOH C 1s hypotheses. The four assignments are aromatic C-C/C=C (284.65 eV),
+C-N/C-Cl (285.85 eV), imide N-C=O (287.90 eV), and acid O-C=O (289.15 eV). The
+five-component alternative adds a broader pi-pi* satellite near 290.70 eV. There
+is deliberately no default 284.10 eV component, and ordinary widths have separate
+1.1–2.0 eV bounds rather than an exact global equality. Config objects also support
+shared-width groups, a width soft-penalty setting, and relative satellite offsets.
+
+`compare_models` returns every `FitResult`; `comparison_table` reports AIC/AICc/BIC,
+RSS, residual diagnostics, warnings, and multistart stability. Resolution and
+meaningfulness warnings must be reviewed alongside chemical knowledge: a lower
+information criterion is not a declaration of chemical truth.
+
+```bash
+MPLBACKEND=Agg python examples/fit_pdi_h_cooh_c1s.py
+MPLBACKEND=Agg python examples/fit_cl2p_doublet.py
+```
