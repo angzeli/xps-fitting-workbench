@@ -27,6 +27,10 @@ Run every retained example independently:
 python scripts/run_all_examples.py
 ```
 
+The runner and individual examples refuse to replace existing files by default.
+Pass `--overwrite` only when intentionally regenerating an example's dedicated
+ignored output directory.
+
 The VGD path is exercised only when `vgd-reader` is installed; the example clearly
 reports when this optional dependency is unavailable. Existing tracked experimental
 files are read in place and never copied. Figures are saved only as PNG or PDF.

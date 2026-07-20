@@ -17,11 +17,16 @@ def compare_models(spectrum: Spectrum, configurations: list[FitConfig]) -> dict[
 def comparison_table(results: dict[str, FitResult]) -> list[dict[str, object]]:
     table = []
     for name, result in results.items():
-        table.append({
-            "model": name,
-            **{key: result.fit_statistics[key] for key in ("aic", "aicc", "bic", "rss", "durbin_watson", "residual_runs")},
-            "warning_count": len(result.warnings),
-            "warnings": list(result.warnings),
-            "multistart_rss": result.convergence.get("multistart_rss", []),
-        })
+        table.append(
+            {
+                "model": name,
+                **{
+                    key: result.fit_statistics[key]
+                    for key in ("aic", "aicc", "bic", "rss", "durbin_watson", "residual_runs")
+                },
+                "warning_count": len(result.warnings),
+                "warnings": list(result.warnings),
+                "multistart_rss": result.convergence.get("multistart_rss", []),
+            }
+        )
     return table

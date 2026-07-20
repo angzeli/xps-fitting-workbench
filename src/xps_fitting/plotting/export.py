@@ -7,15 +7,22 @@ from typing import Iterable
 
 from matplotlib.figure import Figure
 
-from .themes import PlotTheme, SUPPORTED_OUTPUT_FORMATS, load_theme, validate_theme
+from .themes import SUPPORTED_OUTPUT_FORMATS, PlotTheme, load_theme, validate_theme
 
 SUPPORTED_FORMATS = SUPPORTED_OUTPUT_FORMATS
 
 
 def export_figure(
-    figure: Figure, output: str | Path, *, formats: Iterable[str] | None = None,
-    theme: str | PlotTheme = "angze_publication", transparent: bool | None = None,
-    metadata: dict[str, str] | None = None, tight: bool = False,
+    figure: Figure,
+    output: str | Path,
+    *,
+    formats: Iterable[str] | None = None,
+    theme: str | PlotTheme = "angze_publication",
+    transparent: bool | None = None,
+    metadata: dict[str, str] | None = None,
+    tight: bool = False,
+    overwrite: bool = False,
+    dry_run: bool = False,
 ) -> dict[str, Path]:
     selected = load_theme(theme)
     output = Path(output)
@@ -28,12 +35,27 @@ def export_figure(
     except ValueError as exc:
         raise ValueError(f"{exc}. No file was written.") from exc
     stem = output.with_suffix("") if output.suffix else output
-    paths: dict[str, Path] = {}
-    for format_name in requested:
-        path = stem.with_suffix(f".{format_name}")
+    paths = {format_name: stem.with_suffix(f".{format_name}") for format_name in requested}
+    collisions = [path for path in paths.values() if path.exists()]
+    if collisions and not overwrite:
+        names = ", ".join(str(path) for path in collisions)
+        raise FileExistsError(f"output already exists: {names}; pass overwrite=True to replace it")
+    if dry_run:
+        return paths
+    for format_name, path in paths.items():
         path.parent.mkdir(parents=True, exist_ok=True)
         is_vector = format_name == "pdf"
-        alpha = transparent if transparent is not None else (selected.vector_transparent if is_vector else selected.raster_transparent)
-        figure.savefig(path, format=format_name, dpi=selected.dpi, transparent=alpha, bbox_inches="tight" if tight else None, metadata=metadata)
-        paths[format_name] = path
+        alpha = (
+            transparent
+            if transparent is not None
+            else (selected.vector_transparent if is_vector else selected.raster_transparent)
+        )
+        figure.savefig(
+            path,
+            format=format_name,
+            dpi=selected.dpi,
+            transparent=alpha,
+            bbox_inches="tight" if tight else None,
+            metadata=metadata,
+        )
     return paths

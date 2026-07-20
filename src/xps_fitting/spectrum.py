@@ -43,7 +43,12 @@ class Spectrum:
         if mask.sum() < 2:
             raise ValueError("crop interval contains fewer than two points")
         normalised = None if self.normalised_intensity is None else self.normalised_intensity[mask]
-        return replace(self, binding_energy=self.binding_energy[mask], intensity=self.intensity[mask], normalised_intensity=normalised)
+        return replace(
+            self,
+            binding_energy=self.binding_energy[mask],
+            intensity=self.intensity[mask],
+            normalised_intensity=normalised,
+        )
 
     @property
     def source_path(self) -> Path | None:

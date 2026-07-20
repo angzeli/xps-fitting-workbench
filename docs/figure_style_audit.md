@@ -72,11 +72,11 @@ The VGD reader dependency was available locally.
 | Legacy figure formats remain advertised and generated | High | Conflicting output policy | None | Low | 2–3 | Fixed |
 | Publication spine default is 1.2 pt | High | Style mismatch | None | Low | 3 | Fixed |
 | Assignment palette covers only initial C 1s labels | Medium | Inconsistent O/N/Cl panels | Interpretation risk | Low | 3 | Fixed |
-| Compact JSON and curves must be paired manually | High | Fragile reload workflow | Reproducibility risk | Medium | 4 | Fix |
-| CLI is single-input and exposes ordinary tracebacks | High | Blocks non-Python multipanels | None | Medium | 4 | Fix |
-| Output collision behaviour is implicit | Medium | Prior work can be overwritten | Reproducibility risk | Low | 4 | Fix |
-| Version is duplicated and remains 0.1.0 | Medium | Misleading package identity | Provenance risk | Low | 4 | Fix |
-| No Ruff, type check, pre-commit, or CI | Medium | Regressions are easier | Indirect | Medium | 4 | Fix |
+| Compact JSON and curves must be paired manually | High | Fragile reload workflow | Reproducibility risk | Medium | 4 | Fixed with readable bundles |
+| CLI is single-input and exposes ordinary tracebacks | High | Blocks non-Python multipanels | None | Medium | 4 | Fixed |
+| Output collision behaviour is implicit | Medium | Prior work can be overwritten | Reproducibility risk | Low | 4 | Fixed |
+| Version is duplicated and remains 0.1.0 | Medium | Misleading package identity | Provenance risk | Low | 4 | Fixed |
+| No Ruff, type check, pre-commit, or CI | Medium | Regressions are easier | Indirect | Medium | 4 | Fixed |
 | Experimental spectra have not been documented end to end | High | Unknown real-data readiness | High | Medium | 5 | Validate cautiously |
 | Global fitting is a two-pass approximation | Medium | Limited linked analysis | High | High | Roadmap | Defer |
 | Tougaard and asymmetric LA/GL shapes are absent | Medium | Limited model choices | High | Research | Roadmap | Defer |

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
 import json
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -27,7 +27,12 @@ class PeakConfig:
     area_ratio_to: tuple[str, float] | None = None
 
     def __post_init__(self) -> None:
-        for name, value, bounds in (("centre", self.centre, self.centre_bounds), ("area", self.area, self.area_bounds), ("fwhm", self.fwhm, self.fwhm_bounds), ("fraction", self.fraction, self.fraction_bounds)):
+        for name, value, bounds in (
+            ("centre", self.centre, self.centre_bounds),
+            ("area", self.area, self.area_bounds),
+            ("fwhm", self.fwhm, self.fwhm_bounds),
+            ("fraction", self.fraction, self.fraction_bounds),
+        ):
             if bounds[0] > value or value > bounds[1]:
                 raise ValueError(f"{self.label} {name} is outside its bounds")
         if self.area < 0 or self.fwhm <= 0:

@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from xps_fitting.configuration import FitConfig
 from xps_fitting.constraints import cl2p_doublet
@@ -15,6 +16,3 @@ def test_fitted_doublet_links_are_exact() -> None:
     assert p["Cl_2p1/2.centre"] == pytest.approx(p["Cl_2p3/2.centre"] + 1.6)
     assert p["Cl_2p1/2.area"] == pytest.approx(p["Cl_2p3/2.area"] / 2)
     assert p["Cl_2p1/2.fwhm"] == p["Cl_2p3/2.fwhm"]
-
-
-import pytest

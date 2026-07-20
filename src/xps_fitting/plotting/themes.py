@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
+import math
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
-import math
 from typing import Iterator
 
 import matplotlib as mpl
 from matplotlib.axes import Axes
-
 
 VISIBLE_SPINE_WIDTH = 1.8
 SUPPORTED_OUTPUT_FORMATS = frozenset({"png", "pdf"})
@@ -94,9 +93,27 @@ class PlotTheme:
 
 _THEMES = {
     "angze_publication": PlotTheme("angze_publication"),
-    "angze_diagnostic": PlotTheme("angze_diagnostic", figure_size=(5.8, 4.4), show_title=True, top_spine=True, right_spine=True, component_alpha=0.18),
+    "angze_diagnostic": PlotTheme(
+        "angze_diagnostic",
+        figure_size=(5.8, 4.4),
+        show_title=True,
+        top_spine=True,
+        right_spine=True,
+        component_alpha=0.18,
+    ),
     "monochrome_publication": PlotTheme("monochrome_publication", component_alpha=0.12, raw_edge="#000000"),
-    "presentation": PlotTheme("presentation", font_size=15, axis_label_size=17, tick_label_size=13, title_size=18, tick_length=6, marker_size=5, fit_line_width=3, figure_size=FIGURE_SIZE_PRESETS["presentation"], show_title=True),
+    "presentation": PlotTheme(
+        "presentation",
+        font_size=15,
+        axis_label_size=17,
+        tick_label_size=13,
+        title_size=18,
+        tick_length=6,
+        marker_size=5,
+        fit_line_width=3,
+        figure_size=FIGURE_SIZE_PRESETS["presentation"],
+        show_title=True,
+    ),
 }
 
 

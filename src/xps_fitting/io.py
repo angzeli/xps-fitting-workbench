@@ -15,19 +15,26 @@ def spectrum_from_dataframe(
     frame: pd.DataFrame,
     energy_column: str = "binding_energy_eV",
     intensity_column: str = "intensity",
-    *, region: str = "", sample_name: str = "", source_file: str | None = None,
+    *,
+    region: str = "",
+    sample_name: str = "",
+    source_file: str | None = None,
     metadata: dict[str, Any] | None = None,
 ) -> Spectrum:
     """Clean a table, average duplicate energies, and return ascending arrays."""
     if energy_column not in frame or intensity_column not in frame:
         raise ValueError(f"required columns: {energy_column!r}, {intensity_column!r}")
-    original_order = "ascending" if frame[energy_column].is_monotonic_increasing else (
-        "descending" if frame[energy_column].is_monotonic_decreasing else "unordered"
+    original_order = (
+        "ascending"
+        if frame[energy_column].is_monotonic_increasing
+        else ("descending" if frame[energy_column].is_monotonic_decreasing else "unordered")
     )
-    table = pd.DataFrame({
-        "energy": pd.to_numeric(frame[energy_column], errors="coerce"),
-        "intensity": pd.to_numeric(frame[intensity_column], errors="coerce"),
-    }).dropna()
+    table = pd.DataFrame(
+        {
+            "energy": pd.to_numeric(frame[energy_column], errors="coerce"),
+            "intensity": pd.to_numeric(frame[intensity_column], errors="coerce"),
+        }
+    ).dropna()
     table = table[np.isfinite(table["energy"]) & np.isfinite(table["intensity"])]
     table = table.groupby("energy", as_index=False, sort=True)["intensity"].mean()
     info = dict(metadata or {})

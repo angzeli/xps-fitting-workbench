@@ -6,7 +6,14 @@ from hashlib import sha256
 
 from .aliases import canonical_core_level
 
-CORE_LEVEL_COLOURS = {"Survey": "#111810", "C 1s": "#8C8C8C", "N 1s": "#2F80ED", "O 1s": "#EB5757", "S 2p": "#F2C94C", "Cl 2p": "#27AE60"}
+CORE_LEVEL_COLOURS = {
+    "Survey": "#111810",
+    "C 1s": "#8C8C8C",
+    "N 1s": "#2F80ED",
+    "O 1s": "#EB5757",
+    "S 2p": "#F2C94C",
+    "Cl 2p": "#27AE60",
+}
 COMPONENT_COLOURS = {
     "aromatic_C-C_C=C": "#64748B",
     "C-N_C-Cl": "#2563EB",

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0] - 2026-07-21
+
+- Completed all eight deterministic, headless examples and added an isolated
+  all-examples runner.
+- Standardised figure output on PNG/PDF, centralised the 1.8 pt publication spine
+  contract, expanded semantic colours, and added publication size presets.
+- Added readable fit-bundle save/load APIs with numerically consistent reload.
+- Extended `xps-fit plot` to ordered multi-input bundle/curve sources with panel
+  labels, safe names, dry runs, collision checks, and concise ordinary errors.
+- Made the package version authoritative and recorded 0.2.0 in fitted-result
+  provenance.
+- Added Ruff, selected mypy checks, local pre-commit hooks, and Python 3.10–3.13 CI
+  with tests, examples, build, and clean-wheel import.
+
 ## Unreleased — Phase 1
 
 - Added validated CSV, XLSX, DataFrame, and optional VGD spectrum input.

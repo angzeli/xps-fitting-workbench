@@ -10,7 +10,7 @@ assignments or endorse a model merely because it has more peaks.
 
 ## Project overview and status
 
-Phase 1 provides the numerical fitting contract. Phase 2 is adding reusable,
+Phase 1 provides the numerical fitting contract. Phase 2 adds reusable,
 publication-ready rendering while preserving every fitted array exactly.
 
 Phase 3 is in progress on `codex/phase3-polish`: it completes executable examples,
@@ -18,6 +18,10 @@ aligns figures with audited user style, standardises saved figures to PNG/PDF,
 improves bundles and CLI workflows, adds quality gates, and validates tracked
 experimental inputs without claiming automatic chemical validation. See the
 [Phase 3 style and issue audit](docs/figure_style_audit.md).
+
+The package version is 0.2.0. `xps_fitting.__version__`, built package metadata,
+and the version recorded in new `FitResult.software_versions` all derive from the
+single source in `src/xps_fitting/_version.py`.
 
 All eight retained examples now expose `main()`, run headlessly and independently,
 identify synthetic versus tracked experimental input, and default to the ignored
@@ -122,6 +126,22 @@ summary, a Markdown report, and a diagnostic PNG. Generated files belong in the
 ignored `outputs/` directory. The complete result API and schema are documented in
 [`docs/fitresult_contract.md`](docs/fitresult_contract.md).
 
+For convenient reload, a fit bundle is a transparent directory rather than an
+opaque archive. It contains `manifest.json`, `curves.csv`, and `metadata.json`, so
+curves remain spreadsheet-readable while parameters, warnings, configuration,
+convergence, provenance, and software versions reload together:
+
+```python
+from xps_fitting import load_fit_bundle, save_fit_bundle
+
+save_fit_bundle(result, "outputs/pdi-h-c1s.bundle")
+reloaded = load_fit_bundle("outputs/pdi-h-c1s.bundle")
+```
+
+Existing outputs are never silently replaced. Python APIs require
+`overwrite=True`; examples and the CLI expose `--overwrite`. Bundle and figure
+APIs also support dry-run path planning without writing files.
+
 `fit_shared_shapes` provides limited global-fitting groundwork: it performs separate
 first-pass fits, averages selected FWHM/fraction values, and fixes those consensus
 values during a second pass. Areas, centres, and intensity remain sample-specific;
@@ -179,7 +199,7 @@ recipe override when a journal specifies different bounds.
 from xps_fitting.plotting import export_figure, plot_xps_fit
 fig, axes = plot_xps_fit(
     result, theme="angze_publication", core_level="C 1s",
-    component_style="filled_to_background", sample_label="PDI-H-COOH",
+    component_display_mode="filled_to_background", sample_label="PDI-H-COOH",
 )
 export_figure(fig, "outputs/c1s", formats=("png", "pdf"))
 ```
@@ -194,9 +214,9 @@ optional. Use `intensity_units="CPS"` or `"a.u."`; `scale_factor=100000` divides
 displayed values and appends the disclosed factor to the axis label. It does not
 normalise areas.
 
-PNG and PDF are the only supported figure formats. Exports preserve physical theme
-dimensions, DPI, tight bounding boxes, metadata, and format-appropriate transparent
-backgrounds. Unsupported formats are rejected before any file is written. Run
+PNG and PDF are the only supported figure formats. Exports preserve exact physical
+theme dimensions, DPI, metadata, and format-appropriate transparent backgrounds.
+Unsupported formats are rejected before any file is written. Run
 `PYTHONPATH=src MPLBACKEND=Agg python examples/plot_single_fit.py` for publication,
 diagnostic-residual, and monochrome synthetic examples.
 
@@ -242,6 +262,24 @@ xps-fit plot outputs/fit.csv \
   --output-dir outputs/manuscript
 ```
 
+Fit-bundle directories can be supplied directly. Multiple inputs preserve command
+order and use a multipanel recipe; repeat `--sample-label` in the same order:
+
+```bash
+xps-fit plot outputs/pdi-h.bundle outputs/pdi-me.bundle outputs/pdi-ome.bundle \
+  --recipe configs/plots/pdi_three_sample.json \
+  --sample-label PDI-H-COOH \
+  --sample-label PDI-Me-COOH \
+  --sample-label PDI-OMe-COOH \
+  --output-dir outputs/manuscript
+```
+
+Use `--dry-run` to validate and print planned paths, `--output-name` for a safe
+explicit stem, `--overwrite` for intentional replacement, and `--verbose` only
+when a traceback is useful. Ordinary input errors print a concise message and exit
+non-zero. The CLI validates PNG/PDF-only recipes before loading curves and never
+invokes the optimiser.
+
 Use recipe files as manuscript/SI provenance and commit them alongside analysis
 configuration. Prefer PDF for line art, PNG for review, monochrome SI when
 colour reproduction is uncertain, and the presentation recipe only for slides.
@@ -280,8 +318,18 @@ examples. See [the data policy](docs/data_policy.md).
 
 ```bash
 MPLBACKEND=Agg MPLCONFIGDIR=/tmp/xps-mpl pytest
+ruff check .
+ruff format --check .
+mypy
 python -m build
+python scripts/run_all_examples.py --output-dir outputs/examples/quality-check
 ```
+
+The lightweight local pre-commit hooks run Ruff lint/format and the selected mypy
+surface. GitHub Actions tests Python 3.10–3.13, uses headless Matplotlib, runs all
+examples, builds the package, and imports the wheel in a clean environment. A
+specific third-party `fontTools.misc.py23` deprecation warning is filtered in the
+test configuration; unrelated warnings remain visible.
 
 Contributions should add no private/raw data or generated galleries, preserve the
 `FitResult` contract, include no-mutation tests for renderers, and update recipes and

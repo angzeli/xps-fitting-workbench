@@ -27,6 +27,7 @@ processed_xps/
 outputs/
 figures/
 reports/
+graphify-out/
 build/
 dist/
 *.egg-info/

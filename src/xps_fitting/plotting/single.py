@@ -2,17 +2,19 @@
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Mapping, Sequence
 
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.ticker import MultipleLocator, ScalarFormatter
-import numpy as np
 
 from ..result import FitResult
 from .annotations import PDI_H_C1S_LABELS, statistics_text
-from .palettes import component_colour, component_style, core_level_colour
+from .palettes import component_colour, core_level_colour
+from .palettes import component_style as monochrome_component_style
 from .themes import PlotTheme, style_axes, theme_context
 from .validation import validate_result_curves
 
@@ -20,39 +22,93 @@ DISPLAY_MODES = {"lines", "filled", "filled_to_background", "stacked_visualisati
 
 
 def plot_xps_fit(
-    result: FitResult, *, theme: str | PlotTheme = "angze_publication", core_level: str | None = None,
-    component_style_mode: str = "filled", component_style: str | None = None,
-    show_residual: bool = False, show_residual_zero: bool | None = None,
-    show_baseline: bool = False, peak_labels: bool = False, area_percentages: bool = False,
-    fit_statistics: bool = False, intensity_units: str = "a.u.", y_label: str | None = None,
-    scale_factor: float = 1.0, hide_y_tick_labels: bool = False,
-    x_limits: tuple[float, float] | None = None, tick_spacing: float | None = None,
-    sample_label: str | None = None, panel_label: str | None = None,
-    legend_order: Sequence[str] | None = None, label_map: Mapping[str, str] | None = None,
-    component_colours: Mapping[str, str] | None = None, y_start: float | None = 0.0,
+    result: FitResult,
+    *,
+    theme: str | PlotTheme = "angze_publication",
+    core_level: str | None = None,
+    component_display_mode: str = "filled",
+    component_style_mode: str | None = None,
+    component_style: str | None = None,
+    show_residual: bool = False,
+    show_residual_zero: bool | None = None,
+    show_baseline: bool = False,
+    peak_labels: bool = False,
+    area_percentages: bool = False,
+    fit_statistics: bool = False,
+    intensity_units: str = "a.u.",
+    y_label: str | None = None,
+    scale_factor: float = 1.0,
+    hide_y_tick_labels: bool = False,
+    x_limits: tuple[float, float] | None = None,
+    tick_spacing: float | None = None,
+    sample_label: str | None = None,
+    panel_label: str | None = None,
+    legend_order: Sequence[str] | None = None,
+    label_map: Mapping[str, str] | None = None,
+    component_colours: Mapping[str, str] | None = None,
+    y_start: float | None = 0.0,
     title: str | None = None,
     fit_colour: str | None = None,
 ) -> tuple[Figure, Axes | np.ndarray]:
     """Render supplied curves without recalculation, interpolation, or mutation."""
-    mode = component_style or component_style_mode
+    aliases = [("component_style_mode", component_style_mode), ("component_style", component_style)]
+    supplied_aliases = [(name, value) for name, value in aliases if value is not None]
+    if len({value for _, value in supplied_aliases}) > 1:
+        raise ValueError("deprecated component display aliases disagree")
+    mode = component_display_mode
+    if supplied_aliases:
+        name, alias_value = supplied_aliases[0]
+        if component_display_mode != "filled" and component_display_mode != alias_value:
+            raise ValueError(f"{name} conflicts with component_display_mode")
+        warnings.warn(f"{name} is deprecated; use component_display_mode", DeprecationWarning, stacklevel=2)
+        mode = alias_value
     if mode not in DISPLAY_MODES:
         raise ValueError(f"component display mode must be one of {sorted(DISPLAY_MODES)}")
     if not np.isfinite(scale_factor) or scale_factor <= 0:
         raise ValueError("scale_factor must be finite and positive")
     validate_result_curves(result)
-    labels = dict(PDI_H_C1S_LABELS); labels.update(label_map or {})
+    labels = dict(PDI_H_C1S_LABELS)
+    labels.update(label_map or {})
     with theme_context(theme) as selected:
         if show_residual:
             height = selected.residual_height_ratio
-            figure, axes = plt.subplots(2, 1, figsize=selected.figure_size, sharex=True, layout="constrained", gridspec_kw={"height_ratios": [1 - height, height], "hspace": 0.05})
+            figure, axes = plt.subplots(
+                2,
+                1,
+                figsize=selected.figure_size,
+                sharex=True,
+                layout="constrained",
+                gridspec_kw={"height_ratios": [1 - height, height], "hspace": 0.05},
+            )
             main, residual_axis = axes
         else:
             figure, main = plt.subplots(figsize=selected.figure_size, layout="constrained")
             axes, residual_axis = main, None
-        energy = np.asarray(result.energy); background = np.asarray(result.background) / scale_factor
-        raw = np.asarray(result.raw_intensity) / scale_factor; total = np.asarray(result.total_fit) / scale_factor
-        raw_line, = main.plot(energy, raw, linestyle="none", marker=selected.marker, markersize=selected.marker_size, markerfacecolor=selected.raw_face, markeredgecolor=selected.raw_edge, markeredgewidth=selected.marker_edge_width, label="Experimental", zorder=5)
-        background_line, = main.plot(energy, background, selected.background_line_style, color="#555555", linewidth=selected.background_line_width, label="Background", zorder=2)
+        energy = np.asarray(result.energy)
+        background = np.asarray(result.background) / scale_factor
+        raw = np.asarray(result.raw_intensity) / scale_factor
+        total = np.asarray(result.total_fit) / scale_factor
+        (raw_line,) = main.plot(
+            energy,
+            raw,
+            linestyle="none",
+            marker=selected.marker,
+            markersize=selected.marker_size,
+            markerfacecolor=selected.raw_face,
+            markeredgecolor=selected.raw_edge,
+            markeredgewidth=selected.marker_edge_width,
+            label="Experimental",
+            zorder=5,
+        )
+        (background_line,) = main.plot(
+            energy,
+            background,
+            selected.background_line_style,
+            color="#555555",
+            linewidth=selected.background_line_width,
+            label="Background",
+            zorder=2,
+        )
         component_artists = {}
         cumulative = background.copy()
         total_component_area = sum(float(np.trapz(curve, energy)) for curve in result.components.values())
@@ -62,27 +118,57 @@ def plot_xps_fit(
             display_label = labels.get(label, label)
             if area_percentages and total_component_area:
                 display_label += f" ({100 * float(np.trapz(source_curve, energy)) / total_component_area:.1f}%)"
-            linestyle = component_style_fn(label) if selected.name == "monochrome_publication" else "-"
+            linestyle = monochrome_component_style(label) if selected.name == "monochrome_publication" else "-"
             if mode == "hidden":
                 continue
             if mode == "stacked_visualisation":
                 next_curve = cumulative + curve
                 plotted = next_curve
-                artist = main.fill_between(energy, cumulative, next_curve, color=colour, alpha=selected.component_alpha, label=display_label)
-                main.plot(energy, next_curve, color=colour, linewidth=selected.component_line_width, linestyle=linestyle)
+                artist = main.fill_between(
+                    energy, cumulative, next_curve, color=colour, alpha=selected.component_alpha, label=display_label
+                )
+                main.plot(
+                    energy, next_curve, color=colour, linewidth=selected.component_line_width, linestyle=linestyle
+                )
                 cumulative = next_curve
             else:
                 plotted = background + curve
                 if mode in {"filled", "filled_to_background"}:
                     lower = background if mode == "filled_to_background" else np.zeros_like(curve)
-                    artist = main.fill_between(energy, lower, plotted, color=colour, alpha=selected.component_alpha, label=display_label)
-                    main.plot(energy, plotted, color=colour, linewidth=selected.component_line_width, linestyle=linestyle)
+                    artist = main.fill_between(
+                        energy, lower, plotted, color=colour, alpha=selected.component_alpha, label=display_label
+                    )
+                    main.plot(
+                        energy, plotted, color=colour, linewidth=selected.component_line_width, linestyle=linestyle
+                    )
                 else:
-                    artist, = main.plot(energy, plotted, color=colour, linewidth=selected.component_line_width, linestyle=linestyle, label=display_label)
+                    (artist,) = main.plot(
+                        energy,
+                        plotted,
+                        color=colour,
+                        linewidth=selected.component_line_width,
+                        linestyle=linestyle,
+                        label=display_label,
+                    )
             component_artists[label] = artist
             if peak_labels:
-                index = int(np.argmax(source_curve)); main.annotate(display_label.split(" (")[0], (energy[index], plotted[index]), xytext=(0, 5), textcoords="offset points", ha="center", fontsize=selected.tick_label_size)
-        total_line, = main.plot(energy, total, color=fit_colour or core_level_colour(core_level or result.configuration.get("region", "")), linewidth=selected.fit_line_width, label="Total fit", zorder=6)
+                index = int(np.argmax(source_curve))
+                main.annotate(
+                    display_label.split(" (")[0],
+                    (energy[index], plotted[index]),
+                    xytext=(0, 5),
+                    textcoords="offset points",
+                    ha="center",
+                    fontsize=selected.tick_label_size,
+                )
+        (total_line,) = main.plot(
+            energy,
+            total,
+            color=fit_colour or core_level_colour(core_level or result.configuration.get("region", "")),
+            linewidth=selected.fit_line_width,
+            label="Total fit",
+            zorder=6,
+        )
         if show_baseline:
             main.axhline(0, color="#777777", linewidth=0.7, zorder=0)
         ylabel = y_label or f"Intensity ({intensity_units})"
@@ -108,16 +194,33 @@ def plot_xps_fit(
         if core_level:
             main.text(1.0, 1.02, core_level, transform=main.transAxes, va="bottom", ha="right")
         if panel_label:
-            main.text(-0.12, 1.02, selected.panel_label_template.format(label=panel_label), transform=main.transAxes, va="bottom", fontweight="bold")
+            main.text(
+                -0.12,
+                1.02,
+                selected.panel_label_template.format(label=panel_label),
+                transform=main.transAxes,
+                va="bottom",
+                fontweight="bold",
+            )
         if fit_statistics:
-            main.text(0.97, 0.96, statistics_text(result), transform=main.transAxes, va="top", ha="right", fontsize=selected.tick_label_size)
+            main.text(
+                0.97,
+                0.96,
+                statistics_text(result),
+                transform=main.transAxes,
+                va="top",
+                ha="right",
+                fontsize=selected.tick_label_size,
+            )
         ordered = [raw_line, total_line, background_line]
         if legend_order:
             component_sequence = [component_artists[label] for label in legend_order if label in component_artists]
         else:
             component_sequence = list(component_artists.values())
         handles = ordered + component_sequence
-        main.legend(handles=handles, loc="upper left", frameon=selected.legend_frame, labelspacing=selected.legend_spacing)
+        main.legend(
+            handles=handles, loc="upper left", frameon=selected.legend_frame, labelspacing=selected.legend_spacing
+        )
         if residual_axis is not None:
             residual_axis.plot(energy, np.asarray(result.residual) / scale_factor, color="#222222", linewidth=1)
             zero = selected.residual_zero_line if show_residual_zero is None else show_residual_zero
@@ -131,6 +234,3 @@ def plot_xps_fit(
         else:
             main.set_xlabel("Binding energy (eV)", labelpad=selected.axis_padding)
     return figure, axes
-
-
-component_style_fn = component_style

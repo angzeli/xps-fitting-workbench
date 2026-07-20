@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from xps_fitting.lineshapes import gaussian, lorentzian, pseudo_voigt, voigt
 
@@ -12,6 +13,3 @@ def test_requested_area_is_recovered() -> None:
 def test_gaussian_and_lorentzian_fwhm() -> None:
     for function in (gaussian, lorentzian):
         assert function(np.array([1.0]), 1, 0, 2)[0] == pytest.approx(function(np.array([0.0]), 1, 0, 2)[0] / 2)
-
-
-import pytest

@@ -1,8 +1,8 @@
 """Chemistry-constrained XPS fitting tools."""
 
-from .spectrum import Spectrum
+from ._version import __version__
+from .export import load_fit_bundle, save_fit_bundle
 from .result import FitResult
+from .spectrum import Spectrum
 
-__version__ = "0.1.0"
-
-__all__ = ["FitResult", "Spectrum", "__version__"]
+__all__ = ["FitResult", "Spectrum", "__version__", "load_fit_bundle", "save_fit_bundle"]

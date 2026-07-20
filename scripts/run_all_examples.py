@@ -4,14 +4,17 @@ from __future__ import annotations
 
 import argparse
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/examples"))
+    parser.add_argument(
+        "--overwrite", action="store_true", help="Allow examples to replace their own existing outputs."
+    )
     args = parser.parse_args(argv)
     root = Path(__file__).resolve().parents[1]
     examples = sorted(path for path in (root / "examples").glob("*.py") if not path.name.startswith("_"))
@@ -23,11 +26,14 @@ def main(argv: list[str] | None = None) -> int:
     for example in examples:
         destination = args.output_dir / example.stem
         command = [sys.executable, str(example), "--output-dir", str(destination)]
+        if args.overwrite:
+            command.append("--overwrite")
         completed = subprocess.run(command, cwd=root, env=environment, text=True, capture_output=True)
         state = "PASS" if completed.returncode == 0 else "FAIL"
         print(f"{state} {example.name}")
         if completed.returncode:
-            failures.append(example.name); print(completed.stderr.strip() or completed.stdout.strip())
+            failures.append(example.name)
+            print(completed.stderr.strip() or completed.stdout.strip())
     print(f"Summary: {len(examples) - len(failures)} passed, {len(failures)} failed")
     return 1 if failures else 0
 
