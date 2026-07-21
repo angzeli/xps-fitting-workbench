@@ -1,0 +1,130 @@
+"""Exercise tracked PDI spectra without claiming automated chemical validation."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+from xps_fitting.configuration import FitConfig, load_config
+from xps_fitting.constraints import cl2p_doublet
+from xps_fitting.io_vgd import read_vgd
+from xps_fitting.model_comparison import compare_models, comparison_table
+from xps_fitting.optimiser import fit_spectrum
+from xps_fitting.plotting import (
+    export_figure,
+    figure_size_preset,
+    plot_fit_comparison,
+    plot_xps_fit,
+    style_axes,
+    theme_context,
+)
+
+ROOT = Path(__file__).resolve().parents[1]
+SAMPLES = ("PDI-H-COOH", "PDI-Me-COOH", "PDI-OMe-COOH")
+
+
+def _raw_panel(spectra, labels, core_levels):
+    with theme_context("angze_publication") as theme:
+        figure, axes = plt.subplots(1, len(spectra), figsize=figure_size_preset("double-column"), squeeze=False)
+        for index, (axis, spectrum, label, core_level) in enumerate(zip(axes.ravel(), spectra, labels, core_levels)):
+            axis.plot(
+                spectrum.binding_energy,
+                spectrum.intensity,
+                linestyle="none",
+                marker=theme.marker,
+                markersize=theme.marker_size,
+                markerfacecolor=theme.raw_face,
+                markeredgecolor=theme.raw_edge,
+                markeredgewidth=theme.marker_edge_width,
+            )
+            style_axes(axis, theme)
+            axis.set_xlabel("Binding energy / eV")
+            axis.set_ylabel("Intensity / counts" if index == 0 else "")
+            axis.set_title(f"{label} — {core_level}", fontsize=theme.tick_label_size)
+            axis.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+            if theme.invert_binding_energy:
+                axis.invert_xaxis()
+        figure.tight_layout()
+    return figure
+
+
+def _export(figure, output: Path, *, overwrite: bool) -> list[str]:
+    paths = export_figure(figure, output, formats=("png", "pdf"), overwrite=overwrite)
+    plt.close(figure)
+    return [str(path) for path in paths.values()]
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "experimental_validation")
+    parser.add_argument("--overwrite", action="store_true")
+    args = parser.parse_args(argv)
+
+    configs = [load_config(ROOT / "configs" / f"pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
+    c1s = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "C1s Scan.VGD")
+    c1s_results = compare_models(c1s, configs)
+    created: list[str] = []
+    for name, result in c1s_results.items():
+        figure, _ = plot_xps_fit(
+            result,
+            theme="angze_publication",
+            core_level="C 1s",
+            sample_label=f"PDI-H-COOH — {name}",
+            show_residual=True,
+        )
+        created.extend(_export(figure, args.output_dir / f"pdi_h_cooh_{name.lower()}", overwrite=args.overwrite))
+    comparison, _ = plot_fit_comparison(c1s_results)
+    created.extend(_export(comparison, args.output_dir / "pdi_h_cooh_c1s_model_comparison", overwrite=args.overwrite))
+
+    cl2p = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "Cl2p Scan.VGD")
+    cl_config = FitConfig(
+        "Cl2p_constrained",
+        "Cl 2p",
+        cl2p_doublet("Cl", centre_32=200.0, area_32=65_000.0),
+        multistart=2,
+        random_seed=42,
+    )
+    cl_result = fit_spectrum(cl2p, cl_config)
+    cl_figure, _ = plot_xps_fit(
+        cl_result,
+        theme="angze_publication",
+        core_level="Cl 2p",
+        sample_label="PDI-H-COOH",
+        show_residual=True,
+    )
+    created.extend(_export(cl_figure, args.output_dir / "pdi_h_cooh_cl2p_constrained", overwrite=args.overwrite))
+
+    c1s_series = [read_vgd(ROOT / "example_data" / sample / "C1s Scan.VGD") for sample in SAMPLES]
+    series_figure = _raw_panel(c1s_series, SAMPLES, ("C 1s",) * len(SAMPLES))
+    created.extend(_export(series_figure, args.output_dir / "pdi_c1s_raw_series", overwrite=args.overwrite))
+
+    n1s = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "N1s Scan.VGD")
+    o1s = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "O1s Scan.VGD")
+    heteroatom_figure = _raw_panel((n1s, o1s), ("PDI-H-COOH", "PDI-H-COOH"), ("N 1s", "O 1s"))
+    created.extend(_export(heteroatom_figure, args.output_dir / "pdi_h_cooh_n1s_o1s_raw", overwrite=args.overwrite))
+
+    summary = {
+        "c1s_candidate_models": comparison_table(c1s_results),
+        "cl2p": {
+            "fit_statistics": cl_result.fit_statistics,
+            "warnings": cl_result.warnings,
+            "convergence": cl_result.convergence,
+            "fitted_parameters": cl_result.fitted_parameters,
+        },
+        "raw_spectra_plotted": [f"{sample}/C1s Scan.VGD" for sample in SAMPLES]
+        + ["PDI-H-COOH/N1s Scan.VGD", "PDI-H-COOH/O1s Scan.VGD"],
+        "created": created,
+        "scientific_caution": "Convergence and information criteria do not establish chemical assignments.",
+    }
+    print(json.dumps(summary, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -16,6 +16,7 @@ from .themes import (
     PlotTheme,
     figure_size_preset,
     load_theme,
+    style_axes,
     theme_context,
     validate_theme,
 )
@@ -44,6 +45,7 @@ __all__ = [
     "plot_series_from_config",
     "plot_xps_fit",
     "plot_xps_series",
+    "style_axes",
     "theme_context",
     "validate_result_curves",
     "validate_theme",

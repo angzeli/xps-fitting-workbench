@@ -77,7 +77,7 @@ The VGD reader dependency was available locally.
 | Output collision behaviour is implicit | Medium | Prior work can be overwritten | Reproducibility risk | Low | 4 | Fixed |
 | Version is duplicated and remains 0.1.0 | Medium | Misleading package identity | Provenance risk | Low | 4 | Fixed |
 | No Ruff, type check, pre-commit, or CI | Medium | Regressions are easier | Indirect | Medium | 4 | Fixed |
-| Experimental spectra have not been documented end to end | High | Unknown real-data readiness | High | Medium | 5 | Validate cautiously |
+| Experimental spectra have not been documented end to end | High | Unknown real-data readiness | High | Medium | 5 | Fixed with explicit scientific cautions |
 | Global fitting is a two-pass approximation | Medium | Limited linked analysis | High | High | Roadmap | Defer |
 | Tougaard and asymmetric LA/GL shapes are absent | Medium | Limited model choices | High | Research | Roadmap | Defer |
 

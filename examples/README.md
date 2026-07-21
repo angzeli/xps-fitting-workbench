@@ -34,3 +34,10 @@ ignored output directory.
 The VGD path is exercised only when `vgd-reader` is installed; the example clearly
 reports when this optional dependency is unavailable. Existing tracked experimental
 files are read in place and never copied. Figures are saved only as PNG or PDF.
+
+The release's real-data check is intentionally separate from the deterministic
+example suite. With `vgd-reader` installed, run
+`PYTHONPATH=src MPLBACKEND=Agg python scripts/validate_experimental_workflow.py` to
+create ignored PNG/PDF diagnostics for the tracked PDI spectra. See
+`docs/experimental_validation.md`; successful optimisation is not presented as
+chemical validation.

@@ -21,3 +21,8 @@ Use a committed recipe and run headlessly for repeatable automation. PDF metadat
 and exact bytes may vary with Matplotlib/font versions; numerical curves, colours,
 layout parameters, and physical dimensions remain controlled by the result and recipe.
 PNG and PDF are the only supported saved figure formats.
+
+The tracked-data workflow can be repeated with
+`PYTHONPATH=src MPLBACKEND=Agg python scripts/validate_experimental_workflow.py`.
+Its local outputs are deliberately ignored; numerical observations and manual-
+review cautions are recorded in `docs/experimental_validation.md`.

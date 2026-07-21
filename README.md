@@ -13,11 +13,12 @@ assignments or endorse a model merely because it has more peaks.
 Phase 1 provides the numerical fitting contract. Phase 2 adds reusable,
 publication-ready rendering while preserving every fitted array exactly.
 
-Phase 3 is in progress on `codex/phase3-polish`: it completes executable examples,
+Phase 3 is complete on `codex/phase3-polish`: it finishes executable examples,
 aligns figures with audited user style, standardises saved figures to PNG/PDF,
 improves bundles and CLI workflows, adds quality gates, and validates tracked
 experimental inputs without claiming automatic chemical validation. See the
-[Phase 3 style and issue audit](docs/figure_style_audit.md).
+[style and issue audit](docs/figure_style_audit.md) and
+[experimental validation](docs/experimental_validation.md).
 
 The package version is 0.2.0. `xps_fitting.__version__`, built package metadata,
 and the version recorded in new `FitResult.software_versions` all derive from the
@@ -42,11 +43,12 @@ and `docs/`. Raw experimental data, generated outputs, reports, and figures are
 ignored. Deliberately curated small text fixtures may be committed under
 `tests/data/` or `examples/data/`; see [the data policy](docs/data_policy.md).
 
-The legacy `xps_vgd_utils.py` workflow remains in place while package I/O support
-is developed. CSV and XLSX tables, pandas DataFrames, and VGD through the optional
-legacy adapter are supported. All input is cleaned, duplicate energies are averaged,
-and fitting arrays are ascending regardless of acquisition order; the original order
-is recorded in metadata.
+The legacy `xps_vgd_utils.py` workflow remains for its original notebook. CSV and
+XLSX tables, pandas DataFrames, and VGD through the optional package adapter are
+supported. Old binary XLS input needs a separate pandas engine and is not part of
+the declared package workflow. All supported input is cleaned, duplicate energies
+are averaged, and fitting arrays are ascending regardless of acquisition order; the
+original order is recorded in metadata.
 
 ```python
 from xps_fitting.io import read_csv
@@ -56,8 +58,8 @@ spectrum = read_csv("spectrum.csv", region="C 1s", sample_name="sample")
 Existing notebooks may continue importing `xps_vgd_utils`. New code can use
 `xps_fitting.io_vgd.read_vgd`; it requires the separately installed `vgd-reader`
 package. Examples and tests use deterministic synthetic data rather than copying
-the tracked experimental files. Run `python examples/load_spectrum.py` after an
-editable install.
+the tracked experimental files. The separate validation script reads tracked files
+in place. Run `python examples/load_spectrum.py` after an editable install.
 
 ## Physical model
 
@@ -118,6 +120,26 @@ MPLBACKEND=Agg python examples/fit_pdi_h_cooh_c1s.py
 MPLBACKEND=Agg python examples/fit_cl2p_doublet.py
 ```
 
+## Experimental workflow validation
+
+The tracked VGD inventory was exercised in place for all three PDI samples. All 15
+VGD files parse; PDI-H-COOH C 1s was run through both candidate configurations,
+PDI-H-COOH Cl 2p through the constrained doublet, PDI-H-COOH N 1s/O 1s through raw
+plotting, and all three C 1s scans through an unnormalised raw comparison. Reproduce
+the ignored local PNG/PDF set with:
+
+```bash
+PYTHONPATH=src MPLBACKEND=Agg python scripts/validate_experimental_workflow.py
+```
+
+Real C 1s residuals were strongly correlated and multiple parameters reached
+bounds; the five-component model's lower information criteria do not prove its
+satellite assignment. The constrained Cl 2p fit also retained structured residuals
+despite a clean convergence status. Review calibration, background, line shapes,
+constraints, uncertainty, and chemical evidence before reporting assignments. Full
+results and unsupported legacy inputs are recorded in
+[the experimental validation report](docs/experimental_validation.md).
+
 ## Exports and linked fitting
 
 `export_result(result, directory)` writes a curve CSV, an XLSX workbook with curves,
@@ -163,9 +185,9 @@ PYTHONPATH=src MPLBACKEND=Agg python examples/fit_cl2p_doublet.py
 ```
 
 Current limitations include no Tougaard/asymmetric lines, no uncertainty weighting,
-and approximate rather than
-joint global fitting. See [the methodology](docs/fitting_methodology.md). Phase 2
-builds publication-quality styling strictly on the `FitResult` arrays.
+and approximate rather than joint global fitting. See
+[the methodology](docs/fitting_methodology.md). Publication styling operates
+strictly on the stored `FitResult` arrays.
 
 ## Publication themes and colours
 
@@ -309,10 +331,12 @@ figures still do not establish chemical correctness.
 
 ## Data import and policy
 
-DataFrame, CSV, XLSX, and optional legacy VGD imports produce ascending fitting
-arrays while preserving acquisition order in metadata. Raw experimental files are
-excluded from new commits; deterministic synthetic data drive all tests and Phase 2
-examples. See [the data policy](docs/data_policy.md).
+DataFrame, CSV, XLSX, and optional VGD imports produce ascending fitting arrays
+while preserving acquisition order in metadata. Existing legacy `.xls` workbooks
+are not supported without an additional engine. Raw experimental files are excluded
+from new commits; deterministic synthetic data drive tests and examples, while the
+release validation reads already tracked inputs in place. See
+[the data policy](docs/data_policy.md).
 
 ## Testing and development
 

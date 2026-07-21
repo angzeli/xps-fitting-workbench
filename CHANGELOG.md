@@ -13,8 +13,10 @@
   provenance.
 - Added Ruff, selected mypy checks, local pre-commit hooks, and Python 3.10–3.13 CI
   with tests, examples, build, and clean-wheel import.
+- Exercised all tracked VGD spectra, real PDI-H-COOH C 1s candidate fits and Cl 2p
+  constraints, and raw PDI series/N 1s/O 1s plots with explicit scientific caveats.
 
-## Unreleased — Phase 1
+## Earlier Phase 1 foundation
 
 - Added validated CSV, XLSX, DataFrame, and optional VGD spectrum input.
 - Added area-normalised line shapes, backgrounds, chemistry constraints, staged
@@ -22,11 +24,12 @@
 - Added PDI-H-COOH C 1s and Cl 2p examples, export bundles, a stable `FitResult`
   contract, and limited two-pass shared-shape fitting groundwork.
 
-## Unreleased — Phase 2
+## Earlier Phase 2 plotting foundation
 
 - Added scoped publication, diagnostic, monochrome, and presentation themes.
 - Added stable core-level and component palettes with alias handling and contrast checks.
 - Added single-spectrum, residual, multipanel, series, and candidate-model figures.
-- Added figure export plus validated JSON plotting recipes; Phase 3 standardises saved figures on PNG and PDF.
+- Added figure export plus validated JSON plotting recipes; version 0.2.0
+  standardises saved figures on PNG and PDF.
 - Added plotting-only CSV/XLSX/full-JSON reconstruction and the `xps-fit plot` CLI.
 - Added end-to-end numerical-integrity coverage and plotting documentation.
