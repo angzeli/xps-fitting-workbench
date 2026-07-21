@@ -65,6 +65,8 @@ def test_publication_hierarchy_and_legend_styling() -> None:
     )
     figure.canvas.draw()
     assert tuple(figure.get_size_inches()) == (8.0, 6.0)
+    assert axis.get_title(loc="left") == "PDI-H-COOH"
+    assert axis.get_title(loc="right") == "C 1s"
     assert all(spine.get_visible() and spine.get_linewidth() == 1.8 for spine in axis.spines.values())
     assert all(text.get_fontweight() == "bold" for text in (*axis.get_xticklabels(), *axis.get_yticklabels()))
     lines = {line.get_label(): line for line in axis.lines}

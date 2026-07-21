@@ -273,8 +273,8 @@ options work panel by panel with compact theme-controlled annotation text.
 
 `plot_fit_comparison` places candidate models and residuals side by side, annotates
 AICc/BIC and warning counts, and records common-component centre/FWHM values on the
-Figure as `_xps_component_stability`. Its caption explicitly cautions that
-statistical preference is not chemical proof.
+Figure as `_xps_component_stability`. Its shared-legend note explicitly cautions
+that statistical preference is not chemical proof.
 
 ```bash
 PYTHONPATH=src MPLBACKEND=Agg python examples/plot_pdi_c1s_series.py

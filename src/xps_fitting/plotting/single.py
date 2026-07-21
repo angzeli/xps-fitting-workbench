@@ -212,48 +212,25 @@ def plot_xps_fit(
         style_axes(main, selected)
         if title and selected.show_title:
             main.set_title(title, fontsize=selected.title_size, fontweight="bold")
+        upper_left_label = ""
+        if panel_label:
+            upper_left_label = selected.panel_label_template.format(label=panel_label)
         if sample_label:
-            main.text(
-                0.0,
-                1.02,
-                sample_label,
-                transform=main.transAxes,
-                va="bottom",
+            upper_left_label = f"{upper_left_label} {sample_label}".strip()
+        if upper_left_label:
+            main.set_title(
+                upper_left_label,
+                loc="left",
+                pad=selected.title_padding,
                 fontsize=selected.title_size,
                 fontweight="bold",
             )
         if core_level:
-            main.text(
-                1.0,
-                1.02,
+            main.set_title(
                 core_level,
-                transform=main.transAxes,
-                va="bottom",
-                ha="right",
+                loc="right",
+                pad=selected.title_padding,
                 fontsize=selected.core_level_size,
-            )
-        if panel_label:
-            main.text(
-                -0.12,
-                1.02,
-                selected.panel_label_template.format(label=panel_label),
-                transform=main.transAxes,
-                va="bottom",
-                fontsize=selected.title_size,
-                fontweight="bold",
-            )
-        if show_peak_positions:
-            annotate_peak_positions(
-                main,
-                result,
-                displayed_components,
-                annotation_colours,
-                selected,
-                precision=peak_position_precision,
-                include_unit=peak_position_unit,
-                leaders=peak_annotation_leaders,
-                offsets=peak_annotation_offsets,
-                include_negligible=annotate_negligible_components,
             )
         if fit_statistics:
             main.text(
@@ -295,4 +272,18 @@ def plot_xps_fit(
             style_axes(residual_axis, selected)
         else:
             main.set_xlabel("Binding energy (eV)", labelpad=selected.axis_padding)
+        if show_peak_positions:
+            annotate_peak_positions(
+                main,
+                result,
+                displayed_components,
+                annotation_colours,
+                selected,
+                precision=peak_position_precision,
+                include_unit=peak_position_unit,
+                leaders=peak_annotation_leaders,
+                offsets=peak_annotation_offsets,
+                include_negligible=annotate_negligible_components,
+                obstacles=(legend,),
+            )
     return figure, axes

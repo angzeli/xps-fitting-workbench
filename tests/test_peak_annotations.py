@@ -2,6 +2,7 @@ import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.text import Text
 
 from xps_fitting.plotting import component_colour, export_figure, plot_xps_fit, plot_xps_series
 from xps_fitting.result import FitResult
@@ -50,6 +51,7 @@ def test_peak_positions_format_colour_centres_stagger_offsets_and_exports(tmp_pa
         peak_annotation_offsets={"C-N_C-Cl": (4, 3)},
     )
     annotations = peak_annotations(axis)
+    figure.canvas.draw()
     assert [annotation.get_text() for annotation in annotations] == ["285.0 eV", "285.2 eV"]
     assert [annotation._xps_fitted_centre for annotation in annotations] == [285.0, 285.25]
     assert [annotation.xy[0] for annotation in annotations] == [285.0, 285.25]
@@ -61,6 +63,12 @@ def test_peak_positions_format_colour_centres_stagger_offsets_and_exports(tmp_pa
     assert all(annotation.get_fontweight() == "bold" for annotation in annotations)
     assert all(annotation.arrow_patch is not None for annotation in annotations)
     assert axis.xaxis_inverted()
+    axes_box = axis.get_window_extent()
+    assert all(
+        axes_box.contains(*annotation.get_window_extent().get_points()[0])
+        and axes_box.contains(*annotation.get_window_extent().get_points()[1])
+        for annotation in annotations
+    )
     assert result.to_dict() == before
     paths = export_figure(figure, tmp_path / "annotated", formats=("png", "pdf"))
     assert all(path.stat().st_size > 100 for path in paths.values())
@@ -96,4 +104,24 @@ def test_peak_positions_work_in_multipanel_without_input_mutation() -> None:
     assert [len(peak_annotations(axis)) for axis in axes.ravel()] == [2, 2]
     assert all(axis.xaxis_inverted() for axis in axes.ravel())
     assert [result.to_dict() for result in results] == before
+    plt.close(figure)
+
+
+def test_peak_position_text_avoids_the_framed_legend() -> None:
+    energy = np.linspace(280, 292, 241)
+    background = np.ones_like(energy)
+    peak = 10 * np.exp(-(((energy - 290.5) / 0.45) ** 2))
+    result = FitResult(
+        energy,
+        background + peak,
+        background,
+        {"aromatic_C-C_C=C": peak},
+        background + peak,
+        np.zeros_like(energy),
+        {"aromatic_C-C_C=C.centre": 290.5},
+    )
+    figure, axis = plot_xps_fit(result, show_peak_positions=True)
+    figure.canvas.draw()
+    annotation = peak_annotations(axis)[0]
+    assert not Text.get_window_extent(annotation).overlaps(axis.get_legend().get_window_extent())
     plt.close(figure)

@@ -19,6 +19,7 @@ from xps_fitting.optimiser import fit_spectrum
 from xps_fitting.plotting import (
     export_figure,
     figure_size_preset,
+    load_theme,
     plot_fit_comparison,
     plot_xps_fit,
     style_axes,
@@ -30,7 +31,7 @@ SAMPLES = ("PDI-H-COOH", "PDI-Me-COOH", "PDI-OMe-COOH")
 
 
 def _raw_panel(spectra, labels, core_levels):
-    with theme_context("angze_publication") as theme:
+    with theme_context(load_theme("angze_publication").for_multipanel()) as theme:
         figure, axes = plt.subplots(1, len(spectra), figsize=figure_size_preset("double-column"), squeeze=False)
         for index, (axis, spectrum, label, core_level) in enumerate(zip(axes.ravel(), spectra, labels, core_levels)):
             axis.plot(
@@ -44,9 +45,21 @@ def _raw_panel(spectra, labels, core_levels):
                 markeredgewidth=theme.marker_edge_width,
             )
             style_axes(axis, theme)
-            axis.set_xlabel("Binding energy / eV")
-            axis.set_ylabel("Intensity / counts" if index == 0 else "")
-            axis.set_title(f"{label} — {core_level}", fontsize=theme.tick_label_size)
+            axis.set_xlabel("Binding energy (eV)")
+            axis.set_ylabel("Intensity (counts)" if index == 0 else "")
+            axis.set_title(
+                label,
+                loc="left",
+                pad=theme.title_padding,
+                fontsize=theme.title_size,
+                fontweight="bold",
+            )
+            axis.set_title(
+                core_level,
+                loc="right",
+                pad=theme.title_padding,
+                fontsize=theme.core_level_size,
+            )
             axis.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
             if theme.invert_binding_energy:
                 axis.invert_xaxis()
@@ -70,16 +83,28 @@ def main(argv: list[str] | None = None) -> int:
     c1s = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "C1s Scan.VGD")
     c1s_results = compare_models(c1s, configs)
     created: list[str] = []
-    for name, result in c1s_results.items():
-        figure, _ = plot_xps_fit(
-            result,
-            theme="angze_publication",
-            core_level="C 1s",
-            sample_label=f"PDI-H-COOH — {name}",
-            show_residual=True,
-        )
-        created.extend(_export(figure, args.output_dir / f"pdi_h_cooh_{name.lower()}", overwrite=args.overwrite))
-    comparison, _ = plot_fit_comparison(c1s_results)
+    preferred_result = c1s_results["C1s_5"]
+    publication, _ = plot_xps_fit(
+        preferred_result,
+        theme="angze_publication",
+        core_level="C 1s",
+        sample_label="PDI-H-COOH",
+        component_display_mode="filled_to_background",
+        show_peak_positions=True,
+    )
+    created.extend(_export(publication, args.output_dir / "pdi_h_cooh_c1s_publication", overwrite=args.overwrite))
+    diagnostic, _ = plot_xps_fit(
+        preferred_result,
+        theme="angze_diagnostic",
+        core_level="C 1s",
+        sample_label="PDI-H-COOH",
+        component_display_mode="filled_to_background",
+        show_peak_positions=True,
+        show_residual=True,
+        fit_statistics=True,
+    )
+    created.extend(_export(diagnostic, args.output_dir / "pdi_h_cooh_c1s_diagnostic", overwrite=args.overwrite))
+    comparison, _ = plot_fit_comparison(c1s_results, show_residual=False, show_peak_positions=True)
     created.extend(_export(comparison, args.output_dir / "pdi_h_cooh_c1s_model_comparison", overwrite=args.overwrite))
 
     cl2p = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "Cl2p Scan.VGD")
@@ -97,6 +122,8 @@ def main(argv: list[str] | None = None) -> int:
         core_level="Cl 2p",
         sample_label="PDI-H-COOH",
         show_residual=True,
+        show_peak_positions=True,
+        label_map={"Cl_2p3/2": "Cl 2p3/2", "Cl_2p1/2": "Cl 2p1/2"},
     )
     created.extend(_export(cl_figure, args.output_dir / "pdi_h_cooh_cl2p_constrained", overwrite=args.overwrite))
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Refined detailed single-spectrum publication figures to 8 × 6 in with a complete
+  1.8 pt box, bold ticks, restrained markers/fills, a thinner total fit, additional
+  headroom, and compact framed legends without a background entry.
+- Standardised sentence-case chemical labels, including Aromatic C=C/C–C, and
+  layout-aware upper-left sample and upper-right core-level titles.
+- Added optional fitted binding-energy annotations with assignment colours,
+  one-decimal `eV` formatting, leaders, collision staggering, negligible/hidden
+  component controls, manual offsets, multipanel support, and recipe serialization.
+- Polished the publication, diagnostic, model-comparison, monochrome, PDI-series,
+  core-level-panel, and Cl 2p examples while retaining PNG/PDF-only export.
+
 ## [0.2.0] - 2026-07-21
 
 - Completed all eight deterministic, headless examples and added an isolated

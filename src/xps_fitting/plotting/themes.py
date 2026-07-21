@@ -33,13 +33,14 @@ class PlotTheme:
     tick_label_weight: str = "bold"
     title_size: float = 18
     core_level_size: float = 16.5
+    title_padding: float = 6
     peak_annotation_size: float = 10
     peak_annotation_offset_points: float = 8
     peak_annotation_stagger_points: float = 13
     peak_annotation_collision_fraction: float = 0.075
     peak_annotation_leader_width: float = 0.7
     negligible_component_fraction: float = 0.01
-    multipanel_axis_label_size: float = 12
+    multipanel_axis_label_size: float = 10
     multipanel_tick_label_size: float = 9
     multipanel_title_size: float = 9
     multipanel_core_level_size: float = 8.5

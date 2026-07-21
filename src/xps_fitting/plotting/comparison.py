@@ -57,5 +57,9 @@ def plot_fit_comparison(
         widths = [result.fitted_parameters.get(f"{label}.fwhm") for result in values]
         stability[label] = {"centres": centres, "fwhms": widths}
     figure._xps_component_stability = stability  # machine-readable companion to the visual
-    figure.text(0.5, 0.005, "Statistical preference does not prove chemical correctness.", ha="center", fontsize=8)
+    if figure.legends:
+        figure.legends[0].set_title(
+            "Statistical preference does not prove chemical correctness.",
+            prop={"size": 8, "weight": "normal"},
+        )
     return figure, axes

@@ -13,6 +13,10 @@ PYTHONPATH=src MPLBACKEND=Agg python scripts/validate_experimental_workflow.py
 ```
 
 Pass `--overwrite` only to intentionally replace an earlier local validation set.
+The validation script now writes a wide annotated PDI-H-COOH C 1s publication
+figure, a separate residual diagnostic, an annotated candidate-model comparison,
+and an annotated Cl 2p fit in both PNG and PDF. Experimental plots use the sample
+title `PDI-H-COOH`; the word `Synthetic` is reserved for generated validation data.
 
 ## Tracked-data inventory
 

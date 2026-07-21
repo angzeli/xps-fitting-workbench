@@ -156,23 +156,18 @@ def plot_xps_series(
                 zorder=6,
             )
             panel_title = f"{selected.panel_label_template.format(label=panels[index])} {samples[index]}"
-            axis.text(
-                0.0,
-                1.02,
+            axis.set_title(
                 panel_title,
-                transform=axis.transAxes,
-                va="bottom",
+                loc="left",
+                pad=selected.title_padding,
                 fontsize=selected.title_size,
                 fontweight="bold",
             )
             if level:
-                axis.text(
-                    1.0,
-                    1.02,
+                axis.set_title(
                     level,
-                    transform=axis.transAxes,
-                    va="bottom",
-                    ha="right",
+                    loc="right",
+                    pad=selected.title_padding,
                     fontsize=selected.core_level_size,
                 )
             disclosures = []
@@ -203,6 +198,25 @@ def plot_xps_series(
                 bottom=None if independent_y else 0.0,
             )
             style_axes(axis, selected)
+            if index % ncols == 0:
+                axis.set_ylabel("Normalised intensity" if normalised else "Intensity (a.u.)")
+            if index // ncols == nrows - 1:
+                axis.set_xlabel("Binding energy (eV)")
+            legend_obstacles = ()
+            if not shared_legend:
+                legend = axis.legend(
+                    frameon=selected.legend_frame,
+                    fancybox=selected.legend_fancybox,
+                    framealpha=selected.legend_frame_alpha,
+                    facecolor=selected.legend_face_colour,
+                    edgecolor=selected.legend_edge_colour,
+                    labelspacing=selected.legend_spacing,
+                    prop={"size": selected.legend_font_size, "weight": selected.legend_font_weight},
+                )
+                style_legend(legend, selected)
+                legend_obstacles = (legend,)
+            elif legend_handles is None:
+                legend_handles = axis.get_legend_handles_labels()
             if show_peak_positions:
                 annotate_peak_positions(
                     axis,
@@ -215,24 +229,8 @@ def plot_xps_series(
                     leaders=peak_annotation_leaders,
                     offsets=peak_annotation_offsets,
                     include_negligible=annotate_negligible_components,
+                    obstacles=legend_obstacles,
                 )
-            if index % ncols == 0:
-                axis.set_ylabel("Normalised intensity" if normalised else "Intensity (a.u.)")
-            if index // ncols == nrows - 1:
-                axis.set_xlabel("Binding energy (eV)")
-            if not shared_legend:
-                legend = axis.legend(
-                    frameon=selected.legend_frame,
-                    fancybox=selected.legend_fancybox,
-                    framealpha=selected.legend_frame_alpha,
-                    facecolor=selected.legend_face_colour,
-                    edgecolor=selected.legend_edge_colour,
-                    labelspacing=selected.legend_spacing,
-                    prop={"size": selected.legend_font_size, "weight": selected.legend_font_weight},
-                )
-                style_legend(legend, selected)
-            elif legend_handles is None:
-                legend_handles = axis.get_legend_handles_labels()
         for axis in flat[count:]:
             axis.set_visible(False)
         if shared_legend and legend_handles:

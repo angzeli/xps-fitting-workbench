@@ -5,8 +5,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 import numpy as np
+from matplotlib.artist import Artist
 from matplotlib.axes import Axes
-from matplotlib.text import Annotation
+from matplotlib.text import Annotation, Text
 
 from ..result import FitResult
 from .themes import PlotTheme
@@ -40,6 +41,7 @@ def annotate_peak_positions(
     leaders: bool = True,
     offsets: Mapping[str, tuple[float, float]] | None = None,
     include_negligible: bool = False,
+    obstacles: tuple[Artist, ...] = (),
 ) -> list[Annotation]:
     """Annotate fitted centres above displayed component apices."""
     if isinstance(precision, bool) or not isinstance(precision, int) or precision < 0:
@@ -125,4 +127,58 @@ def annotate_peak_positions(
         annotation._xps_fitted_centre = centre
         annotation._xps_stagger_level = stagger_level
         annotations.append(annotation)
+    _keep_annotations_inside_axes(axis, annotations, obstacles)
     return annotations
+
+
+def _keep_annotations_inside_axes(
+    axis: Axes,
+    annotations: list[Annotation],
+    obstacles: tuple[Artist, ...],
+) -> None:
+    """Keep annotation text inside the axes and clear of framed legends."""
+    if not annotations:
+        return
+    canvas = axis.figure.canvas
+    padding = 3.0
+    points_per_pixel = 72.0 / axis.figure.dpi
+    for _ in range(3):
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        axes_box = axis.get_window_extent(renderer)
+        obstacle_boxes = [artist.get_window_extent(renderer) for artist in obstacles if artist.get_visible()]
+        adjusted = False
+        for annotation in annotations:
+            box = Text.get_window_extent(annotation, renderer)
+            shift_x = 0.0
+            shift_y = 0.0
+            for obstacle_box in obstacle_boxes:
+                if not box.overlaps(obstacle_box):
+                    continue
+                shift_right = obstacle_box.x1 - box.x0 + padding
+                shift_left = obstacle_box.x0 - box.x1 - padding
+                if box.x1 + shift_right <= axes_box.x1 - padding:
+                    shift_x += shift_right
+                elif box.x0 + shift_left >= axes_box.x0 + padding:
+                    shift_x += shift_left
+                else:
+                    shift_y += obstacle_box.y0 - box.y1 - padding
+            shifted_x0 = box.x0 + shift_x
+            shifted_x1 = box.x1 + shift_x
+            shifted_y0 = box.y0 + shift_y
+            shifted_y1 = box.y1 + shift_y
+            shift_x += max(axes_box.x0 + padding - shifted_x0, 0.0)
+            shift_x += min(axes_box.x1 - padding - shifted_x1, 0.0)
+            shift_y += max(axes_box.y0 + padding - shifted_y0, 0.0)
+            shift_y += min(axes_box.y1 - padding - shifted_y1, 0.0)
+            if shift_x or shift_y:
+                current_x, current_y = annotation.get_position()
+                annotation.set_position(
+                    (
+                        current_x + shift_x * points_per_pixel,
+                        current_y + shift_y * points_per_pixel,
+                    )
+                )
+                adjusted = True
+        if not adjusted:
+            break

@@ -7,6 +7,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 from ..result import FitResult
+from .annotations import PDI_H_C1S_LABELS
 from .export import export_figure
 
 
@@ -15,11 +16,11 @@ def plot_fit(result: FitResult, path: str | Path | None = None, *, residual_pane
         2 if residual_panel else 1, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]} if residual_panel else None
     )
     main = axes[0] if residual_panel else axes
-    main.plot(result.energy, result.raw_intensity, ".", color="0.35", label="data")
-    main.plot(result.energy, result.background, "--", color="0.5", label="background")
+    main.plot(result.energy, result.raw_intensity, ".", color="0.35", label="Experimental")
+    main.plot(result.energy, result.background, "--", color="0.5", label="_nolegend_")
     for label, curve in result.components.items():
-        main.plot(result.energy, result.background + curve, lw=1, label=label)
-    main.plot(result.energy, result.total_fit, color="black", label="total fit")
+        main.plot(result.energy, result.background + curve, lw=1, label=PDI_H_C1S_LABELS.get(label, label))
+    main.plot(result.energy, result.total_fit, color="black", label="Total fit")
     main.legend()
     main.set_ylabel("Intensity")
     main.invert_xaxis()
