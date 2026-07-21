@@ -139,8 +139,18 @@ def activate_reviewed_bundle(
     path = Path(manifest_path)
     manifest = load_sample_manifest(path)
     bundle_path = Path(bundle).resolve()
-    report = validate_fit_bundle(bundle_path, repository_root=repository_root)
-    descriptor = ArtifactDescriptor.from_dict(dict(read_fit_bundle_manifest(bundle_path).get("artifact") or {}))
+    raw_manifest = json.loads((bundle_path / "manifest.json").read_text(encoding="utf-8"))
+    if raw_manifest.get("format") == "xps-fitting-workbench-fit-bundle":
+        report = validate_fit_bundle(bundle_path, repository_root=repository_root)
+        artifact_data = read_fit_bundle_manifest(bundle_path).get("artifact")
+    elif raw_manifest.get("format") == "xps-fitting-workbench-spectrum-bundle":
+        from .spectrum_artifacts import read_spectrum_bundle_manifest, validate_spectrum_bundle
+
+        report = validate_spectrum_bundle(bundle_path, repository_root=repository_root)
+        artifact_data = read_spectrum_bundle_manifest(bundle_path).get("artifact")
+    else:
+        raise ValueError(f"unsupported reviewed artifact bundle: {bundle_path}")
+    descriptor = ArtifactDescriptor.from_dict(dict(artifact_data or {}))
     if report.errors:
         raise ValueError("reviewed bundle failed validation:\n" + "\n".join(report.errors))
     if descriptor.state != "reviewed" or descriptor.review_status != "reviewed":

@@ -280,6 +280,23 @@ def _resolve_source(path: str, bundle: Path, repository_root: str | Path | None)
     return None
 
 
+def bundle_scientific_sha256(directory: str | Path) -> str:
+    """Hash a bundle's immutable identity and member-file integrity records."""
+    manifest = json.loads((Path(directory) / "manifest.json").read_text(encoding="utf-8"))
+    if manifest.get("format") not in {
+        "xps-fitting-workbench-fit-bundle",
+        "xps-fitting-workbench-spectrum-bundle",
+    }:
+        raise ValueError(f"unsupported scientific artifact bundle: {directory}")
+    artifact = manifest.get("artifact") or {}
+    return sha256_json(
+        {
+            "artifact_id": artifact.get("artifact_id"),
+            "integrity": manifest.get("integrity", {}),
+        }
+    )
+
+
 def validate_fit_bundle(
     directory: str | Path,
     *,
@@ -379,15 +396,42 @@ def validate_fit_bundle(
                         errors.append("review record model does not match the bundle")
                     if review.get("source_sha256") != descriptor.source_sha256:
                         errors.append("review record source SHA-256 does not match the bundle")
-                    if review.get("configuration_sha256") != descriptor.configuration_sha256:
+                    reviewed_configuration_sha256 = descriptor.lineage.get(
+                        "reviewed_configuration_sha256", descriptor.configuration_sha256
+                    )
+                    if review.get("configuration_sha256") != reviewed_configuration_sha256:
                         errors.append("review record configuration SHA-256 does not match the bundle")
-                    parent_id = descriptor.lineage.get("parent_artifact_id")
+                    parent_id = descriptor.lineage.get(
+                        "review_candidate_artifact_id", descriptor.lineage.get("parent_artifact_id")
+                    )
                     if review.get("candidate_artifact_id") != parent_id:
                         errors.append("review record candidate lineage does not match the bundle")
         if require_calibrated and calibration_status != "calibrated":
             publication_reasons.append("publication workflow requires a calibrated reviewed artifact")
         if calibration_status == "calibrated" and not descriptor.calibration_record:
             errors.append("calibrated artifact has no calibration record")
+        elif calibration_status == "calibrated" and descriptor.calibration_record:
+            resolved_calibration = _resolve_source(descriptor.calibration_record, bundle, repository_root)
+            if resolved_calibration is None:
+                errors.append("calibration record does not resolve from artifact provenance")
+            else:
+                expected_calibration_sha256 = descriptor.lineage.get("calibration_record_sha256")
+                if not expected_calibration_sha256:
+                    errors.append("calibration record SHA-256 is missing from artifact lineage")
+                elif sha256_file(resolved_calibration) != expected_calibration_sha256:
+                    errors.append("calibration record SHA-256 does not match the artifact lineage")
+                try:
+                    calibration = json.loads(resolved_calibration.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError) as exc:
+                    errors.append(f"calibration record is unreadable: {exc}")
+                else:
+                    calibration_metadata = result.metadata.get("binding_energy_calibration", {})
+                    if calibration.get("sample") != descriptor.sample:
+                        errors.append("calibration record sample does not match the bundle")
+                    if descriptor.region not in calibration.get("applied_regions", []):
+                        errors.append("calibration record does not include the bundle region")
+                    if calibration.get("energy_offset_eV") != calibration_metadata.get("offset_eV"):
+                        errors.append("calibration record offset does not match bundle metadata")
     metrics = result_identity_metrics(result)
     return BundleValidationReport(
         bundle_path=str(bundle),
