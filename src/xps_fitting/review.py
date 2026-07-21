@@ -8,6 +8,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Literal
 
+import numpy as np
+
 from ._version import __version__
 from .artifacts import ArtifactDescriptor, canonical_region, portable_path, utc_now, validate_fit_bundle
 from .export import load_fit_bundle, read_fit_bundle_manifest, save_fit_bundle
@@ -89,6 +91,39 @@ def _next_review_version(directory: Path, region: str) -> int:
     return max(versions, default=0) + 1
 
 
+def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
+    """Return the numerical evidence a reviewer needs without selecting a model."""
+    result = load_fit_bundle(candidate_bundle)
+    areas = {label: float(result.fitted_parameters.get(f"{label}.area", 0.0)) for label in result.components}
+    total_area = sum(areas.values())
+    components = []
+    for label in result.components:
+        components.append(
+            {
+                "label": label,
+                "centre_eV": result.fitted_parameters.get(f"{label}.centre"),
+                "fwhm_eV": result.fitted_parameters.get(f"{label}.fwhm"),
+                "area": areas[label],
+                "area_fraction": areas[label] / total_area if total_area > 0 else None,
+            }
+        )
+    return {
+        "bundle": str(Path(candidate_bundle).resolve()),
+        "model": result.configuration.get("name", "unknown"),
+        "background": result.configuration.get("background", "unknown"),
+        "components": components,
+        "residual": {
+            "mean": float(np.mean(result.residual)),
+            "rms": float(np.sqrt(np.mean(np.square(result.residual)))),
+            "max_abs": float(np.max(np.abs(result.residual))),
+        },
+        "fit_statistics": copy.deepcopy(result.fit_statistics),
+        "warnings": list(result.warnings),
+        "convergence": copy.deepcopy(result.convergence),
+        "parameter_correlations": copy.deepcopy(result.correlation_matrix),
+    }
+
+
 def review_candidate(
     candidate_bundle: str | Path,
     reviewed_root: str | Path,
@@ -112,6 +147,9 @@ def review_candidate(
     report = validate_fit_bundle(candidate_path, repository_root=repository_root)
     if report.errors:
         raise ValueError("candidate bundle failed validation:\n" + "\n".join(report.errors))
+    blockers = [reason for reason in report.publication_reasons if "has not been scientifically reviewed" not in reason]
+    if blockers:
+        raise ValueError("candidate bundle cannot be promoted:\n" + "\n".join(blockers))
     manifest = read_fit_bundle_manifest(candidate_path)
     descriptor = ArtifactDescriptor.from_dict(dict(manifest.get("artifact") or {}))
     if descriptor.state != "candidate" or descriptor.review_status != "candidate":

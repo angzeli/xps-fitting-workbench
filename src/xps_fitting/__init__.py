@@ -10,6 +10,7 @@ from .calibration_workflow import (
     prepare_sample_calibration,
 )
 from .export import load_fit_bundle, save_fit_bundle
+from .publication import load_publication_region, plot_publication_region
 from .result import FitResult
 from .sample_manifest import SampleManifest, create_sample_manifest, load_sample_manifest
 from .spectrum import Spectrum
@@ -28,9 +29,11 @@ __all__ = [
     "calibrate_reviewed_sample",
     "create_sample_manifest",
     "load_fit_bundle",
+    "load_publication_region",
     "load_sample_manifest",
     "load_spectrum_bundle",
     "prepare_sample_calibration",
+    "plot_publication_region",
     "review_spectrum",
     "save_fit_bundle",
     "save_spectrum_bundle",

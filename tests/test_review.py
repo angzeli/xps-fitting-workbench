@@ -117,3 +117,22 @@ def test_review_versions_never_overwrite_and_record_tampering_is_detected(tmp_pa
     report = validate_fit_bundle(first.reviewed_bundle, repository_root=tmp_path)
     assert not report.publication_eligible
     assert "review record SHA-256" in " ".join(report.errors)
+
+
+def test_review_rejects_a_raw_equals_total_candidate(tmp_path) -> None:
+    result = candidate_result()
+    result.raw_intensity = result.total_fit.copy()
+    result.residual = np.zeros_like(result.energy)
+    source = tmp_path / "source.VGD"
+    source.write_bytes(b"experimental")
+    candidate = tmp_path / "candidate.bundle"
+    save_candidate_bundle(
+        result,
+        candidate,
+        sample="PDI-H-COOH",
+        region="C1s",
+        source_path=source,
+        repository_root=tmp_path,
+    )
+    with pytest.raises(ValueError, match="raw_intensity is identical to total_fit"):
+        approve(candidate, tmp_path)

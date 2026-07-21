@@ -8,6 +8,8 @@ from xps_fitting.artifacts import save_candidate_bundle, validate_fit_bundle
 from xps_fitting.calibration_workflow import calibrate_reviewed_sample, prepare_sample_calibration
 from xps_fitting.export import load_fit_bundle
 from xps_fitting.integrity import result_arrays_equal, sha256_file
+from xps_fitting.plotting.configuration import PlotConfig
+from xps_fitting.publication import load_publication_region, plot_publication_region
 from xps_fitting.result import FitResult
 from xps_fitting.review import review_candidate
 from xps_fitting.sample_manifest import activate_reviewed_bundle, create_sample_manifest, load_sample_manifest
@@ -116,6 +118,8 @@ def test_persisted_calibration_uses_exact_centre_and_preserves_every_intensity_a
     assert plan.reference_center_before_eV == 284.3762
     assert plan.energy_offset_eV == pytest.approx(0.4238)
     assert "Exact fitted reference centre: 284.376200 eV" in plan.format_text()
+    with pytest.raises(ValueError, match="no active calibration record"):
+        load_publication_region(manifest_path, "C1s", repository_root=tmp_path)
 
     with pytest.raises(PermissionError, match="confirmation"):
         calibrate_reviewed_sample(
@@ -175,6 +179,28 @@ def test_persisted_calibration_uses_exact_centre_and_preserves_every_intensity_a
     assert set(stored_manifest.calibrated) == {"C1s", "N1s", "Survey"}
     record = json.loads(outcome.calibration_record.read_text())
     assert record["reference_center_before_eV"] == 284.3762
+
+    recipe = PlotConfig(
+        output_filename="c1s_final",
+        output_formats=("png", "pdf"),
+        core_level="C 1s",
+        show_peak_positions=True,
+        show_y_ticks=False,
+        show_sample_title=False,
+    ).save(tmp_path / "c1s_recipe.json")
+    figure, _, paths, provenance = plot_publication_region(
+        manifest_path,
+        "C1s",
+        recipe,
+        tmp_path / "figures" / "final",
+        repository_root=tmp_path,
+    )
+    import matplotlib.pyplot as plt
+
+    plt.close(figure)
+    assert set(paths) == {"png", "pdf", "provenance"}
+    assert all(path.is_file() for path in paths.values())
+    assert provenance["energy_offset_eV"] == pytest.approx(0.4238)
 
 
 def test_incomplete_sample_requires_an_explicit_override_and_calibration_is_immutable(tmp_path) -> None:
