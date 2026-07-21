@@ -61,7 +61,7 @@ def load_curve_result(path: str | Path, metadata: str | Path | dict[str, Any] | 
     if path.suffix.lower() == ".json":
         return fit_result_from_dict(json.loads(path.read_text(encoding="utf-8")))
     if path.suffix.lower() == ".csv":
-        table = pd.read_csv(path)
+        table = pd.read_csv(path, float_precision="round_trip")
     elif path.suffix.lower() in {".xlsx", ".xls"}:
         table = pd.read_excel(path, sheet_name="curves")
     else:

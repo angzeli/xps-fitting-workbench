@@ -2,23 +2,14 @@
 
 from __future__ import annotations
 
-import numpy as np
 from matplotlib.colors import to_rgb
 
+from ..integrity import validate_result_integrity
 from ..result import FitResult
 
 
 def validate_result_curves(result: FitResult, *, rtol: float = 1e-9, atol: float = 1e-12) -> None:
-    arrays = [result.raw_intensity, result.background, result.total_fit, result.residual, *result.components.values()]
-    if any(np.asarray(array).shape != result.energy.shape for array in arrays):
-        raise ValueError("all FitResult curves must share the energy shape")
-    reconstructed = result.background + sum(
-        (np.asarray(curve) for curve in result.components.values()), start=np.zeros_like(result.energy)
-    )
-    if not np.allclose(reconstructed, result.total_fit, rtol=rtol, atol=atol):
-        raise ValueError("components plus background do not match total_fit")
-    if not np.allclose(result.raw_intensity - result.total_fit, result.residual, rtol=rtol, atol=atol):
-        raise ValueError("raw_intensity minus total_fit does not match residual")
+    validate_result_integrity(result, rtol=rtol, atol=atol)
 
 
 def contrast_ratio(foreground: str, background: str = "#FFFFFF") -> float:
