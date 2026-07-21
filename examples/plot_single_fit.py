@@ -16,12 +16,27 @@ def main(argv: list[str] | None = None) -> int:
     output = prepare_output(args.output_dir)
     result = fit_spectrum(synthetic_c1s(), load_config(ROOT / "configs/pdi_h_cooh_c1s_5.json"))
     recipes = {
-        "c1s_publication": ({"component_display_mode": "filled_to_background"}, ("png", "pdf")),
+        "c1s_publication": (
+            {"component_display_mode": "filled_to_background", "show_peak_positions": True},
+            ("png", "pdf"),
+        ),
         "c1s_diagnostic_residual": (
-            {"theme": "angze_diagnostic", "show_residual": True, "fit_statistics": True},
+            {
+                "theme": "angze_diagnostic",
+                "show_residual": True,
+                "fit_statistics": True,
+                "show_peak_positions": True,
+            },
             ("png",),
         ),
-        "c1s_monochrome_si": ({"theme": "monochrome_publication", "component_display_mode": "outline_only"}, ("pdf",)),
+        "c1s_monochrome_si": (
+            {
+                "theme": "monochrome_publication",
+                "component_display_mode": "outline_only",
+                "show_peak_positions": False,
+            },
+            ("pdf",),
+        ),
     }
     paths = []
     for name, (kwargs, formats) in recipes.items():

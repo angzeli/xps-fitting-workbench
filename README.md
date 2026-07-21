@@ -230,6 +230,8 @@ from xps_fitting.plotting import export_figure, plot_xps_fit
 fig, axes = plot_xps_fit(
     result, theme="angze_publication", core_level="C 1s",
     component_display_mode="filled_to_background", sample_label="PDI-H-COOH",
+    show_peak_positions=True, peak_position_precision=1,
+    peak_position_unit=True, peak_annotation_leaders=True,
 )
 export_figure(fig, "outputs/c1s", formats=("png", "pdf"))
 ```
@@ -244,6 +246,15 @@ optional. Use `intensity_units="CPS"` or `"a.u."`; `scale_factor=100000` divides
 displayed values and appends the disclosed factor to the axis label. It does not
 normalise areas.
 
+`show_peak_positions=True` labels each visible, non-negligible component from its
+stored fitted centre while using the displayed component-plus-background apex for
+vertical placement. Labels are bold, assignment-coloured, one decimal place with
+`eV` by default, and deterministically staggered when neighbouring centres are
+close. `peak_annotation_leaders=False` removes leader lines;
+`peak_annotation_offsets={"component": (dx, dy)}` adds per-component point offsets.
+Hidden and negligible components stay unlabelled unless explicitly requested. The
+committed detailed C 1s recipe enables these labels by default.
+
 PNG and PDF are the only supported figure formats. Exports preserve exact physical
 theme dimensions, DPI, metadata, and format-appropriate transparent backgrounds.
 Unsupported formats are rejected before any file is written. Run
@@ -257,7 +268,8 @@ shared or independent axes, stable assignment colours, shared/per-panel legends,
 automatic panel/sample labels, common energy windows, offsets, and optional exact
 residual insets. Any normalisation or intensity offset must be passed explicitly and
 is disclosed inside each affected panel. `show_components=False` provides an
-unfitted/raw comparison panel without changing its data.
+unfitted/raw comparison panel without changing its data. The same peak-position
+options work panel by panel with compact theme-controlled annotation text.
 
 `plot_fit_comparison` places candidate models and residuals side by side, annotates
 AICc/BIC and warning counts, and records common-component centre/FWHM values on the

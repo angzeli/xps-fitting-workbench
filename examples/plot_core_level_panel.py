@@ -29,7 +29,7 @@ def main(argv: list[str] | None = None) -> int:
                 {assignment: peak},
                 total,
                 np.zeros_like(energy),
-                {},
+                {f"{assignment}.centre": centre},
                 configuration={"region": region},
                 metadata={"data_origin": "deterministic synthetic"},
             )
@@ -41,6 +41,7 @@ def main(argv: list[str] | None = None) -> int:
         core_levels=[item[0] for item in levels],
         sample_labels=["Synthetic PDI-H-COOH"] * 3,
         shared_legend=False,
+        show_peak_positions=True,
     )
     paths = export_figure(
         figure, output / "pdi_h_cooh_core_level_panel", formats=("png", "pdf"), overwrite=args.overwrite

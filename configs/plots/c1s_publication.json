@@ -1,1 +1,1 @@
-{"theme":"angze_publication","figure_size_preset":"detailed-publication","output_formats":["png","pdf"],"output_filename":"c1s_publication","core_level":"C 1s","component_display_mode":"filled_to_background","x_limits":[294,280],"tick_spacing":2}
+{"theme":"angze_publication","figure_size_preset":"detailed-publication","output_formats":["png","pdf"],"output_filename":"c1s_publication","core_level":"C 1s","component_display_mode":"filled_to_background","show_peak_positions":true,"x_limits":[294,280],"tick_spacing":2}

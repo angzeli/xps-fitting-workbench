@@ -33,11 +33,18 @@ class PlotTheme:
     tick_label_weight: str = "bold"
     title_size: float = 18
     core_level_size: float = 16.5
+    peak_annotation_size: float = 10
+    peak_annotation_offset_points: float = 8
+    peak_annotation_stagger_points: float = 13
+    peak_annotation_collision_fraction: float = 0.075
+    peak_annotation_leader_width: float = 0.7
+    negligible_component_fraction: float = 0.01
     multipanel_axis_label_size: float = 12
     multipanel_tick_label_size: float = 9
-    multipanel_title_size: float = 11
-    multipanel_core_level_size: float = 10
+    multipanel_title_size: float = 9
+    multipanel_core_level_size: float = 8.5
     multipanel_legend_font_size: float = 9
+    multipanel_peak_annotation_size: float = 8
     spine_width: float = VISIBLE_SPINE_WIDTH
     tick_width: float = VISIBLE_SPINE_WIDTH
     tick_length: float = 4.0
@@ -84,11 +91,24 @@ class PlotTheme:
             or min(self.figure_size) <= 0
             or not 0 <= self.component_alpha <= 1
             or not 0 <= self.legend_frame_alpha <= 1
+            or not 0 <= self.negligible_component_fraction <= 1
+            or self.peak_annotation_collision_fraction < 0
             or self.vertical_headroom < 0
         ):
             raise ValueError("theme dimensions, DPI, and alpha must be valid")
-        if min(self.spine_width, self.tick_width, self.marker_edge_width, self.legend_frame_linewidth) <= 0:
-            raise ValueError("spine, tick, marker-edge, and legend-frame widths must be positive")
+        if (
+            min(
+                self.spine_width,
+                self.tick_width,
+                self.marker_edge_width,
+                self.legend_frame_linewidth,
+                self.peak_annotation_size,
+                self.peak_annotation_leader_width,
+                self.peak_annotation_stagger_points,
+            )
+            <= 0
+        ):
+            raise ValueError("theme widths and annotation sizes must be positive")
 
     def rc_params(self) -> dict[str, object]:
         return {
@@ -123,6 +143,7 @@ class PlotTheme:
             title_size=self.multipanel_title_size,
             core_level_size=self.multipanel_core_level_size,
             legend_font_size=self.multipanel_legend_font_size,
+            peak_annotation_size=self.multipanel_peak_annotation_size,
         )
 
 

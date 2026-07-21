@@ -30,7 +30,7 @@ residual, multipanel, and inset axes; plotting functions do not override it. Tic
 point inward, use the audited 1.8 pt width, and have bold 14 pt labels on both axes.
 Detailed axis labels are 22 pt bold, sample titles are 18 pt bold, and core-level
 labels are 16.5 pt. Multipanel figures retain those weights and line values but use
-the theme's compact 12 pt axis labels, 9 pt ticks, 11 pt titles, 10 pt core-level
+the theme's compact 12 pt axis labels, 9 pt ticks, 9 pt titles, 8.5 pt core-level
 labels, and 9 pt legends. PDF output uses TrueType-compatible font embedding where
 Matplotlib supports it.
 
@@ -46,6 +46,22 @@ Named physical presets are:
 
 The detailed publication theme uses 10% vertical headroom above the highest
 displayed curve so peaks and later annotations do not touch the complete box.
+
+## Component binding-energy annotations
+
+Set `show_peak_positions=True` to place an assignment-coloured, bold binding-energy
+label above each visible component. The numeric value comes from
+`FitResult.fitted_parameters["<component>.centre"]`; the vertical anchor comes from
+the apex of the component as it is displayed, including its fitted background.
+Values use one decimal place and `eV` by default and are not added to the legend.
+
+Close fitted centres are detected from a theme-controlled fraction of the displayed
+energy span and staggered vertically in point units. Short colour-matched leaders
+preserve association. `peak_annotation_leaders=False` disables them, while
+`peak_annotation_offsets={"component": (dx, dy)}` applies finite manual point
+offsets after staggering. Anchors are clamped just inside either orientation of the
+x axis. Negligible and hidden components are omitted unless their explicit include
+options are enabled. Multipanels use the same algorithm with compact 8 pt text.
 
 PNG is the supported raster output and PDF is the supported vector output. Format
 validation happens before directory creation or rendering, so an unsupported request

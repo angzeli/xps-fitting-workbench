@@ -31,12 +31,21 @@ def main(argv: list[str] | None = None) -> int:
                 components,
                 total,
                 np.zeros_like(energy),
-                {},
+                {
+                    "aromatic_C-C_C=C.centre": 284.65 + shift,
+                    "C-N_C-Cl.centre": 285.85 + shift,
+                },
                 configuration={"region": "C 1s"},
                 metadata={"sample_name": sample, "data_origin": "deterministic synthetic"},
             )
         )
-    figure, _ = plot_xps_series(results, normalised=True, core_levels="C 1s", x_limits=(294, 280))
+    figure, _ = plot_xps_series(
+        results,
+        normalised=True,
+        core_levels="C 1s",
+        x_limits=(294, 280),
+        show_peak_positions=True,
+    )
     paths = export_figure(
         figure, output / "pdi_c1s_three_sample_series", formats=("png", "pdf"), overwrite=args.overwrite
     )

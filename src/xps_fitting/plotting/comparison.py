@@ -18,6 +18,7 @@ def plot_fit_comparison(
     names: Sequence[str] | None = None,
     theme: str | PlotTheme = "angze_publication",
     show_residual: bool = True,
+    show_peak_positions: bool = False,
 ) -> tuple[Figure, np.ndarray]:
     """Compare statistics and component stability without claiming chemical truth."""
     if isinstance(results, Mapping):
@@ -35,6 +36,7 @@ def plot_fit_comparison(
         panel_labels=[chr(97 + index) for index in range(len(values))],
         shared_legend=True,
         show_residual=show_residual,
+        show_peak_positions=show_peak_positions,
     )
     for result, axis in zip(values, axes.ravel()):
         stats = result.fit_statistics

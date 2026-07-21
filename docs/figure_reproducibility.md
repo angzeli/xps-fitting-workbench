@@ -22,6 +22,13 @@ and exact bytes may vary with Matplotlib/font versions; numerical curves, colour
 layout parameters, and physical dimensions remain controlled by the result and recipe.
 PNG and PDF are the only supported saved figure formats.
 
+Peak-position annotations are also recipe-controlled. Their text is generated from
+the stored fitted centre, not a visual re-fit; their height uses the already displayed
+component-plus-background curve. Formatting, leader visibility, negligible/hidden
+component policy, and finite per-component point offsets are serialized in
+`PlotConfig`. The deterministic collision stagger depends only on fitted centres and
+the plotted energy span, so reversed binding-energy axes produce the same labels.
+
 The tracked-data workflow can be repeated with
 `PYTHONPATH=src MPLBACKEND=Agg python scripts/validate_experimental_workflow.py`.
 Its local outputs are deliberately ignored; numerical observations and manual-

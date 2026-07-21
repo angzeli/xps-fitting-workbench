@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,13 @@ class PlotConfig:
     fit_line_width: float | None = None
     component_line_width: float | None = None
     marker_size: float | None = None
+    show_peak_positions: bool = False
+    peak_position_precision: int = 1
+    peak_position_unit: bool = True
+    peak_annotation_leaders: bool = True
+    peak_annotation_offsets: dict[str, tuple[float, float]] = field(default_factory=dict)
+    annotate_negligible_components: bool = False
+    annotate_hidden_components: bool = False
     labels: dict[str, str] = field(default_factory=dict)
     legend_order: tuple[str, ...] = ()
     x_limits: tuple[float, float] | None = None
@@ -52,6 +60,19 @@ class PlotConfig:
         for value in (self.fit_line_width, self.component_line_width, self.marker_size, self.tick_spacing):
             if value is not None and value <= 0:
                 raise ValueError("line widths, marker size, and tick spacing must be positive")
+        if (
+            isinstance(self.peak_position_precision, bool)
+            or not isinstance(self.peak_position_precision, int)
+            or self.peak_position_precision < 0
+        ):
+            raise ValueError("peak_position_precision must be a non-negative integer")
+        for label, offset in self.peak_annotation_offsets.items():
+            try:
+                offset_x, offset_y = offset
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"peak annotation offset for {label!r} must contain two finite values") from exc
+            if not all(math.isfinite(value) for value in (offset_x, offset_y)):
+                raise ValueError(f"peak annotation offset for {label!r} must contain two finite values")
         if self.panel_layout not in {"single", "horizontal", "vertical", "grid"}:
             raise ValueError("invalid panel_layout")
 
@@ -70,4 +91,8 @@ def load_plot_config(path: str | Path) -> PlotConfig:
     for key in ("figure_size", "output_formats", "legend_order", "x_limits", "panel_labels"):
         if key in data and data[key] is not None:
             data[key] = tuple(data[key])
+    if "peak_annotation_offsets" in data:
+        data["peak_annotation_offsets"] = {
+            label: tuple(offset) for label, offset in data["peak_annotation_offsets"].items()
+        }
     return PlotConfig(**data)

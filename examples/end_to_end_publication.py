@@ -20,7 +20,11 @@ def main(argv: list[str] | None = None) -> int:
     paths = export_result(result, output, "pdi_h_cooh_c1s", overwrite=args.overwrite)
     reloaded = load_curve_result(paths["xlsx"], paths["json"])
     figure, _ = plot_xps_fit(
-        reloaded, core_level="C 1s", sample_label="Synthetic PDI-H-COOH", component_display_mode="filled_to_background"
+        reloaded,
+        core_level="C 1s",
+        sample_label="Synthetic PDI-H-COOH",
+        component_display_mode="filled_to_background",
+        show_peak_positions=True,
     )
     publication = export_figure(
         figure,

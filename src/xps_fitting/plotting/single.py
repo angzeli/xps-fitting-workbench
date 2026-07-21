@@ -12,7 +12,7 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import MultipleLocator, ScalarFormatter
 
 from ..result import FitResult
-from .annotations import PDI_H_C1S_LABELS, statistics_text
+from .annotations import PDI_H_C1S_LABELS, annotate_peak_positions, statistics_text
 from .palettes import component_colour
 from .palettes import component_style as monochrome_component_style
 from .themes import PlotTheme, apply_vertical_headroom, style_axes, style_legend, theme_context
@@ -33,6 +33,13 @@ def plot_xps_fit(
     show_residual_zero: bool | None = None,
     show_baseline: bool = False,
     peak_labels: bool = False,
+    show_peak_positions: bool = False,
+    peak_position_precision: int = 1,
+    peak_position_unit: bool = True,
+    peak_annotation_leaders: bool = True,
+    peak_annotation_offsets: Mapping[str, tuple[float, float]] | None = None,
+    annotate_negligible_components: bool = False,
+    annotate_hidden_components: bool = False,
     area_percentages: bool = False,
     fit_statistics: bool = False,
     intensity_units: str = "a.u.",
@@ -110,6 +117,8 @@ def plot_xps_fit(
             zorder=2,
         )
         component_artists = {}
+        displayed_components = {}
+        annotation_colours = {}
         displayed_curves = [raw, background, total]
         cumulative = background.copy()
         total_component_area = sum(float(np.trapz(curve, energy)) for curve in result.components.values())
@@ -121,6 +130,9 @@ def plot_xps_fit(
                 display_label += f" ({100 * float(np.trapz(source_curve, energy)) / total_component_area:.1f}%)"
             linestyle = monochrome_component_style(label) if selected.name == "monochrome_publication" else "-"
             if mode == "hidden":
+                if annotate_hidden_components:
+                    displayed_components[label] = background + curve
+                    annotation_colours[label] = colour
                 continue
             if mode == "stacked_visualisation":
                 next_curve = cumulative + curve
@@ -152,6 +164,8 @@ def plot_xps_fit(
                         label=display_label,
                     )
             component_artists[label] = artist
+            displayed_components[label] = plotted
+            annotation_colours[label] = colour
             displayed_curves.append(plotted)
             if peak_labels:
                 index = int(np.argmax(source_curve))
@@ -227,6 +241,19 @@ def plot_xps_fit(
                 va="bottom",
                 fontsize=selected.title_size,
                 fontweight="bold",
+            )
+        if show_peak_positions:
+            annotate_peak_positions(
+                main,
+                result,
+                displayed_components,
+                annotation_colours,
+                selected,
+                precision=peak_position_precision,
+                include_unit=peak_position_unit,
+                leaders=peak_annotation_leaders,
+                offsets=peak_annotation_offsets,
+                include_negligible=annotate_negligible_components,
             )
         if fit_statistics:
             main.text(

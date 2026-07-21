@@ -10,7 +10,7 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import MultipleLocator
 
 from ..result import FitResult
-from .annotations import PDI_H_C1S_LABELS
+from .annotations import PDI_H_C1S_LABELS, annotate_peak_positions
 from .palettes import component_colour
 from .themes import (
     PlotTheme,
@@ -46,6 +46,13 @@ def plot_xps_series(
     normalised: bool = False,
     spacing: tuple[float, float] = (0.08, 0.12),
     label_map: Mapping[str, str] | None = None,
+    show_peak_positions: bool = False,
+    peak_position_precision: int = 1,
+    peak_position_unit: bool = True,
+    peak_annotation_leaders: bool = True,
+    peak_annotation_offsets: Mapping[str, tuple[float, float]] | None = None,
+    annotate_negligible_components: bool = False,
+    annotate_hidden_components: bool = False,
 ) -> tuple[Figure, np.ndarray]:
     """Plot related immutable results on an aligned grid."""
     if not results:
@@ -113,24 +120,30 @@ def plot_xps_series(
                 linewidth=selected.background_line_width,
                 label="_nolegend_",
             )
-            if components_visible[index]:
-                for label, curve in result.components.items():
-                    colour = component_colour(label)
+            displayed_components = {}
+            annotation_colours = {}
+            for label, curve in result.components.items():
+                colour = component_colour(label)
+                displayed_component = np.asarray(result.background) + np.asarray(curve) + offset
+                if components_visible[index]:
                     axis.fill_between(
                         energy,
                         np.asarray(result.background) + offset,
-                        np.asarray(result.background) + np.asarray(curve) + offset,
+                        displayed_component,
                         color=colour,
                         alpha=selected.component_alpha,
                         label=labels.get(label, label),
                     )
                     axis.plot(
                         energy,
-                        np.asarray(result.background) + np.asarray(curve) + offset,
+                        displayed_component,
                         color=colour,
                         linewidth=selected.component_line_width,
                     )
-                    displayed_curves.append(np.asarray(result.background) + np.asarray(curve) + offset)
+                    displayed_curves.append(displayed_component)
+                if components_visible[index] or annotate_hidden_components:
+                    displayed_components[label] = displayed_component
+                    annotation_colours[label] = colour
             level = levels[index] or result.configuration.get("region", "")
             displayed_total = np.asarray(result.total_fit) + offset
             displayed_curves.append(displayed_total)
@@ -190,6 +203,19 @@ def plot_xps_series(
                 bottom=None if independent_y else 0.0,
             )
             style_axes(axis, selected)
+            if show_peak_positions:
+                annotate_peak_positions(
+                    axis,
+                    result,
+                    displayed_components,
+                    annotation_colours,
+                    selected,
+                    precision=peak_position_precision,
+                    include_unit=peak_position_unit,
+                    leaders=peak_annotation_leaders,
+                    offsets=peak_annotation_offsets,
+                    include_negligible=annotate_negligible_components,
+                )
             if index % ncols == 0:
                 axis.set_ylabel("Normalised intensity" if normalised else "Intensity (a.u.)")
             if index // ncols == nrows - 1:

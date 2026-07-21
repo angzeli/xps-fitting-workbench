@@ -51,6 +51,13 @@ def plot_from_config(
         component_colours=config.component_colour_overrides,
         fit_colour=config.core_level_colour,
         sample_label=disclosure or None,
+        show_peak_positions=config.show_peak_positions,
+        peak_position_precision=config.peak_position_precision,
+        peak_position_unit=config.peak_position_unit,
+        peak_annotation_leaders=config.peak_annotation_leaders,
+        peak_annotation_offsets=config.peak_annotation_offsets,
+        annotate_negligible_components=config.annotate_negligible_components,
+        annotate_hidden_components=config.annotate_hidden_components,
     )
     output_filename = validate_output_stem(config.output_filename)
     paths = export_figure(
@@ -98,6 +105,13 @@ def plot_series_from_config(
         tick_spacing=config.tick_spacing,
         normalised=bool(config.normalisation_disclosure),
         label_map=config.labels,
+        show_peak_positions=config.show_peak_positions,
+        peak_position_precision=config.peak_position_precision,
+        peak_position_unit=config.peak_position_unit,
+        peak_annotation_leaders=config.peak_annotation_leaders,
+        peak_annotation_offsets=config.peak_annotation_offsets,
+        annotate_negligible_components=config.annotate_negligible_components,
+        annotate_hidden_components=config.annotate_hidden_components,
     )
     output_filename = validate_output_stem(config.output_filename)
     paths = export_figure(

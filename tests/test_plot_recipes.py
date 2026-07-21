@@ -1,11 +1,12 @@
 import json
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
 from xps_fitting.cli import main
 from xps_fitting.export import curve_table, save_fit_bundle
-from xps_fitting.plotting import PlotConfig, fit_result_from_dict, load_curve_result, load_plot_config
+from xps_fitting.plotting import PlotConfig, fit_result_from_dict, load_curve_result, load_plot_config, plot_from_config
 from xps_fitting.result import FitResult
 
 
@@ -14,7 +15,16 @@ def fixture() -> FitResult:
     bg = np.ones_like(x)
     peak = np.exp(-(((x - 1) / 0.2) ** 2))
     total = bg + peak
-    return FitResult(x, total, bg, {"p": peak}, total, np.zeros_like(x), {}, configuration={"region": "C 1s"})
+    return FitResult(
+        x,
+        total,
+        bg,
+        {"p": peak},
+        total,
+        np.zeros_like(x),
+        {"p.centre": 1.0},
+        configuration={"region": "C 1s"},
+    )
 
 
 def test_recipe_round_trip_and_validation(tmp_path) -> None:
@@ -25,9 +35,15 @@ def test_recipe_round_trip_and_validation(tmp_path) -> None:
         output_filename="recipe",
         residual_panel=True,
         x_limits=(2, 0),
+        show_peak_positions=True,
+        peak_annotation_offsets={"p": (2, 3)},
     )
     path = config.save(tmp_path / "recipe.json")
     assert load_plot_config(path) == config
+    figure, axis, paths = plot_from_config(config=config, result=fixture(), output_directory=tmp_path)
+    assert any((text.get_gid() or "").startswith("peak-position:") for text in axis[0].texts)
+    assert paths["pdf"].stat().st_size > 100
+    plt.close(figure)
     with pytest.raises(ValueError):
         PlotConfig(component_display_mode="invented")
     with pytest.raises(ValueError, match="unsupported output"):

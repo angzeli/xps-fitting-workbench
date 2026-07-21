@@ -24,7 +24,14 @@ def main(argv: list[str] | None = None) -> int:
         Spectrum(energy, intensity, region="Cl 2p", metadata={"data_origin": "deterministic synthetic"}),
         FitConfig("Cl_doublet", "Cl 2p", cl2p_doublet("Cl", 199.8, 900)),
     )
-    figure, _ = plot_xps_fit(result, core_level="Cl 2p", sample_label="Synthetic Cl 2p", show_residual=True)
+    figure, _ = plot_xps_fit(
+        result,
+        core_level="Cl 2p",
+        sample_label="Synthetic Cl 2p",
+        show_residual=True,
+        show_peak_positions=True,
+        label_map={"Cl_2p3/2": "Cl 2p3/2", "Cl_2p1/2": "Cl 2p1/2"},
+    )
     paths = export_figure(figure, output / "cl2p_constrained_doublet", formats=("png", "pdf"), overwrite=args.overwrite)
     print(result.fit_statistics)
     print("Created:", ", ".join(map(str, paths.values())))
