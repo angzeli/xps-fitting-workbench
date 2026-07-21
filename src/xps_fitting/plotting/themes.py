@@ -9,6 +9,7 @@ from typing import Iterator
 
 import matplotlib as mpl
 from matplotlib.axes import Axes
+from matplotlib.legend import Legend
 
 VISIBLE_SPINE_WIDTH = 1.8
 SUPPORTED_OUTPUT_FORMATS = frozenset({"png", "pdf"})
@@ -16,6 +17,7 @@ FIGURE_SIZE_PRESETS = {
     "single-column": (3.45, 2.8),
     "one-and-a-half-column": (5.2, 3.4),
     "double-column": (7.1, 3.8),
+    "detailed-publication": (8.0, 6.0),
     "presentation": (8.0, 5.0),
 }
 _FIXED_SPINE_THEMES = frozenset({"angze_publication", "monochrome_publication", "presentation"})
@@ -25,46 +27,68 @@ _FIXED_SPINE_THEMES = frozenset({"angze_publication", "monochrome_publication", 
 class PlotTheme:
     name: str
     font_family: str = "DejaVu Sans"
-    font_size: float = 9
-    axis_label_size: float = 10
-    tick_label_size: float = 8
-    title_size: float = 11
+    font_size: float = 14
+    axis_label_size: float = 22
+    tick_label_size: float = 14
+    tick_label_weight: str = "bold"
+    title_size: float = 18
+    core_level_size: float = 16.5
+    multipanel_axis_label_size: float = 12
+    multipanel_tick_label_size: float = 9
+    multipanel_title_size: float = 11
+    multipanel_core_level_size: float = 10
+    multipanel_legend_font_size: float = 9
     spine_width: float = VISIBLE_SPINE_WIDTH
     tick_width: float = VISIBLE_SPINE_WIDTH
     tick_length: float = 4.0
     tick_direction: str = "in"
     marker: str = "o"
-    marker_size: float = 3.0
-    marker_edge_width: float = 0.8
+    marker_size: float = 4.0
+    marker_edge_width: float = 0.9
     raw_face: str = "white"
     raw_edge: str = "#222222"
+    fit_colour: str = "#333333"
     fit_line_width: float = 2.0
-    background_line_width: float = 1.1
+    background_line_width: float = 1.3
     background_line_style: str = "--"
-    component_line_width: float = 1.2
-    component_alpha: float = 0.32
-    legend_frame: bool = False
+    component_line_width: float = 1.5
+    component_alpha: float = 0.28
+    legend_frame: bool = True
+    legend_font_size: float = 11
+    legend_font_weight: str = "bold"
+    legend_face_colour: str = "white"
+    legend_edge_colour: str = "#222222"
+    legend_frame_alpha: float = 0.95
+    legend_frame_linewidth: float = 1.0
+    legend_fancybox: bool = False
     legend_spacing: float = 0.35
     axis_padding: float = 4.0
-    figure_size: tuple[float, float] = FIGURE_SIZE_PRESETS["single-column"]
+    figure_size: tuple[float, float] = FIGURE_SIZE_PRESETS["detailed-publication"]
+    vertical_headroom: float = 0.1
     dpi: int = 300
     invert_binding_energy: bool = True
     residual_height_ratio: float = 0.28
     residual_zero_line: bool = True
     panel_label_template: str = "({label})"
     show_title: bool = False
-    top_spine: bool = False
-    right_spine: bool = False
+    top_spine: bool = True
+    right_spine: bool = True
     raster_transparent: bool = False
     vector_transparent: bool = True
 
     def __post_init__(self) -> None:
         if self.tick_direction not in {"in", "out", "inout"}:
             raise ValueError("tick_direction must be in, out, or inout")
-        if self.dpi <= 0 or min(self.figure_size) <= 0 or not 0 <= self.component_alpha <= 1:
+        if (
+            self.dpi <= 0
+            or min(self.figure_size) <= 0
+            or not 0 <= self.component_alpha <= 1
+            or not 0 <= self.legend_frame_alpha <= 1
+            or self.vertical_headroom < 0
+        ):
             raise ValueError("theme dimensions, DPI, and alpha must be valid")
-        if min(self.spine_width, self.tick_width, self.marker_edge_width) <= 0:
-            raise ValueError("spine, tick, and marker-edge widths must be positive")
+        if min(self.spine_width, self.tick_width, self.marker_edge_width, self.legend_frame_linewidth) <= 0:
+            raise ValueError("spine, tick, marker-edge, and legend-frame widths must be positive")
 
     def rc_params(self) -> dict[str, object]:
         return {
@@ -84,21 +108,36 @@ class PlotTheme:
             "ytick.major.size": self.tick_length,
             "axes.grid": False,
             "legend.frameon": self.legend_frame,
-            "legend.fontsize": self.tick_label_size,
+            "legend.fontsize": self.legend_font_size,
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
             "savefig.dpi": self.dpi,
         }
+
+    def for_multipanel(self) -> PlotTheme:
+        """Return the theme's compact typography variant for aligned panels."""
+        return replace(
+            self,
+            axis_label_size=self.multipanel_axis_label_size,
+            tick_label_size=self.multipanel_tick_label_size,
+            title_size=self.multipanel_title_size,
+            core_level_size=self.multipanel_core_level_size,
+            legend_font_size=self.multipanel_legend_font_size,
+        )
 
 
 _THEMES = {
     "angze_publication": PlotTheme("angze_publication"),
     "angze_diagnostic": PlotTheme(
         "angze_diagnostic",
+        font_size=10,
+        axis_label_size=13,
+        tick_label_size=10,
+        title_size=14,
+        core_level_size=12,
+        legend_font_size=9,
         figure_size=(5.8, 4.4),
         show_title=True,
-        top_spine=True,
-        right_spine=True,
         component_alpha=0.18,
     ),
     "monochrome_publication": PlotTheme("monochrome_publication", component_alpha=0.12, raw_edge="#000000"),
@@ -178,7 +217,37 @@ def style_axes(axis: Axes, theme: PlotTheme, *, top: bool | None = None, right: 
         top=top_visible,
         right=right_visible,
     )
+    for tick in (*axis.xaxis.get_major_ticks(), *axis.yaxis.get_major_ticks()):
+        tick.label1.set_fontweight(theme.tick_label_weight)
+        tick.label2.set_fontweight(theme.tick_label_weight)
     axis.grid(False)
+
+
+def style_legend(legend: Legend, theme: PlotTheme) -> Legend:
+    """Apply the compact, deterministic publication legend hierarchy."""
+    frame = legend.get_frame()
+    frame.set_facecolor(theme.legend_face_colour)
+    frame.set_edgecolor(theme.legend_edge_colour)
+    frame.set_alpha(theme.legend_frame_alpha)
+    frame.set_linewidth(theme.legend_frame_linewidth)
+    for text in legend.get_texts():
+        text.set_fontweight(theme.legend_font_weight)
+        text.set_fontsize(theme.legend_font_size)
+    return legend
+
+
+def apply_vertical_headroom(
+    axis: Axes,
+    theme: PlotTheme,
+    *,
+    minimum: float,
+    maximum: float,
+    bottom: float | None = None,
+) -> None:
+    """Set a stable y range with theme-controlled space above displayed curves."""
+    lower = minimum if bottom is None else bottom
+    span = max(maximum - lower, abs(maximum), 1.0)
+    axis.set_ylim(bottom=lower, top=maximum + theme.vertical_headroom * span)
 
 
 @contextmanager

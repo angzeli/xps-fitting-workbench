@@ -21,6 +21,8 @@ def test_themes_aliases_and_deterministic_colours() -> None:
     assert load_theme("angze_publication").dpi == 300
     assert load_theme("presentation").figure_size == (8, 5)
     assert figure_size_preset("double_column") == FIGURE_SIZE_PRESETS["double-column"]
+    assert figure_size_preset("detailed_publication") == (8, 6)
+    assert load_theme("angze_publication").figure_size == (8, 6)
     assert all(
         load_theme(name).spine_width == VISIBLE_SPINE_WIDTH
         for name in ("angze_publication", "monochrome_publication", "presentation")

@@ -12,11 +12,13 @@ from .configuration import PlotConfig
 from .export import export_figure
 from .multipanel import plot_xps_series
 from .single import plot_xps_fit
-from .themes import PlotTheme, load_theme
+from .themes import PlotTheme, figure_size_preset, load_theme
 
 
 def _theme_from_config(config: PlotConfig) -> PlotTheme:
     overrides = {}
+    if config.figure_size_preset is not None:
+        overrides["figure_size"] = figure_size_preset(config.figure_size_preset)
     for field_name in ("figure_size", "fit_line_width", "component_line_width", "marker_size"):
         value = getattr(config, field_name)
         if value is not None:

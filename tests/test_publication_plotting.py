@@ -6,7 +6,7 @@ import pytest
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from xps_fitting.plotting import VISIBLE_SPINE_WIDTH, export_figure, figure_size_preset, plot_xps_fit
+from xps_fitting.plotting import VISIBLE_SPINE_WIDTH, export_figure, figure_size_preset, load_theme, plot_xps_fit
 from xps_fitting.result import FitResult
 
 
@@ -46,12 +46,40 @@ def test_single_plot_layers_residual_and_no_mutation() -> None:
     assert axes[0].xaxis_inverted()
     assert len(axes[0].lines) >= 5
     assert result.to_dict() == before
-    assert any(label.startswith("aromatic C-C/C=C") for label in axes[0].get_legend_handles_labels()[1])
+    assert any(label.startswith("Aromatic C=C/C–C") for label in axes[0].get_legend_handles_labels()[1])
     for axis in axes:
         assert all(
-            spine.get_linewidth() == VISIBLE_SPINE_WIDTH for spine in axis.spines.values() if spine.get_visible()
+            spine.get_visible() and spine.get_linewidth() == VISIBLE_SPINE_WIDTH for spine in axis.spines.values()
         )
-    assert tuple(figure.get_size_inches()) == figure_size_preset("single-column")
+    assert tuple(figure.get_size_inches()) == figure_size_preset("detailed-publication")
+    plt.close(figure)
+
+
+def test_publication_hierarchy_and_legend_styling() -> None:
+    theme = load_theme("angze_publication")
+    figure, axis = plot_xps_fit(
+        result_fixture(),
+        core_level="C 1s",
+        sample_label="PDI-H-COOH",
+        component_display_mode="filled_to_background",
+    )
+    figure.canvas.draw()
+    assert tuple(figure.get_size_inches()) == (8.0, 6.0)
+    assert all(spine.get_visible() and spine.get_linewidth() == 1.8 for spine in axis.spines.values())
+    assert all(text.get_fontweight() == "bold" for text in (*axis.get_xticklabels(), *axis.get_yticklabels()))
+    lines = {line.get_label(): line for line in axis.lines}
+    assert lines["Total fit"].get_linewidth() == theme.fit_line_width == 2.0
+    assert lines["Experimental"].get_markersize() == theme.marker_size == 4.0
+    legend = axis.get_legend()
+    assert legend is not None and legend.get_frame().get_visible()
+    assert legend.get_frame().get_linewidth() == theme.legend_frame_linewidth == 1.0
+    assert all(text.get_fontweight() == "bold" for text in legend.get_texts())
+    legend_labels = [text.get_text() for text in legend.get_texts()]
+    assert "Background" not in legend_labels
+    assert legend_labels[:2] == ["Experimental", "Total fit"]
+    assert "Aromatic C=C/C–C" in legend_labels
+    assert axis.collections[0].get_alpha() == theme.component_alpha == 0.28
+    assert axis.get_ylim()[1] > max(result_fixture().raw_intensity) * 1.08
     plt.close(figure)
 
 

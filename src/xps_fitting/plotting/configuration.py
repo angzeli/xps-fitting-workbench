@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from .single import DISPLAY_MODES
+from .themes import figure_size_preset as resolve_figure_size_preset
 from .themes import load_theme, validate_theme
 
 
@@ -15,6 +16,7 @@ from .themes import load_theme, validate_theme
 class PlotConfig:
     theme: str = "angze_publication"
     figure_size: tuple[float, float] | None = None
+    figure_size_preset: str | None = None
     output_formats: tuple[str, ...] = ("png", "pdf")
     output_filename: str = "xps_fit"
     core_level: str | None = None
@@ -38,6 +40,10 @@ class PlotConfig:
 
     def __post_init__(self) -> None:
         theme = load_theme(self.theme)
+        if self.figure_size is not None and self.figure_size_preset is not None:
+            raise ValueError("set either figure_size or figure_size_preset, not both")
+        if self.figure_size_preset is not None:
+            resolve_figure_size_preset(self.figure_size_preset)
         if self.component_display_mode not in DISPLAY_MODES:
             raise ValueError(f"invalid component_display_mode {self.component_display_mode!r}")
         if not self.output_formats:

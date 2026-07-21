@@ -19,7 +19,12 @@ def fixture() -> FitResult:
 
 def test_recipe_round_trip_and_validation(tmp_path) -> None:
     config = PlotConfig(
-        theme="presentation", output_formats=("pdf",), output_filename="recipe", residual_panel=True, x_limits=(2, 0)
+        theme="presentation",
+        figure_size_preset="detailed-publication",
+        output_formats=("pdf",),
+        output_filename="recipe",
+        residual_panel=True,
+        x_limits=(2, 0),
     )
     path = config.save(tmp_path / "recipe.json")
     assert load_plot_config(path) == config
@@ -27,6 +32,8 @@ def test_recipe_round_trip_and_validation(tmp_path) -> None:
         PlotConfig(component_display_mode="invented")
     with pytest.raises(ValueError, match="unsupported output"):
         PlotConfig(output_formats=("svg",))
+    with pytest.raises(ValueError, match="either figure_size"):
+        PlotConfig(figure_size=(4, 3), figure_size_preset="single-column")
 
 
 def test_curve_and_serialised_loading_and_cli(tmp_path) -> None:

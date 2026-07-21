@@ -2,10 +2,16 @@
 
 ## Visual hierarchy
 
-Experimental observations use small dark markers, the unchanged total fit uses the
-strongest line, the stored background is thin and dashed, and components use stable
-semantic colours with restrained transparency. Binding energy decreases left to
-right. Grids, decorative frames, and titles are absent from publication defaults.
+Experimental observations use hollow 4 pt markers with 0.9 pt dark edges, the
+unchanged total fit uses a 2 pt dark-neutral line, the stored background is a 1.3 pt
+dashed neutral line, and components use 1.5 pt stable semantic outlines with alpha
+0.28 fills. Binding energy decreases left to right and grids remain off.
+
+Publication legends use a compact white frame with a dark 1 pt edge, 0.95 frame
+alpha, minimally rounded corners, and approximately 11 pt bold text. Labels use
+sentence case and typographic en dashes. The background stays visible on the axes
+but is omitted from the legend. Deterministic C 1s labels are Aromatic C=C/C–C,
+C–N/C–Cl, Imide N–C=O, Carboxylic O–C=O, and π–π* satellite.
 
 The core-level colours are Survey `#111810`, C 1s `#8C8C8C`, N 1s `#2F80ED`,
 O 1s `#EB5757`, S 2p `#F2C94C`, and Cl 2p `#27AE60`. Established element colours
@@ -18,12 +24,15 @@ figures add deterministic line styles.
 
 ## Geometry and typography
 
-All visible spines in `angze_publication`, `monochrome_publication`, and
-`presentation` are exactly 1.8 pt. The same central theme value is applied to main,
+All four spines in `angze_publication`, `monochrome_publication`, and `presentation`
+are visible and exactly 1.8 pt. The same central theme value is applied to main,
 residual, multipanel, and inset axes; plotting functions do not override it. Ticks
-point inward and use the audited 1.8 pt width. Grids remain off, axis labels are
-bold, the total-fit line is strongest, and PDF output uses TrueType-compatible font
-embedding where Matplotlib supports it.
+point inward, use the audited 1.8 pt width, and have bold 14 pt labels on both axes.
+Detailed axis labels are 22 pt bold, sample titles are 18 pt bold, and core-level
+labels are 16.5 pt. Multipanel figures retain those weights and line values but use
+the theme's compact 12 pt axis labels, 9 pt ticks, 11 pt titles, 10 pt core-level
+labels, and 9 pt legends. PDF output uses TrueType-compatible font embedding where
+Matplotlib supports it.
 
 Named physical presets are:
 
@@ -32,7 +41,11 @@ Named physical presets are:
 | `single-column` | 3.45 × 2.8 | One fitted region |
 | `one-and-a-half-column` | 5.2 × 3.4 | Tall or vertical comparison |
 | `double-column` | 7.1 × 3.8 | Horizontal multipanel manuscript figure |
+| `detailed-publication` | 8 × 6 | Detailed single-spectrum fit and annotations |
 | `presentation` | 8 × 5 | Slide figure |
+
+The detailed publication theme uses 10% vertical headroom above the highest
+displayed curve so peaks and later annotations do not touch the complete box.
 
 PNG is the supported raster output and PDF is the supported vector output. Format
 validation happens before directory creation or rendering, so an unsupported request

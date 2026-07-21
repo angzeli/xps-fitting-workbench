@@ -103,8 +103,9 @@ energy axis reversed; it can save a diagnostic PNG.
 ## Candidate models
 
 JSON configuration files in `configs/` define the four- and five-component
-PDI-H-COOH C 1s hypotheses. The four assignments are aromatic C-C/C=C (284.65 eV),
-C-N/C-Cl (285.85 eV), imide N-C=O (287.90 eV), and acid O-C=O (289.15 eV). The
+PDI-H-COOH C 1s hypotheses. The four legend assignments are Aromatic C=C/C–C
+(284.65 eV), C–N/C–Cl (285.85 eV), Imide N–C=O (287.90 eV), and Carboxylic
+O–C=O (289.15 eV). The
 five-component alternative adds a broader pi-pi* satellite near 290.70 eV. There
 is deliberately no default 284.10 eV component, and ordinary widths have separate
 1.1–2.0 eV bounds rather than an exact global equality. Config objects also support
@@ -211,9 +212,16 @@ stable entries. Monochrome output additionally uses stable line styles. Plotting
 validates—but never changes, smooths, normalises, or refits—the Phase 1 arrays.
 
 Physical presets are `single-column` (3.45 × 2.8 in), `one-and-a-half-column`
-(5.2 × 3.4 in), `double-column` (7.1 × 3.8 in), and `presentation` (8 × 5 in).
-Use `figure_size_preset()` for these dimensions or a validated `figure_size`
-recipe override when a journal specifies different bounds.
+(5.2 × 3.4 in), `double-column` (7.1 × 3.8 in), `detailed-publication`
+(8 × 6 in), and `presentation` (8 × 5 in). Detailed single-spectrum publication
+figures use the 8 × 6 preset by default; smaller journal presets remain available
+through `figure_size_preset()` or `figure_size_preset` in a plotting recipe.
+
+The detailed hierarchy uses 22 pt bold axis labels, 14 pt bold ticks, a complete
+1.8 pt box, hollow 4 pt experimental markers, a 2 pt dark-neutral total fit,
+1.3 pt dashed background, 1.5 pt component outlines, and component alpha 0.28.
+The compact upper-left legend has a restrained white frame and bold sentence-case
+text. The background remains visible but is deliberately omitted from the legend.
 
 ## Publication single-spectrum plots
 

@@ -5,11 +5,11 @@ from __future__ import annotations
 from ..result import FitResult
 
 PDI_H_C1S_LABELS = {
-    "aromatic_C-C_C=C": "aromatic C-C/C=C",
-    "C-N_C-Cl": "C-N/C-Cl",
-    "imide_N-C=O": "imide N-C=O",
-    "acid_O-C=O": "carboxylic O-C=O",
-    "pi-pi_star": r"$\pi$-$\pi^*$ satellite",
+    "aromatic_C-C_C=C": "Aromatic C=C/C–C",
+    "C-N_C-Cl": "C–N/C–Cl",
+    "imide_N-C=O": "Imide N–C=O",
+    "acid_O-C=O": "Carboxylic O–C=O",
+    "pi-pi_star": r"$\pi$–$\pi^*$ satellite",
 }
 
 

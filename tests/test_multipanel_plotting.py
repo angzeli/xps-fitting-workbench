@@ -39,12 +39,15 @@ def test_series_consistency_labels_limits_legend_and_no_mutation(tmp_path) -> No
     assert all(axis.get_xlim() == axes[0, 0].get_xlim() for axis in axes.ravel())
     component_colours = [axis.collections[0].get_facecolor()[0].tolist() for axis in axes.ravel()]
     assert component_colours[0] == component_colours[1] == component_colours[2]
-    assert [text.get_text() for text in axes[0, 0].texts][1] == "(a)"
+    assert axes[0, 0].texts[0].get_text().startswith("(a) PDI-H-COOH")
     assert len(figure.legends) == 1 and [result.to_dict() for result in results] == before
+    assert "Background" not in [text.get_text() for text in figure.legends[0].get_texts()]
+    assert figure.legends[0].get_frame().get_visible()
+    assert all(text.get_fontweight() == "bold" for text in figure.legends[0].get_texts())
     assert tuple(figure.get_size_inches()) == figure_size_preset("double-column")
     for axis in axes.ravel():
         assert all(
-            spine.get_linewidth() == VISIBLE_SPINE_WIDTH for spine in axis.spines.values() if spine.get_visible()
+            spine.get_visible() and spine.get_linewidth() == VISIBLE_SPINE_WIDTH for spine in axis.spines.values()
         )
     assert export_figure(figure, tmp_path / "series.pdf")["pdf"].stat().st_size > 100
     plt.close(figure)

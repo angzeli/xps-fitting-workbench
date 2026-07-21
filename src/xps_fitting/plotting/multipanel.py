@@ -11,8 +11,16 @@ from matplotlib.ticker import MultipleLocator
 
 from ..result import FitResult
 from .annotations import PDI_H_C1S_LABELS
-from .palettes import component_colour, core_level_colour
-from .themes import PlotTheme, figure_size_preset, style_axes, theme_context
+from .palettes import component_colour
+from .themes import (
+    PlotTheme,
+    apply_vertical_headroom,
+    figure_size_preset,
+    load_theme,
+    style_axes,
+    style_legend,
+    theme_context,
+)
 from .validation import validate_result_curves
 
 
@@ -61,7 +69,9 @@ def plot_xps_series(
         raise ValueError("per-panel options must match the number of results")
     labels = dict(PDI_H_C1S_LABELS)
     labels.update(label_map or {})
-    with theme_context(theme) as selected:
+    base_theme = load_theme(theme)
+    plotting_theme = base_theme.for_multipanel() if count > 1 else base_theme
+    with theme_context(plotting_theme) as selected:
         height_multiplier = 1.28 if show_residual else 1.0
         if count == 1:
             figure_size = selected.figure_size
@@ -92,15 +102,16 @@ def plot_xps_series(
                 markeredgecolor=selected.raw_edge,
                 markeredgewidth=selected.marker_edge_width,
                 label="Experimental",
-                zorder=5,
+                zorder=7,
             )
+            displayed_curves = [np.asarray(result.raw_intensity) + offset, np.asarray(result.background) + offset]
             axis.plot(
                 energy,
                 np.asarray(result.background) + offset,
                 selected.background_line_style,
                 color="#555555",
                 linewidth=selected.background_line_width,
-                label="Background",
+                label="_nolegend_",
             )
             if components_visible[index]:
                 for label, curve in result.components.items():
@@ -119,24 +130,38 @@ def plot_xps_series(
                         color=colour,
                         linewidth=selected.component_line_width,
                     )
+                    displayed_curves.append(np.asarray(result.background) + np.asarray(curve) + offset)
             level = levels[index] or result.configuration.get("region", "")
+            displayed_total = np.asarray(result.total_fit) + offset
+            displayed_curves.append(displayed_total)
             axis.plot(
                 energy,
-                np.asarray(result.total_fit) + offset,
-                color=core_level_colour(level),
+                displayed_total,
+                color=selected.fit_colour,
                 linewidth=selected.fit_line_width,
                 label="Total fit",
                 zorder=6,
             )
-            axis.text(0.03, 0.96, samples[index], transform=axis.transAxes, va="top", fontweight="bold")
+            panel_title = f"{selected.panel_label_template.format(label=panels[index])} {samples[index]}"
             axis.text(
-                0.01,
+                0.0,
                 1.02,
-                selected.panel_label_template.format(label=panels[index]),
+                panel_title,
                 transform=axis.transAxes,
                 va="bottom",
+                fontsize=selected.title_size,
                 fontweight="bold",
             )
+            if level:
+                axis.text(
+                    1.0,
+                    1.02,
+                    level,
+                    transform=axis.transAxes,
+                    va="bottom",
+                    ha="right",
+                    fontsize=selected.core_level_size,
+                )
             disclosures = []
             if normalised:
                 disclosures.append("normalised")
@@ -157,26 +182,46 @@ def plot_xps_series(
                 axis.invert_xaxis()
             if tick_spacing:
                 axis.xaxis.set_major_locator(MultipleLocator(tick_spacing))
+            apply_vertical_headroom(
+                axis,
+                selected,
+                minimum=min(float(np.min(curve)) for curve in displayed_curves),
+                maximum=max(float(np.max(curve)) for curve in displayed_curves),
+                bottom=None if independent_y else 0.0,
+            )
             style_axes(axis, selected)
-            if not independent_y:
-                axis.set_ylim(bottom=0)
             if index % ncols == 0:
                 axis.set_ylabel("Normalised intensity" if normalised else "Intensity (a.u.)")
             if index // ncols == nrows - 1:
                 axis.set_xlabel("Binding energy (eV)")
             if not shared_legend:
-                axis.legend(frameon=selected.legend_frame, labelspacing=selected.legend_spacing)
+                legend = axis.legend(
+                    frameon=selected.legend_frame,
+                    fancybox=selected.legend_fancybox,
+                    framealpha=selected.legend_frame_alpha,
+                    facecolor=selected.legend_face_colour,
+                    edgecolor=selected.legend_edge_colour,
+                    labelspacing=selected.legend_spacing,
+                    prop={"size": selected.legend_font_size, "weight": selected.legend_font_weight},
+                )
+                style_legend(legend, selected)
             elif legend_handles is None:
                 legend_handles = axis.get_legend_handles_labels()
         for axis in flat[count:]:
             axis.set_visible(False)
         if shared_legend and legend_handles:
-            figure.legend(
+            legend = figure.legend(
                 *legend_handles,
                 loc="outside lower center",
                 ncol=min(4, len(legend_handles[0])),
                 frameon=selected.legend_frame,
+                fancybox=selected.legend_fancybox,
+                framealpha=selected.legend_frame_alpha,
+                facecolor=selected.legend_face_colour,
+                edgecolor=selected.legend_edge_colour,
+                prop={"size": selected.legend_font_size, "weight": selected.legend_font_weight},
             )
+            style_legend(legend, selected)
         figure.get_layout_engine().set(w_pad=spacing[0], h_pad=spacing[1])
         if show_residual:
             # Residuals remain available as a compact inset and use the exact Phase 1 arrays.
@@ -186,7 +231,7 @@ def plot_xps_series(
                 inset.axhline(0, color="#777777", linewidth=0.6)
                 inset.set_ylabel("res.", fontsize=selected.tick_label_size)
                 inset.tick_params(labelsize=selected.tick_label_size)
-                style_axes(inset, selected, top=False, right=False)
+                style_axes(inset, selected)
                 if x_limits:
                     inset.set_xlim(x_limits)
                 if selected.invert_binding_energy and not inset.xaxis_inverted():

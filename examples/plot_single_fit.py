@@ -16,7 +16,7 @@ def main(argv: list[str] | None = None) -> int:
     output = prepare_output(args.output_dir)
     result = fit_spectrum(synthetic_c1s(), load_config(ROOT / "configs/pdi_h_cooh_c1s_5.json"))
     recipes = {
-        "c1s_publication": ({}, ("png", "pdf")),
+        "c1s_publication": ({"component_display_mode": "filled_to_background"}, ("png", "pdf")),
         "c1s_diagnostic_residual": (
             {"theme": "angze_diagnostic", "show_residual": True, "fit_statistics": True},
             ("png",),
