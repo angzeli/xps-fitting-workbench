@@ -161,6 +161,34 @@ save_fit_bundle(result, "outputs/pdi-h-c1s.bundle")
 reloaded = load_fit_bundle("outputs/pdi-h-c1s.bundle")
 ```
 
+### Sample-wide binding-energy calibration
+
+`calibrate_sample_binding_energy()` applies one reviewed rigid correction to every
+core level from the same sample without refitting. The reference offset is the target
+energy minus the stored fitted C 1s component centre. Pass fitted core levels in the
+first mapping and any unfitted raw regions (for example N 1s, O 1s, and Survey) in
+`spectra`:
+
+```python
+from xps_fitting import calibrate_sample_binding_energy
+
+calibrated_results, calibrated_spectra, calibration = calibrate_sample_binding_energy(
+    {"C 1s": c1s_result, "Cl 2p": cl2p_result},
+    spectra={"N 1s": n1s_spectrum, "O 1s": o1s_spectrum, "Survey": survey_spectrum},
+    reference_component="aromatic_C-C_C=C",
+    target_eV=284.8,
+)
+print(calibration.offset_eV)
+```
+
+The API returns copies. It shifts every energy grid, fitted `*.centre`, and absolute
+configuration centre/bound by exactly the same offset. Raw intensity, background,
+component y arrays, total fit, residuals, areas, widths, uncertainties, and relative
+centre offsets remain unchanged. Calibration provenance is stored under
+`metadata["binding_energy_calibration"]`, mixed samples and double application are
+rejected, and saved fit bundles retain the record. Fixed plotting-recipe `x_limits`
+may be translated by the reported offset when an identical viewport is required.
+
 Existing outputs are never silently replaced. Python APIs require
 `overwrite=True`; examples and the CLI expose `--overwrite`. Bundle and figure
 APIs also support dry-run path planning without writing files.
@@ -169,8 +197,9 @@ APIs also support dry-run path planning without writing files.
 first-pass fits, averages selected FWHM/fraction values, and fixes those consensus
 values during a second pass. Areas, centres, and intensity remain sample-specific;
 configured relative offsets stay exact. This is not simultaneous optimisation,
-does not estimate joint covariance, and does not yet fit a sample-wide charging
-shift or bounded per-sample deviations.
+does not estimate joint covariance, and does not fit a sample-wide charging shift or
+bounded per-sample deviations. The calibration API applies an independently reviewed
+rigid offset after fitting; it does not estimate that offset from a joint model.
 
 ## Reproducibility and development
 

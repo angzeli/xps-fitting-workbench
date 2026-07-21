@@ -22,6 +22,8 @@
   provenance, stored raw/background, numerical-audit, and plot-immutability checks.
 - Preserved source-file, sample, and region metadata in new `FitResult` exports and
   marked VGD acquisitions explicitly as experimental provenance.
+- Added non-mutating sample-wide binding-energy calibration for fitted results and
+  raw spectra, with one shared C 1s-derived offset, provenance, and double-shift guards.
 
 ## [0.2.0] - 2026-07-21
 
