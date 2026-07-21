@@ -10,17 +10,29 @@ assignments or endorse a model merely because it has more peaks.
 
 ## Project overview and status
 
-Phase 1 provides the numerical fitting contract. Phase 2 adds reusable,
-publication-ready rendering while preserving every fitted array exactly.
+The workbench now treats experimental results as a scientific lifecycle rather
+than a plotting session:
 
-Phase 3 is complete on `codex/phase3-polish`: it finishes executable examples,
-aligns figures with audited user style, standardises saved figures to PNG/PDF,
-improves bundles and CLI workflows, adds quality gates, and validates tracked
-experimental inputs without claiming automatic chemical validation. See the
-[style and issue audit](docs/figure_style_audit.md) and
-[experimental validation](docs/experimental_validation.md).
+```text
+Raw Spectrum
+  -> persisted Candidate FitResult
+  -> explicitly Reviewed FitResult
+  -> calibrated reviewed copy
+  -> publication PNG/PDF
+```
 
-The package version is 0.2.0. `xps_fitting.__version__`, built package metadata,
+Every experimental candidate is persisted before diagnostics. Review creates an
+immutable version and signed decision record. Calibration uses the exact stored
+C 1s reference centre and applies one common shift to every reviewed region from
+the same sample, including a raw Survey spectrum. Final plotting reads only
+reviewed calibrated artifacts and writes a provenance sidecar; it never refits.
+
+Start with the [plain-language quick start](QUICKSTART.md). Scientific details are
+in [the workflow](docs/scientific_workflow.md),
+[review guide](docs/reviewing_fits.md), [calibration guide](docs/calibration.md),
+and [backup guide](docs/artifacts_and_backups.md).
+
+The package version is 0.3.0. `xps_fitting.__version__`, built package metadata,
 and the version recorded in new `FitResult.software_versions` all derive from the
 single source in `src/xps_fitting/_version.py`.
 
@@ -32,19 +44,31 @@ or run `python scripts/run_all_examples.py`. Example figures use PNG and PDF onl
 ## Installation
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e '.[dev]'
-pytest
+uv sync --python 3.13
+uv run xps-fit --help
+uv run pytest
 ```
 
-The project uses a `src/xps_fitting/` package, `tests/`, `examples/`, `configs/`,
-and `docs/`. Raw experimental data, generated outputs, reports, and figures are
-ignored. Deliberately curated small text fixtures may be committed under
-`tests/data/` or `examples/data/`; see [the data policy](docs/data_policy.md).
+On macOS, `Start_XPS_Workflow.command` provides a double-click launcher for the
+guided workflow.
+
+The main directories have distinct purposes:
+
+| Directory | Meaning | Safe to delete? |
+|---|---|---|
+| `data/raw/` | immutable acquired VGD/XML data | no |
+| `artifacts/candidates/` | persisted unreviewed fits | only after review/backup |
+| `artifacts/reviewed/` | durable scientific records | no |
+| `figures/diagnostic/` | review figures | yes after review |
+| `figures/final/` | regenerated manuscript PNG/PDF | yes |
+| `configs/fits/` | candidate hypotheses | no |
+| `configs/plots/` | figure recipes | no |
+
+Synthetic examples and automated fixtures are marked `data_origin = synthetic`
+and are never publication eligible. See [the data policy](docs/data_policy.md).
 
 The legacy `xps_vgd_utils.py` workflow remains for its original notebook. CSV and
-XLSX tables, pandas DataFrames, and VGD through the optional package adapter are
+XLSX tables, pandas DataFrames, and VGD through the package adapter are
 supported. Old binary XLS input needs a separate pandas engine and is not part of
 the declared package workflow. All supported input is cleaned, duplicate energies
 are averaged, and fitting arrays are ascending regardless of acquisition order; the
@@ -56,8 +80,8 @@ spectrum = read_csv("spectrum.csv", region="C 1s", sample_name="sample")
 ```
 
 Existing notebooks may continue importing `xps_vgd_utils`. New code can use
-`xps_fitting.io_vgd.read_vgd`; it requires the separately installed `vgd-reader`
-package. Examples and tests use deterministic synthetic data rather than copying
+`xps_fitting.io_vgd.read_vgd`; `vgd-reader` is installed by `uv sync`. Examples
+and tests use deterministic synthetic data rather than copying
 the tracked experimental files. The separate validation script reads tracked files
 in place. Run `python examples/load_spectrum.py` after an editable install.
 
@@ -289,30 +313,24 @@ committed detailed C 1s recipe enables these labels by default.
 
 ### Generating the PDI-H-COOH C 1s publication figure
 
-The exact publication workflow requires the reviewed Phase 1 numerical export, not
-the raw VGD file. Put a bundle created by `save_fit_bundle()` at
-`outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle/`; it must contain
-`manifest.json`, `curves.csv`, and `metadata.json`. A curve CSV/XLSX plus its Phase 1
-metadata JSON is also accepted. The private reviewed bundle is intentionally not
-committed.
-
-Run the dedicated Python API example from the repository root:
+The final workflow resolves the active calibrated reviewed C 1s bundle from
+`artifacts/reviewed/PDI-H-COOH/sample_manifest.json`. It rejects candidates,
+synthetic/legacy data, unreviewed or uncalibrated bundles, missing arrays,
+raw-equals-total fixtures, trivial backgrounds, source/configuration hash errors,
+and inconsistent calibration records.
 
 ```bash
-PYTHONPATH=src MPLBACKEND=Agg python examples/plot_pdi_h_cooh_c1s_publication.py \
-  --fit-result outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle \
-  --output-dir outputs/manuscript
+uv run xps-fit plot-region \
+  --sample PDI-H-COOH \
+  --region C1s \
+  --recipe configs/plots/c1s_publication.json
 ```
 
-The command creates `pdi_h_cooh_c1s_publication.png` at 600 dpi and
-`pdi_h_cooh_c1s_publication.pdf` without importing or calling the optimiser. For a
-curve table instead of a bundle, add `--metadata PATH`. Use this dedicated example,
-not the generic plotting CLI, when the experimental-provenance gate is required.
-It prints the resolved curve-table and metadata paths, source classification,
-source-file metadata, numerical curve identities, recipe, and output paths. It rejects
-synthetic or unclassified provenance, an identical raw/fit trace, a zero background,
-and sources lacking required stored arrays, components, or fitted centres. It never
-reconstructs missing raw intensity or background.
+The command creates a 600 dpi PNG, vector PDF, and provenance JSON under
+`figures/final/PDI-H-COOH/` without importing or calling the optimiser. It prints
+the source bundle and exact calibration offset. The generic `xps-fit plot` command
+remains available for diagnostic/legacy rendering, but it is not the final
+experimental publication gate.
 
 `configs/plots/c1s_publication.json` is the complete visual provenance. Edit
 `peak_annotation_offsets` to change component-specific `(x, y)` point offsets;
