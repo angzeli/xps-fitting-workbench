@@ -98,6 +98,51 @@ def test_publication_exports(tmp_path) -> None:
     plt.close(figure)
 
 
+def test_publication_tick_and_inside_title_controls() -> None:
+    figure, axis = plot_xps_fit(
+        result_fixture(),
+        core_level="C 1s",
+        sample_label="PDI-H-COOH",
+        x_limits=(292, 280),
+        tick_spacing=2,
+        x_minor_interval=1,
+        show_y_ticks=False,
+        show_top_ticks=False,
+        show_sample_title=False,
+        core_level_label_position=(0.97, 0.96),
+    )
+    figure.canvas.draw()
+
+    assert axis.get_title(loc="left") == ""
+    assert axis.get_title(loc="right") == ""
+    core_labels = [text for text in axis.texts if text.get_gid() == "core-level-label"]
+    assert len(core_labels) == 1
+    assert core_labels[0].get_text() == "C 1s"
+    assert core_labels[0].get_position() == (0.97, 0.96)
+    assert core_labels[0].get_transform() == axis.transAxes
+
+    assert all(not tick.tick1line.get_visible() and not tick.tick2line.get_visible() for tick in axis.yaxis.majorTicks)
+    assert all(not tick.label1.get_visible() and not tick.label2.get_visible() for tick in axis.yaxis.majorTicks)
+    assert all(tick.tick1line.get_visible() and not tick.tick2line.get_visible() for tick in axis.xaxis.majorTicks)
+    assert all(tick.tick1line.get_visible() and not tick.tick2line.get_visible() for tick in axis.xaxis.minorTicks)
+    assert {round(value, 6) for value in axis.xaxis.get_minorticklocs() if 280 < value < 292} == {
+        281,
+        283,
+        285,
+        287,
+        289,
+        291,
+    }
+    assert all(tick.tick1line.get_markeredgewidth() == 1.8 for tick in axis.xaxis.majorTicks)
+    assert all(tick.tick1line.get_markeredgewidth() == 1.2 for tick in axis.xaxis.minorTicks)
+    assert all(
+        tick.tick1line.get_markersize() < axis.xaxis.majorTicks[0].tick1line.get_markersize()
+        for tick in axis.xaxis.minorTicks
+    )
+    assert all(spine.get_visible() and spine.get_linewidth() == 1.8 for spine in axis.spines.values())
+    plt.close(figure)
+
+
 def test_deprecated_component_style_alias_remains_available() -> None:
     with pytest.warns(DeprecationWarning, match="component_style is deprecated"):
         figure, _ = plot_xps_fit(result_fixture(), component_style="hidden")

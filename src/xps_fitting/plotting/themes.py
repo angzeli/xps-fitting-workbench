@@ -49,6 +49,8 @@ class PlotTheme:
     spine_width: float = VISIBLE_SPINE_WIDTH
     tick_width: float = VISIBLE_SPINE_WIDTH
     tick_length: float = 4.0
+    minor_tick_width: float = 1.2
+    minor_tick_length: float = 2.5
     tick_direction: str = "in"
     marker: str = "o"
     marker_size: float = 4.0
@@ -101,6 +103,8 @@ class PlotTheme:
             min(
                 self.spine_width,
                 self.tick_width,
+                self.minor_tick_width,
+                self.minor_tick_length,
                 self.marker_edge_width,
                 self.legend_frame_linewidth,
                 self.peak_annotation_size,
@@ -127,6 +131,10 @@ class PlotTheme:
             "ytick.major.width": self.tick_width,
             "xtick.major.size": self.tick_length,
             "ytick.major.size": self.tick_length,
+            "xtick.minor.width": self.minor_tick_width,
+            "ytick.minor.width": self.minor_tick_width,
+            "xtick.minor.size": self.minor_tick_length,
+            "ytick.minor.size": self.minor_tick_length,
             "axes.grid": False,
             "legend.frameon": self.legend_frame,
             "legend.fontsize": self.legend_font_size,
@@ -224,7 +232,15 @@ def load_theme(theme: str | PlotTheme = "angze_publication", **overrides) -> Plo
     return validate_theme(selected)
 
 
-def style_axes(axis: Axes, theme: PlotTheme, *, top: bool | None = None, right: bool | None = None) -> None:
+def style_axes(
+    axis: Axes,
+    theme: PlotTheme,
+    *,
+    top: bool | None = None,
+    right: bool | None = None,
+    show_top_ticks: bool | None = None,
+    show_y_ticks: bool = True,
+) -> None:
     """Apply the theme to every visible spine and tick without changing global state."""
     top_visible = theme.top_spine if top is None else top
     right_visible = theme.right_spine if right is None else right
@@ -232,12 +248,39 @@ def style_axes(axis: Axes, theme: PlotTheme, *, top: bool | None = None, right: 
     axis.spines["right"].set_visible(right_visible)
     for spine in axis.spines.values():
         spine.set_linewidth(theme.spine_width)
+    top_ticks = top_visible if show_top_ticks is None else show_top_ticks
     axis.tick_params(
+        axis="x",
+        which="major",
         direction=theme.tick_direction,
         length=theme.tick_length,
         width=theme.tick_width,
-        top=top_visible,
-        right=right_visible,
+        bottom=True,
+        top=top_ticks,
+        labelbottom=True,
+        labeltop=False,
+    )
+    axis.tick_params(
+        axis="x",
+        which="minor",
+        direction=theme.tick_direction,
+        length=theme.minor_tick_length,
+        width=theme.minor_tick_width,
+        bottom=True,
+        top=top_ticks,
+        labelbottom=False,
+        labeltop=False,
+    )
+    axis.tick_params(
+        axis="y",
+        which="both",
+        direction=theme.tick_direction,
+        length=theme.tick_length,
+        width=theme.tick_width,
+        left=show_y_ticks,
+        right=right_visible and show_y_ticks,
+        labelleft=show_y_ticks,
+        labelright=False,
     )
     for tick in (*axis.xaxis.get_major_ticks(), *axis.yaxis.get_major_ticks()):
         tick.label1.set_fontweight(theme.tick_label_weight)

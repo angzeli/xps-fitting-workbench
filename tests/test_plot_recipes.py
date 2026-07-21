@@ -33,15 +33,22 @@ def test_recipe_round_trip_and_validation(tmp_path) -> None:
         figure_size_preset="detailed-publication",
         output_formats=("pdf",),
         output_filename="recipe",
+        core_level="C 1s",
         residual_panel=True,
         x_limits=(2, 0),
         show_peak_positions=True,
         peak_annotation_offsets={"p": (2, 3)},
+        x_minor_interval=0.5,
+        show_y_ticks=False,
+        show_top_ticks=False,
+        show_sample_title=False,
+        core_level_label_position=(0.97, 0.96),
     )
     path = config.save(tmp_path / "recipe.json")
     assert load_plot_config(path) == config
     figure, axis, paths = plot_from_config(config=config, result=fixture(), output_directory=tmp_path)
     assert any((text.get_gid() or "").startswith("peak-position:") for text in axis[0].texts)
+    assert any(text.get_gid() == "core-level-label" for text in axis[0].texts)
     assert paths["pdf"].stat().st_size > 100
     plt.close(figure)
     with pytest.raises(ValueError):

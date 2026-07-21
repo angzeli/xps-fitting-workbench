@@ -46,9 +46,14 @@ def plot_xps_fit(
     y_label: str | None = None,
     scale_factor: float = 1.0,
     hide_y_tick_labels: bool = False,
+    show_y_ticks: bool = True,
+    show_top_ticks: bool | None = None,
     x_limits: tuple[float, float] | None = None,
     tick_spacing: float | None = None,
+    x_minor_interval: float | None = None,
     sample_label: str | None = None,
+    show_sample_title: bool = True,
+    core_level_label_position: tuple[float, float] | None = None,
     panel_label: str | None = None,
     legend_order: Sequence[str] | None = None,
     label_map: Mapping[str, str] | None = None,
@@ -73,6 +78,14 @@ def plot_xps_fit(
         raise ValueError(f"component display mode must be one of {sorted(DISPLAY_MODES)}")
     if not np.isfinite(scale_factor) or scale_factor <= 0:
         raise ValueError("scale_factor must be finite and positive")
+    for name, value in (("tick_spacing", tick_spacing), ("x_minor_interval", x_minor_interval)):
+        if value is not None and (not np.isfinite(value) or value <= 0):
+            raise ValueError(f"{name} must be finite and positive")
+    if core_level_label_position is not None:
+        if len(core_level_label_position) != 2 or not all(
+            np.isfinite(value) and 0 <= value <= 1 for value in core_level_label_position
+        ):
+            raise ValueError("core_level_label_position must contain two axes-relative values between 0 and 1")
     validate_result_curves(result)
     labels = dict(PDI_H_C1S_LABELS)
     labels.update(label_map or {})
@@ -197,8 +210,10 @@ def plot_xps_fit(
             main.set_xlim(x_limits)
         if selected.invert_binding_energy and not main.xaxis_inverted():
             main.invert_xaxis()
-        if tick_spacing:
+        if tick_spacing is not None:
             main.xaxis.set_major_locator(MultipleLocator(tick_spacing))
+        if x_minor_interval is not None:
+            main.xaxis.set_minor_locator(MultipleLocator(x_minor_interval))
         main.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
         visible_minimum = min(float(np.min(curve)) for curve in displayed_curves)
         visible_maximum = max(float(np.max(curve)) for curve in displayed_curves)
@@ -209,7 +224,7 @@ def plot_xps_fit(
             maximum=visible_maximum,
             bottom=y_start,
         )
-        style_axes(main, selected)
+        style_axes(main, selected, show_top_ticks=show_top_ticks, show_y_ticks=show_y_ticks)
         if title and selected.show_title:
             main.set_title(title, fontsize=selected.title_size, fontweight="bold")
         upper_left_label = ""
@@ -217,7 +232,7 @@ def plot_xps_fit(
             upper_left_label = selected.panel_label_template.format(label=panel_label)
         if sample_label:
             upper_left_label = f"{upper_left_label} {sample_label}".strip()
-        if upper_left_label:
+        if upper_left_label and show_sample_title:
             main.set_title(
                 upper_left_label,
                 loc="left",
@@ -225,13 +240,25 @@ def plot_xps_fit(
                 fontsize=selected.title_size,
                 fontweight="bold",
             )
-        if core_level:
+        if core_level and core_level_label_position is None:
             main.set_title(
                 core_level,
                 loc="right",
                 pad=selected.title_padding,
                 fontsize=selected.core_level_size,
             )
+        elif core_level:
+            core_label = main.text(
+                *core_level_label_position,
+                core_level,
+                transform=main.transAxes,
+                ha="right",
+                va="top",
+                fontsize=selected.core_level_size,
+                fontweight="semibold",
+                zorder=10,
+            )
+            core_label.set_gid("core-level-label")
         if fit_statistics:
             main.text(
                 0.97,
@@ -267,9 +294,16 @@ def plot_xps_fit(
                 residual_axis.axhline(0, color="#777777", linewidth=0.7)
             residual_axis.set_ylabel("Residual", labelpad=selected.axis_padding)
             residual_axis.set_xlabel("Binding energy (eV)", labelpad=selected.axis_padding)
-            if tick_spacing:
+            if tick_spacing is not None:
                 residual_axis.xaxis.set_major_locator(MultipleLocator(tick_spacing))
-            style_axes(residual_axis, selected)
+            if x_minor_interval is not None:
+                residual_axis.xaxis.set_minor_locator(MultipleLocator(x_minor_interval))
+            style_axes(
+                residual_axis,
+                selected,
+                show_top_ticks=show_top_ticks,
+                show_y_ticks=show_y_ticks,
+            )
         else:
             main.set_xlabel("Binding energy (eV)", labelpad=selected.axis_padding)
         if show_peak_positions:
