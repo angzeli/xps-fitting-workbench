@@ -98,9 +98,7 @@ def test_sample_wide_calibration_shifts_every_energy_coordinate_without_mutation
     assert c1s_peaks[1]["centre_offset_from"] == ["aromatic_C-C_C=C", 1.6]
 
     figure, axis = plot_xps_fit(results["C 1s"], show_peak_positions=True)
-    annotation = next(
-        text for text in axis.texts if text.get_gid() == "peak-position:aromatic_C-C_C=C"
-    )
+    annotation = next(text for text in axis.texts if text.get_gid() == "peak-position:aromatic_C-C_C=C")
     assert annotation.get_text() == "284.8 eV"
     assert annotation._xps_fitted_centre == pytest.approx(284.8)
     plt.close(figure)

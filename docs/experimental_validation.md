@@ -1,22 +1,22 @@
 # Experimental workflow validation
 
 This release-readiness check exercised the experimental files already tracked in
-the repository on 2026-07-21 with `xps-fitting-workbench` 0.2.0. It is a software
+the repository on 2026-07-21 with `xps-fitting-workbench` 0.3.0. It is a software
 workflow check, not a peer-reviewed XPS interpretation. Generated figures remain
-under the ignored `outputs/experimental_validation/` directory.
+under the ignored `figures/diagnostic/experimental_validation/` directory.
 
-Run the reproducible check from the repository root after installing the optional
-`vgd-reader` package:
+Run the reproducible check from the repository root after `uv sync`:
 
 ```bash
 PYTHONPATH=src MPLBACKEND=Agg python scripts/validate_experimental_workflow.py
 ```
 
 Pass `--overwrite` only to intentionally replace an earlier local validation set.
-The validation script now writes a wide annotated PDI-H-COOH C 1s publication
-figure, a separate residual diagnostic, an annotated candidate-model comparison,
-and an annotated Cl 2p fit in both PNG and PDF. Experimental plots use the sample
-title `PDI-H-COOH`; the word `Synthetic` is reserved for generated validation data.
+The validation script persists the configured C 1s and Cl 2p candidates before it
+writes their review diagnostics, a candidate-model comparison, and raw overview
+panels in both PNG and PDF. These are not final publication figures. Experimental
+plots use the sample title `PDI-H-COOH`; the word `Synthetic` is reserved for
+generated validation data.
 
 For manuscript reproduction after scientific review, use the plotting-only command
 in `README.md` with the accepted Phase 1 fit bundle and
@@ -36,7 +36,7 @@ needed to distinguish samples and should be checked against the laboratory recor
 | Sample | Core level | Format and bytes | Points | Parse | Fit configuration | Demonstration suitability |
 |---|---|---:|---:|---|---|---|
 | PDI-H-COOH | C 1s | VGD, 11,776 | 231 | Yes; metadata 11/11 | Four- and five-component JSON | Candidate-model diagnostic, with manual review |
-| PDI-H-COOH | Cl 2p | VGD, 12,288 | 261 | Yes; metadata 11/11 | Constrained doublet in validation script | Constrained-fit diagnostic, with manual review |
+| PDI-H-COOH | Cl 2p | VGD, 12,288 | 261 | Yes; metadata 11/11 | `configs/fits/pdi_h_cooh_cl2p_constrained.json` | Constrained-fit diagnostic, with manual review |
 | PDI-H-COOH | N 1s | VGD, 11,264 | 181 | Yes; metadata 11/11 | None | Ingestion and raw plotting only |
 | PDI-H-COOH | O 1s | VGD, 11,776 | 201 | Yes; metadata 11/11 | None | Ingestion and raw plotting only |
 | PDI-H-COOH | Survey | VGD, 20,992 | 1,361 | Yes; metadata 8/11 | None | Parser check only |
@@ -62,7 +62,7 @@ files therefore remain an explicitly unsupported ingestion case.
 ## Numerical observations
 
 The PDI-H-COOH C 1s scan was fitted with
-`configs/pdi_h_cooh_c1s_4.json` and `configs/pdi_h_cooh_c1s_5.json`.
+`configs/fits/pdi_h_cooh_c1s_4.json` and `configs/fits/pdi_h_cooh_c1s_5.json`.
 Both seeded two-start fits converged to essentially identical RSS values between
 starts. The five-component candidate lowered RSS by about 12.9% and had lower
 AICc/BIC, but the residual remained strongly structured.
@@ -78,12 +78,22 @@ visible residual shape show that neither candidate is an adequate chemically
 validated description merely because the optimiser converged. The added satellite
 is a hypothesis, not an assignment proven by the information criteria.
 
+The 2026-07-21 lifecycle rerun persisted these new experimental generations before
+plotting at `artifacts/candidates/PDI-H-COOH/C1s/c1s-4.bundle/` and
+`c1s-5.bundle/`. Both contain 231 points, the raw-source SHA-256
+`080a8d87490cbf883c4c9becabc3982eeff35b1d7533a49e9a0bc30cf8a2f9f5`,
+nontrivial backgrounds, complete component/total/residual arrays, full-precision
+centres, uncertainties, configurations, convergence metadata, and explicit
+`review_status = candidate`. They replace no historical arrays and remain
+publication-ineligible until a human review decision is recorded.
+
 The PDI-H-COOH Cl 2p check used a 1.6 eV separation, exact 2:1 area ratio, shared
 FWHM/fraction, and a linear background. It converged reproducibly at 199.992 and
 201.592 eV, FWHM 0.966 eV, with RSS 1.0557e8 and Durbin–Watson 0.092. No automated
 warning fired, but the visibly structured residual and low Durbin–Watson statistic
 still require manual review of background, line shape, calibration, and possible
-additional chemistry.
+additional chemistry. Its unreviewed result is persisted at
+`artifacts/candidates/PDI-H-COOH/Cl2p/cl2p-constrained.bundle/`.
 
 PDI-Me-COOH and PDI-OMe-COOH C 1s spectra were parsed and plotted beside
 PDI-H-COOH without normalisation or fitted assignments. The PDI-H-COOH N 1s and

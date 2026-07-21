@@ -17,13 +17,14 @@ from .artifacts import (
     ArtifactDescriptor,
     bundle_scientific_sha256,
     canonical_region,
+    fit_configuration_sha256,
     portable_path,
     utc_now,
     validate_fit_bundle,
 )
 from .calibration import calibrate_sample_binding_energy
 from .export import load_fit_bundle, read_fit_bundle_manifest, save_fit_bundle
-from .integrity import result_arrays_equal, sha256_file, sha256_json
+from .integrity import result_arrays_equal, sha256_file
 from .sample_manifest import EXPECTED_REGIONS, SampleManifest, load_sample_manifest, save_sample_manifest
 from .spectrum_artifacts import (
     SPECTRUM_CONFIGURATION_SHA256,
@@ -325,7 +326,7 @@ def calibrate_reviewed_sample(
             calibrated_id = f"{source_descriptor.artifact_id}-calibrated"
             if is_fit_result:
                 calibrated = copy.deepcopy(calibrated_results[region])
-                calibrated_configuration_sha256 = sha256_json(calibrated.configuration)
+                calibrated_configuration_sha256 = fit_configuration_sha256(calibrated)
                 calibrated.metadata.update(
                     {
                         "artifact_id": calibrated_id,

@@ -48,14 +48,10 @@ def _validate_datasets(fit_results: Mapping[str, FitResult], spectra: Mapping[st
     if len(names) > 1:
         raise ValueError(f"sample-wide calibration received mixed samples: {', '.join(sorted(names))}")
     already_calibrated = [
-        core_level
-        for core_level, dataset in datasets
-        if CALIBRATION_METADATA_KEY in dataset.metadata
+        core_level for core_level, dataset in datasets if CALIBRATION_METADATA_KEY in dataset.metadata
     ]
     if already_calibrated:
-        raise ValueError(
-            "binding-energy calibration is already present for: " + ", ".join(already_calibrated)
-        )
+        raise ValueError("binding-energy calibration is already present for: " + ", ".join(already_calibrated))
 
 
 def _shift_bounds(bounds: Any, offset_eV: float) -> Any:

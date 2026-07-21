@@ -9,9 +9,7 @@ import pytest
 ROOT = Path(__file__).parents[1]
 PUBLICATION_EXAMPLE = ROOT / "examples" / "plot_pdi_h_cooh_c1s_publication.py"
 EXAMPLES = sorted(
-    path
-    for path in (ROOT / "examples").glob("*.py")
-    if not path.name.startswith("_") and path != PUBLICATION_EXAMPLE
+    path for path in (ROOT / "examples").glob("*.py") if not path.name.startswith("_") and path != PUBLICATION_EXAMPLE
 )
 
 
@@ -36,7 +34,7 @@ def test_example_smoke(example: Path, tmp_path: Path) -> None:
     assert not list(tmp_path.rglob("*.tif")) and not list(tmp_path.rglob("*.tiff"))
 
 
-def test_experimental_publication_example_requires_reviewed_export(tmp_path: Path) -> None:
+def test_experimental_publication_example_requires_calibrated_manifest(tmp_path: Path) -> None:
     environment = dict(os.environ)
     environment["PYTHONPATH"] = str(ROOT / "src")
     environment["MPLBACKEND"] = "Agg"
@@ -44,8 +42,8 @@ def test_experimental_publication_example_requires_reviewed_export(tmp_path: Pat
         [
             sys.executable,
             str(PUBLICATION_EXAMPLE),
-            "--fit-result",
-            str(tmp_path / "missing.bundle"),
+            "--sample-manifest",
+            str(tmp_path / "missing.json"),
             "--output-dir",
             str(tmp_path / "output"),
         ],
@@ -55,4 +53,4 @@ def test_experimental_publication_example_requires_reviewed_export(tmp_path: Pat
         capture_output=True,
     )
     assert completed.returncode == 2
-    assert "reviewed Phase 1 FitResult export not found" in completed.stderr
+    assert "reviewed calibrated sample manifest not found" in completed.stderr

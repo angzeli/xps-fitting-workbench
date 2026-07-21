@@ -11,8 +11,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from xps_fitting.configuration import FitConfig, load_config
-from xps_fitting.constraints import cl2p_doublet
+from xps_fitting.configuration import load_config
 from xps_fitting.io_vgd import read_vgd
 from xps_fitting.model_comparison import compare_models, comparison_table
 from xps_fitting.optimiser import fit_spectrum
@@ -82,14 +81,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--overwrite-candidates", action="store_true")
     args = parser.parse_args(argv)
 
-    configs = [load_config(ROOT / "configs" / f"pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
-    c1s = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "C1s Scan.VGD")
+    configs = [load_config(ROOT / "configs" / "fits" / f"pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
+    c1s = read_vgd(ROOT / "data" / "raw" / "PDI-H-COOH" / "C1s Scan.VGD")
     c1s_results = compare_models(c1s, configs)
     c1s_bundles = persist_candidate_results(
         c1s_results,
         sample="PDI-H-COOH",
         region="C1s",
-        source_path=ROOT / "example_data" / "PDI-H-COOH" / "C1s Scan.VGD",
+        source_path=ROOT / "data" / "raw" / "PDI-H-COOH" / "C1s Scan.VGD",
         artifacts_root=args.artifacts_dir,
         repository_root=ROOT,
         overwrite=args.overwrite_candidates,
@@ -112,20 +111,14 @@ def main(argv: list[str] | None = None) -> int:
     comparison, _ = plot_fit_comparison(c1s_results, show_residual=False, show_peak_positions=True)
     created.extend(_export(comparison, args.output_dir / "pdi_h_cooh_c1s_model_comparison", overwrite=args.overwrite))
 
-    cl2p = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "Cl2p Scan.VGD")
-    cl_config = FitConfig(
-        "Cl2p_constrained",
-        "Cl 2p",
-        cl2p_doublet("Cl", centre_32=200.0, area_32=65_000.0),
-        multistart=2,
-        random_seed=42,
-    )
+    cl2p = read_vgd(ROOT / "data" / "raw" / "PDI-H-COOH" / "Cl2p Scan.VGD")
+    cl_config = load_config(ROOT / "configs" / "fits" / "pdi_h_cooh_cl2p_constrained.json")
     cl_result = fit_spectrum(cl2p, cl_config)
     cl_bundles = persist_candidate_results(
         {cl_config.name: cl_result},
         sample="PDI-H-COOH",
         region="Cl2p",
-        source_path=ROOT / "example_data" / "PDI-H-COOH" / "Cl2p Scan.VGD",
+        source_path=ROOT / "data" / "raw" / "PDI-H-COOH" / "Cl2p Scan.VGD",
         artifacts_root=args.artifacts_dir,
         repository_root=ROOT,
         overwrite=args.overwrite_candidates,
@@ -141,12 +134,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     created.extend(_export(cl_figure, args.output_dir / "pdi_h_cooh_cl2p_constrained", overwrite=args.overwrite))
 
-    c1s_series = [read_vgd(ROOT / "example_data" / sample / "C1s Scan.VGD") for sample in SAMPLES]
+    c1s_series = [read_vgd(ROOT / "data" / "raw" / sample / "C1s Scan.VGD") for sample in SAMPLES]
     series_figure = _raw_panel(c1s_series, SAMPLES, ("C 1s",) * len(SAMPLES))
     created.extend(_export(series_figure, args.output_dir / "pdi_c1s_raw_series", overwrite=args.overwrite))
 
-    n1s = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "N1s Scan.VGD")
-    o1s = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "O1s Scan.VGD")
+    n1s = read_vgd(ROOT / "data" / "raw" / "PDI-H-COOH" / "N1s Scan.VGD")
+    o1s = read_vgd(ROOT / "data" / "raw" / "PDI-H-COOH" / "O1s Scan.VGD")
     heteroatom_figure = _raw_panel((n1s, o1s), ("PDI-H-COOH", "PDI-H-COOH"), ("N 1s", "O 1s"))
     created.extend(_export(heteroatom_figure, args.output_dir / "pdi_h_cooh_n1s_o1s_raw", overwrite=args.overwrite))
 

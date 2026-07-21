@@ -96,6 +96,15 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
     result = load_fit_bundle(candidate_bundle)
     areas = {label: float(result.fitted_parameters.get(f"{label}.area", 0.0)) for label in result.components}
     total_area = sum(areas.values())
+    high_correlations = []
+    seen_pairs: set[tuple[str, str]] = set()
+    for first, row in result.correlation_matrix.items():
+        for second, value in row.items():
+            pair = tuple(sorted((first, second)))
+            if first != second and pair not in seen_pairs and abs(float(value)) >= 0.9:
+                seen_pairs.add(pair)
+                high_correlations.append({"parameter_1": pair[0], "parameter_2": pair[1], "correlation": float(value)})
+    high_correlations.sort(key=lambda item: abs(item["correlation"]), reverse=True)
     components = []
     for label in result.components:
         components.append(
@@ -120,7 +129,7 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
         "fit_statistics": copy.deepcopy(result.fit_statistics),
         "warnings": list(result.warnings),
         "convergence": copy.deepcopy(result.convergence),
-        "parameter_correlations": copy.deepcopy(result.correlation_matrix),
+        "high_parameter_correlations": high_correlations,
     }
 
 

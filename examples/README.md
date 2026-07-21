@@ -6,7 +6,7 @@ Override the destination with `--output-dir PATH`.
 
 | Example | Workflows | Expected outputs |
 |---|---|---|
-| `load_spectrum.py` | DataFrame, CSV, XLSX, optional tracked experimental VGD | CSV and XLSX input tables |
+| `load_spectrum.py` | DataFrame, CSV, XLSX, tracked experimental VGD | CSV and XLSX input tables |
 | `fit_pdi_h_cooh_c1s.py` | Four- and five-component synthetic C 1s fits | Two diagnostic PNGs |
 | `compare_pdi_h_cooh_models.py` | Annotated four-versus-five model comparison | PNG and PDF |
 | `fit_cl2p_doublet.py` | Annotated constrained 2:1 synthetic Cl 2p doublet | PNG and PDF |
@@ -14,7 +14,7 @@ Override the destination with `--output-dir PATH`.
 | `plot_pdi_c1s_series.py` | Annotated three-sample synthetic multipanel | PNG and PDF |
 | `plot_core_level_panel.py` | Annotated synthetic C 1s/N 1s/O 1s panel | PNG and PDF |
 | `end_to_end_publication.py` | Fit, Phase 1 export, XLSX reload, curve-table plotting, CLI | Numerical bundle files, PNG and PDF |
-| `plot_pdi_h_cooh_c1s_publication.py` | Reviewed experimental FitResult reload and exact C 1s recipe | PNG and PDF |
+| `plot_pdi_h_cooh_c1s_publication.py` | Active calibrated reviewed C 1s artifact and exact recipe | PNG, PDF, provenance JSON |
 
 Run one example:
 
@@ -22,34 +22,34 @@ Run one example:
 PYTHONPATH=src MPLBACKEND=Agg python examples/plot_single_fit.py
 ```
 
-Run every retained example independently:
+Run every synthetic example independently:
 
 ```bash
-python scripts/run_all_examples.py \
-  --pdi-h-c1s-fit-result outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle
+python scripts/run_all_examples.py
 ```
 
-Omitting the reviewed source makes the experimental example fail clearly; the
-runner does not substitute synthetic data or invoke fitting for that figure.
+The runner skips the experimental publication example unless
+`--pdi-h-c1s-sample-manifest PATH` is supplied. It never substitutes synthetic
+data or invokes fitting for that figure. The experimental example itself fails
+clearly when its reviewed calibrated source is missing or ineligible.
 
 The runner and individual examples refuse to replace existing files by default.
 Pass `--overwrite` only when intentionally regenerating an example's dedicated
 ignored output directory.
 
 The experimental publication example deliberately has no fitting fallback. Pass a
-reviewed Phase 1 bundle with `--fit-result PATH`; CSV/XLSX inputs also require their
-metadata JSON via `--metadata PATH`. It fails clearly if the numerical export is
-missing, synthetic/unclassified, has identical raw and fitted curves or a zero
-background, or does not contain the stored raw/background arrays, recipe's five
-components, and fitted centres. Its output prints the resolved curve-table and
-metadata paths plus the numerical provenance audit and post-plot immutability check.
+sample manifest with `--sample-manifest PATH`. It resolves only the active calibrated
+reviewed bundle and fails clearly on missing review/calibration records, synthetic or
+legacy provenance, identical raw/fitted curves, a trivial background, incomplete
+arrays, or hash inconsistencies. It prints the bundle, calibration record, exact
+offset, recipe, and output paths.
 
-The VGD path is exercised only when `vgd-reader` is installed; the example clearly
-reports when this optional dependency is unavailable. Existing tracked experimental
-files are read in place and never copied. Figures are saved only as PNG or PDF.
+The declared `vgd-reader` dependency exercises the VGD path. Existing tracked
+experimental files are read in place and never copied. Figures are saved only as
+PNG or PDF.
 
 The release's real-data check is intentionally separate from the deterministic
-example suite. With `vgd-reader` installed, run
+example suite. Run
 `PYTHONPATH=src MPLBACKEND=Agg python scripts/validate_experimental_workflow.py` to
 create ignored PNG/PDF publication, diagnostic, comparison, and raw-series figures
 for the tracked PDI spectra. The experimental title is `PDI-H-COOH`; `Synthetic`

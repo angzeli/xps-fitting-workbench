@@ -91,6 +91,25 @@ def test_bundle_member_tampering_is_detected(tmp_path) -> None:
         load_fit_bundle(bundle)
 
 
+def test_unbounded_configuration_is_hashed_from_its_stored_json_representation(tmp_path) -> None:
+    source = tmp_path / "source.VGD"
+    source.write_bytes(b"source")
+    result = experimental_result()
+    result.configuration["peaks"][0]["area_bounds"] = [0.0, float("inf")]
+    bundle = tmp_path / "candidate.bundle"
+    save_candidate_bundle(
+        result,
+        bundle,
+        sample="PDI-H-COOH",
+        region="C1s",
+        source_path=source,
+        repository_root=tmp_path,
+    )
+    reloaded = load_fit_bundle(bundle)
+    assert reloaded.configuration["peaks"][0]["area_bounds"] == [0.0, None]
+    assert not validate_fit_bundle(bundle, repository_root=tmp_path).errors
+
+
 def test_legacy_and_synthetic_results_are_never_publication_eligible(tmp_path) -> None:
     result = experimental_result()
     legacy = tmp_path / "legacy.bundle"

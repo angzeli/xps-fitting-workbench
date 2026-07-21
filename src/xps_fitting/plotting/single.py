@@ -10,6 +10,7 @@ import numpy as np
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.ticker import MultipleLocator, ScalarFormatter
+from scipy.integrate import trapezoid
 
 from ..result import FitResult
 from .annotations import PDI_H_C1S_LABELS, annotate_peak_positions, statistics_text
@@ -135,13 +136,13 @@ def plot_xps_fit(
         annotation_colours = {}
         displayed_curves = [raw, background, total]
         cumulative = background.copy()
-        total_component_area = sum(float(np.trapz(curve, energy)) for curve in result.components.values())
+        total_component_area = sum(float(trapezoid(curve, energy)) for curve in result.components.values())
         for label, source_curve in result.components.items():
             curve = np.asarray(source_curve) / scale_factor
             colour = component_colour(label, dict(component_colours or {}))
             display_label = labels.get(label, label)
             if area_percentages and total_component_area:
-                display_label += f" ({100 * float(np.trapz(source_curve, energy)) / total_component_area:.1f}%)"
+                display_label += f" ({100 * float(trapezoid(source_curve, energy)) / total_component_area:.1f}%)"
             linestyle = monochrome_component_style(label) if selected.name == "monochrome_publication" else "-"
             if mode == "hidden":
                 if annotate_hidden_components:

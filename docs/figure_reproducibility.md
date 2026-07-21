@@ -40,25 +40,20 @@ route is now:
 
 ```bash
 PYTHONPATH=src MPLBACKEND=Agg python examples/plot_pdi_h_cooh_c1s_publication.py \
-  --fit-result outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle \
-  --output-dir outputs/manuscript
+  --sample-manifest artifacts/reviewed/PDI-H-COOH/sample_manifest.json \
+  --output-dir figures/final/PDI-H-COOH
 ```
 
-The default bundle directory must contain `manifest.json`, `curves.csv`, and
-`metadata.json`. The curve table supplies binding energy, raw intensity, background,
-five component arrays, total fit, and residual. Metadata supplies the accepted fitted
-centres and the rest of the `FitResult` contract. The example loads those files with
-`load_curve_result()`, applies `configs/plots/c1s_publication.json` through
-`plot_from_config()`, and writes only the named 600 dpi PNG and vector PDF. Before
-rendering it prints the two resolved member paths, acquisition metadata, and numerical
-identity checks. Synthetic/test-fixture provenance, identical raw and fitted curves,
-zero backgrounds, and absent raw/background columns are hard errors.
+The sample manifest resolves the calibrated reviewed bundle, review record, and
+calibration record. `plot_publication_region()` validates them, applies
+`configs/plots/c1s_publication.json`, and writes only the named 600 dpi PNG, vector
+PDF, and provenance JSON. Synthetic/test-fixture provenance, candidate/unreviewed
+state, identical raw/fitted curves, trivial backgrounds, absent arrays, and hash or
+calibration inconsistencies are hard errors.
 
-The reviewed experimental bundle is not committed because it is a private project
-artifact. There is intentionally no fallback to fitting raw data: a missing or
-incomplete export is reported as an error. The generic plotting CLI does not certify
-experimental provenance and is therefore not the accepted route for this exact
-figure. Clone the recipe and change the core
+There is intentionally no fallback to fitting raw data: a missing or incomplete
+artifact is reported as an error. The generic plotting CLI does not certify the full
+experimental lifecycle and is not the accepted route for this exact figure. Clone the recipe and change the core
 level, energy limits, output name, and per-assignment annotation offsets to reproduce
 the same style for another region.
 
@@ -69,6 +64,6 @@ Its local outputs are deliberately ignored; numerical observations and manual-re
 cautions are recorded in `docs/experimental_validation.md`.
 
 The historical validation run saved figures but did not save its in-memory C 1s
-`FitResult`. Consequently those PNG/PDF files are not a substitute for the reviewed
-curve table, and the plotting-only workflow cannot recover arrays from them. Supply
-the archived Phase 1 bundle rather than rerunning the optimiser.
+`FitResult`. Consequently those PNG/PDF files are not a substitute for a reviewed
+bundle, and the plotting-only workflow cannot recover arrays from them. A new fit
+generation must pass explicit review instead of being described as historical recovery.

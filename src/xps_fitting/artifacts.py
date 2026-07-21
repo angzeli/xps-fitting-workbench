@@ -174,6 +174,11 @@ def classify_origin(value: object) -> str:
     return "unclassified"
 
 
+def fit_configuration_sha256(result: FitResult) -> str:
+    """Hash the JSON-safe configuration representation stored in a bundle."""
+    return sha256_json(result.to_dict()["configuration"])
+
+
 def _descriptor_for_candidate(
     result: FitResult,
     *,
@@ -189,7 +194,7 @@ def _descriptor_for_candidate(
     if classify_origin(result.metadata.get("data_origin")) != "experimental":
         raise ValueError("candidate artifacts require explicit data_origin='experimental'")
     timestamp = created_at or utc_now()
-    configuration_sha256 = sha256_json(result.configuration)
+    configuration_sha256 = fit_configuration_sha256(result)
     source_sha256 = sha256_file(source)
     identity = sha256_json(
         {
@@ -353,7 +358,7 @@ def validate_fit_bundle(
             errors.append("region identity differs between metadata and manifest")
         if model != descriptor.model:
             errors.append("model identity differs between configuration and manifest")
-        if descriptor.configuration_sha256 != sha256_json(result.configuration):
+        if descriptor.configuration_sha256 != fit_configuration_sha256(result):
             errors.append("configuration SHA-256 does not match stored configuration")
         resolved_source = _resolve_source(descriptor.source_path, bundle, repository_root)
         if resolved_source is None:

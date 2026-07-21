@@ -16,9 +16,10 @@ def main(argv: list[str] | None = None) -> int:
         "--overwrite", action="store_true", help="Allow examples to replace their own existing outputs."
     )
     parser.add_argument(
-        "--pdi-h-c1s-fit-result", type=Path, help="Reviewed FitResult source for the experimental example."
+        "--pdi-h-c1s-sample-manifest",
+        type=Path,
+        help="Sample manifest for the calibrated experimental example.",
     )
-    parser.add_argument("--pdi-h-c1s-metadata", type=Path, help="Metadata JSON when that source is a curve table.")
     args = parser.parse_args(argv)
     root = Path(__file__).resolve().parents[1]
     examples = sorted(path for path in (root / "examples").glob("*.py") if not path.name.startswith("_"))
@@ -27,13 +28,16 @@ def main(argv: list[str] | None = None) -> int:
     environment["PYTHONPATH"] = os.pathsep.join(filter(None, (str(root / "src"), current_pythonpath)))
     environment.setdefault("MPLBACKEND", "Agg")
     failures = []
+    skipped = []
     for example in examples:
+        if example.stem == "plot_pdi_h_cooh_c1s_publication" and not args.pdi_h_c1s_sample_manifest:
+            skipped.append(example.name)
+            print(f"SKIP {example.name} (no calibrated reviewed sample manifest supplied)")
+            continue
         destination = args.output_dir / example.stem
         command = [sys.executable, str(example), "--output-dir", str(destination)]
-        if example.stem == "plot_pdi_h_cooh_c1s_publication" and args.pdi_h_c1s_fit_result:
-            command.extend(("--fit-result", str(args.pdi_h_c1s_fit_result)))
-            if args.pdi_h_c1s_metadata:
-                command.extend(("--metadata", str(args.pdi_h_c1s_metadata)))
+        if example.stem == "plot_pdi_h_cooh_c1s_publication" and args.pdi_h_c1s_sample_manifest:
+            command.extend(("--sample-manifest", str(args.pdi_h_c1s_sample_manifest)))
         if args.overwrite:
             command.append("--overwrite")
         completed = subprocess.run(command, cwd=root, env=environment, text=True, capture_output=True)
@@ -42,7 +46,8 @@ def main(argv: list[str] | None = None) -> int:
         if completed.returncode:
             failures.append(example.name)
             print(completed.stderr.strip() or completed.stdout.strip())
-    print(f"Summary: {len(examples) - len(failures)} passed, {len(failures)} failed")
+    passed = len(examples) - len(failures) - len(skipped)
+    print(f"Summary: {passed} passed, {len(failures)} failed, {len(skipped)} skipped")
     return 1 if failures else 0
 
 

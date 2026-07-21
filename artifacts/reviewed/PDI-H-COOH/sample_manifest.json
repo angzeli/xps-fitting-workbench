@@ -1,0 +1,35 @@
+{
+  "sample": "PDI-H-COOH",
+  "raw_regions": {
+    "C1s": "data/raw/PDI-H-COOH/C1s Scan.VGD",
+    "Cl2p": "data/raw/PDI-H-COOH/Cl2p Scan.VGD",
+    "N1s": "data/raw/PDI-H-COOH/N1s Scan.VGD",
+    "O1s": "data/raw/PDI-H-COOH/O1s Scan.VGD",
+    "Survey": "data/raw/PDI-H-COOH/XPS Survey.VGD"
+  },
+  "raw_sha256": {
+    "C1s": "080a8d87490cbf883c4c9becabc3982eeff35b1d7533a49e9a0bc30cf8a2f9f5",
+    "Cl2p": "9cbe567914280393e8c16ba8941c73bfe54e8dd676f8c51506fad01952823728",
+    "N1s": "ea43fcefc5f6296e741071b7b7d47442c499971f0034cfbb01c61a7600295f57",
+    "O1s": "acad209a5f0967125a6ab3519623219cc01533f4573e5dc56a3465f964e1bc37",
+    "Survey": "7f662cefe1e428d4c72ed7ffbdf6209af6e1d16ccd08b824dbab09bd7e067afb"
+  },
+  "expected_regions": [
+    "C1s",
+    "N1s",
+    "O1s",
+    "Cl2p",
+    "Survey"
+  ],
+  "reviewed_uncalibrated": {},
+  "active_review_versions": {},
+  "calibrated": {},
+  "calibration": null,
+  "calibration_status": "uncalibrated",
+  "energy_offset_eV": null,
+  "calibrated_at": null,
+  "created_at": "2026-07-21T14:45:55.287701+00:00",
+  "updated_at": "2026-07-21T14:45:55.287701+00:00",
+  "schema_version": 1,
+  "missing_raw_regions": []
+}
