@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 import numpy as np
 from matplotlib.artist import Artist
@@ -41,6 +41,7 @@ def annotate_peak_positions(
     leaders: bool = True,
     offsets: Mapping[str, tuple[float, float]] | None = None,
     include_negligible: bool = False,
+    clearance_curves: Sequence[np.ndarray] = (),
     obstacles: tuple[Artist, ...] = (),
 ) -> list[Annotation]:
     """Annotate fitted centres above displayed component apices."""
@@ -61,6 +62,8 @@ def annotate_peak_positions(
         (float(np.nanmax(np.abs(np.asarray(result.components[label])))) for label in displayed_components),
         default=0.0,
     )
+    energy = np.asarray(result.energy)
+    clearance_arrays = [np.asarray(curve) for curve in clearance_curves]
     candidates = []
     for label, displayed_curve in displayed_components.items():
         centre = result.fitted_parameters.get(f"{label}.centre")
@@ -76,7 +79,12 @@ def annotate_peak_positions(
             continue
         displayed_curve = np.asarray(displayed_curve)
         apex_index = int(np.nanargmax(displayed_curve))
-        candidates.append((float(centre), label, float(displayed_curve[apex_index])))
+        centre_index = int(np.nanargmin(np.abs(energy - centre)))
+        clearance_height = max(
+            [float(displayed_curve[apex_index])]
+            + [float(curve[centre_index]) for curve in clearance_arrays if curve.shape == energy.shape]
+        )
+        candidates.append((float(centre), label, float(displayed_curve[apex_index]), clearance_height))
 
     x_lower, x_upper = sorted(axis.get_xlim())
     x_span = max(x_upper - x_lower, np.finfo(float).eps)
@@ -85,7 +93,7 @@ def annotate_peak_positions(
     annotations: list[Annotation] = []
     previous_centre: float | None = None
     stagger_level = 0
-    for centre, label, apex_height in sorted(candidates):
+    for centre, label, apex_height, clearance_height in sorted(candidates):
         if previous_centre is not None and abs(centre - previous_centre) < collision_distance:
             stagger_level += 1
         else:
@@ -93,6 +101,9 @@ def annotate_peak_positions(
         previous_centre = centre
         manual_x, manual_y = manual_offsets.get(label, (0.0, 0.0))
         anchor_x = min(max(centre, x_lower + x_margin), x_upper - x_margin)
+        apex_y_pixels = axis.transData.transform((anchor_x, apex_height))[1]
+        clearance_y_pixels = axis.transData.transform((anchor_x, clearance_height))[1]
+        clearance_points = max(0.0, clearance_y_pixels - apex_y_pixels) * 72.0 / axis.figure.dpi
         text = f"{centre:.{precision}f}" + (" eV" if include_unit else "")
         colour = component_colours[label]
         arrowprops = None
@@ -109,7 +120,10 @@ def annotate_peak_positions(
             xy=(anchor_x, apex_height),
             xytext=(
                 manual_x,
-                theme.peak_annotation_offset_points + stagger_level * theme.peak_annotation_stagger_points + manual_y,
+                theme.peak_annotation_offset_points
+                + clearance_points
+                + stagger_level * theme.peak_annotation_stagger_points
+                + manual_y,
             ),
             textcoords="offset points",
             ha="center",
@@ -126,9 +140,71 @@ def annotate_peak_positions(
         annotation._xps_component_label = label
         annotation._xps_fitted_centre = centre
         annotation._xps_stagger_level = stagger_level
+        annotation._xps_clearance_height = clearance_height
         annotations.append(annotation)
+    for _ in range(3):
+        _lift_annotations_above_lines(axis, annotations)
+        _lift_annotations_above_clearance(axis, annotations)
+        _expand_upper_limit_for_annotations(axis, annotations)
     _keep_annotations_inside_axes(axis, annotations, obstacles)
     return annotations
+
+
+def _expand_upper_limit_for_annotations(axis: Axes, annotations: list[Annotation]) -> None:
+    """Add data-scaled headroom when point-offset labels would cross the top spine."""
+    if not annotations:
+        return
+    canvas = axis.figure.canvas
+    padding = 3.0
+    for _ in range(4):
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        axes_box = axis.get_window_extent(renderer)
+        overflow = max(Text.get_window_extent(item, renderer).y1 - axes_box.y1 + padding for item in annotations)
+        if overflow <= 0:
+            break
+        lower, upper = axis.get_ylim()
+        data_per_pixel = (upper - lower) / max(axes_box.height, 1.0)
+        axis.set_ylim(top=upper + overflow * data_per_pixel)
+
+
+def _lift_annotations_above_clearance(axis: Axes, annotations: list[Annotation]) -> None:
+    """Preserve the curve clearance after any automatic y-limit expansion."""
+    canvas = axis.figure.canvas
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    points_per_pixel = 72.0 / axis.figure.dpi
+    padding = 3.0
+    for annotation in annotations:
+        clearance_y = axis.transData.transform((annotation.xy[0], annotation._xps_clearance_height))[1]
+        text_box = Text.get_window_extent(annotation, renderer)
+        shift = clearance_y + padding - text_box.y0
+        if shift > 0:
+            current_x, current_y = annotation.get_position()
+            annotation.set_position((current_x, current_y + shift * points_per_pixel))
+
+
+def _lift_annotations_above_lines(axis: Axes, annotations: list[Annotation]) -> None:
+    """Lift text above every visible curve that crosses its rendered width."""
+    canvas = axis.figure.canvas
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    points_per_pixel = 72.0 / axis.figure.dpi
+    padding = 3.0
+    paths = [line.get_transform().transform_path(line.get_path()).vertices for line in axis.lines if line.get_visible()]
+    for annotation in annotations:
+        text_box = Text.get_window_extent(annotation, renderer)
+        crossing_heights = [
+            float(np.max(vertices[inside, 1]))
+            for vertices in paths
+            if np.any(inside := ((vertices[:, 0] >= text_box.x0) & (vertices[:, 0] <= text_box.x1)))
+        ]
+        if not crossing_heights:
+            continue
+        shift = max(crossing_heights) + padding - text_box.y0
+        if shift > 0:
+            current_x, current_y = annotation.get_position()
+            annotation.set_position((current_x, current_y + shift * points_per_pixel))
 
 
 def _keep_annotations_inside_axes(
@@ -142,12 +218,13 @@ def _keep_annotations_inside_axes(
     canvas = axis.figure.canvas
     padding = 3.0
     points_per_pixel = 72.0 / axis.figure.dpi
-    for _ in range(3):
+    for _ in range(5):
         canvas.draw()
         renderer = canvas.get_renderer()
         axes_box = axis.get_window_extent(renderer)
         obstacle_boxes = [artist.get_window_extent(renderer) for artist in obstacles if artist.get_visible()]
         adjusted = False
+        placed_boxes = []
         for annotation in annotations:
             box = Text.get_window_extent(annotation, renderer)
             shift_x = 0.0
@@ -163,6 +240,12 @@ def _keep_annotations_inside_axes(
                     shift_x += shift_left
                 else:
                     shift_y += obstacle_box.y0 - box.y1 - padding
+            shifted_box = box.translated(shift_x, shift_y)
+            for placed_box in placed_boxes:
+                if shifted_box.overlaps(placed_box):
+                    extra_y = placed_box.y1 - shifted_box.y0 + padding
+                    shift_y += extra_y
+                    shifted_box = shifted_box.translated(0.0, extra_y)
             shifted_x0 = box.x0 + shift_x
             shifted_x1 = box.x1 + shift_x
             shifted_y0 = box.y0 + shift_y
@@ -180,5 +263,6 @@ def _keep_annotations_inside_axes(
                     )
                 )
                 adjusted = True
+            placed_boxes.append(box.translated(shift_x, shift_y))
         if not adjusted:
             break

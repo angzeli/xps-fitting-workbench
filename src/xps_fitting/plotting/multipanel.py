@@ -229,6 +229,7 @@ def plot_xps_series(
                     leaders=peak_annotation_leaders,
                     offsets=peak_annotation_offsets,
                     include_negligible=annotate_negligible_components,
+                    clearance_curves=displayed_curves,
                     obstacles=legend_obstacles,
                 )
         for axis in flat[count:]:

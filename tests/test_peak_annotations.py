@@ -1,4 +1,5 @@
 import copy
+from itertools import combinations
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -62,6 +63,21 @@ def test_peak_positions_format_colour_centres_stagger_offsets_and_exports(tmp_pa
     assert annotations[1].get_color() == component_colour("C-N_C-Cl")
     assert all(annotation.get_fontweight() == "bold" for annotation in annotations)
     assert all(annotation.arrow_patch is not None for annotation in annotations)
+    assert all(
+        not Text.get_window_extent(first).overlaps(Text.get_window_extent(second))
+        for first, second in combinations(annotations, 2)
+    )
+    assert all(
+        Text.get_window_extent(annotation).y0
+        > axis.transData.transform((annotation.xy[0], annotation._xps_clearance_height))[1]
+        for annotation in annotations
+    )
+    for annotation in annotations:
+        text_box = Text.get_window_extent(annotation)
+        for line in axis.lines:
+            vertices = line.get_transform().transform_path(line.get_path()).vertices
+            within_text_width = (vertices[:, 0] >= text_box.x0) & (vertices[:, 0] <= text_box.x1)
+            assert not np.any(within_text_width) or np.max(vertices[within_text_width, 1]) < text_box.y0
     assert axis.xaxis_inverted()
     axes_box = axis.get_window_extent()
     assert all(

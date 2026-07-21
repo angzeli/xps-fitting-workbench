@@ -90,6 +90,7 @@ def plot_xps_fit(
     labels = dict(PDI_H_C1S_LABELS)
     labels.update(label_map or {})
     with theme_context(theme) as selected:
+        core_label = None
         if show_residual:
             height = selected.residual_height_ratio
             figure, axes = plt.subplots(
@@ -307,6 +308,7 @@ def plot_xps_fit(
         else:
             main.set_xlabel("Binding energy (eV)", labelpad=selected.axis_padding)
         if show_peak_positions:
+            annotation_obstacles = (legend,) if core_label is None else (legend, core_label)
             annotate_peak_positions(
                 main,
                 result,
@@ -318,6 +320,7 @@ def plot_xps_fit(
                 leaders=peak_annotation_leaders,
                 offsets=peak_annotation_offsets,
                 include_negligible=annotate_negligible_components,
-                obstacles=(legend,),
+                clearance_curves=displayed_curves,
+                obstacles=annotation_obstacles,
             )
     return figure, axes

@@ -31,6 +31,8 @@ class PlotConfig:
     peak_position_precision: int = 1
     peak_position_unit: bool = True
     peak_annotation_leaders: bool = True
+    peak_label_fontsize: float | None = None
+    peak_annotation_leader_width: float | None = None
     peak_annotation_offsets: dict[str, tuple[float, float]] = field(default_factory=dict)
     annotate_negligible_components: bool = False
     annotate_hidden_components: bool = False
@@ -68,6 +70,8 @@ class PlotConfig:
             self.marker_size,
             self.tick_spacing,
             self.x_minor_interval,
+            self.peak_label_fontsize,
+            self.peak_annotation_leader_width,
         ):
             if value is not None and value <= 0:
                 raise ValueError("line widths, marker size, and tick spacing must be positive")

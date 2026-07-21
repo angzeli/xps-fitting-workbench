@@ -38,6 +38,8 @@ def test_recipe_round_trip_and_validation(tmp_path) -> None:
         x_limits=(2, 0),
         show_peak_positions=True,
         peak_annotation_offsets={"p": (2, 3)},
+        peak_label_fontsize=9,
+        peak_annotation_leader_width=0.5,
         x_minor_interval=0.5,
         show_y_ticks=False,
         show_top_ticks=False,
@@ -49,6 +51,9 @@ def test_recipe_round_trip_and_validation(tmp_path) -> None:
     figure, axis, paths = plot_from_config(config=config, result=fixture(), output_directory=tmp_path)
     assert any((text.get_gid() or "").startswith("peak-position:") for text in axis[0].texts)
     assert any(text.get_gid() == "core-level-label" for text in axis[0].texts)
+    annotation = next(text for text in axis[0].texts if (text.get_gid() or "").startswith("peak-position:"))
+    assert annotation.get_fontsize() == 9
+    assert annotation.arrow_patch.get_linewidth() == 0.5
     assert paths["pdf"].stat().st_size > 100
     plt.close(figure)
     with pytest.raises(ValueError):

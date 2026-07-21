@@ -23,6 +23,10 @@ def _theme_from_config(config: PlotConfig) -> PlotTheme:
         value = getattr(config, field_name)
         if value is not None:
             overrides[field_name] = value
+    if config.peak_label_fontsize is not None:
+        overrides["peak_annotation_size"] = config.peak_label_fontsize
+    if config.peak_annotation_leader_width is not None:
+        overrides["peak_annotation_leader_width"] = config.peak_annotation_leader_width
     return load_theme(config.theme, **overrides)
 
 
