@@ -56,13 +56,13 @@ experimental XPS bundle was found. The only XPS bundle was
 
 The historical result is therefore not recoverable from the locations searched.
 The tracked 231-point source remains
-`example_data/PDI-H-COOH/C1s Scan.VGD`. Re-fitting it must create a **new**
+`data/raw/PDI-H-COOH/C1s Scan.VGD`. Re-fitting it must create a **new**
 candidate generation and must not be represented as recovery of the historical
 accepted arrays.
 
 ## Current storage classification
 
-- `example_data/`: tracked raw scientific input; immutable and protected.
+- `data/raw/`: tracked raw scientific input; immutable and protected.
 - `configs/`: fit hypotheses and plotting recipes; durable provenance.
 - `outputs/`: 102 generated files (about 11 MB); no fit bundles or scientific
   manifests. Twelve PNG/PDF files under `outputs/experimental_validation/` are

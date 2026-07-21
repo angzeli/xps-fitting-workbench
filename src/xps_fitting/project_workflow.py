@@ -33,8 +33,7 @@ def find_repository_root(start: str | Path = ".") -> Path:
 
 def sample_raw_directory(root: str | Path, sample: str) -> Path:
     repository = Path(root).resolve()
-    choices = (repository / "data" / "raw" / sample, repository / "example_data" / sample)
-    return next((path for path in choices if path.is_dir()), choices[0])
+    return repository / "data" / "raw" / sample
 
 
 def sample_manifest_path(root: str | Path, sample: str) -> Path:
@@ -195,6 +194,9 @@ def validate_sample(root: str | Path, sample: str, *, require_calibrated: bool =
             errors.append(f"raw {region} SHA-256 differs from the manifest")
     if manifest.missing_raw_regions:
         warnings.append("missing raw regions: " + ", ".join(manifest.missing_raw_regions))
+    missing_reviewed = [region for region in manifest.expected_regions if region not in manifest.reviewed_uncalibrated]
+    if missing_reviewed:
+        warnings.append("raw-only or unreviewed regions: " + ", ".join(missing_reviewed))
     checked: dict[str, Any] = {}
     links = manifest.calibrated if require_calibrated else manifest.reviewed_uncalibrated
     for region, value in links.items():
@@ -227,6 +229,8 @@ def validate_sample(root: str | Path, sample: str, *, require_calibrated: bool =
         "manifest": str(path),
         "calibration_status": manifest.calibration_status,
         "energy_offset_eV": manifest.energy_offset_eV,
+        "review_complete": not missing_reviewed,
+        "publication_ready": manifest.calibration_status == "calibrated" and not errors,
         "checked_artifacts": checked,
         "errors": errors,
         "warnings": warnings,

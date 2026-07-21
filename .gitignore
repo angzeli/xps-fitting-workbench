@@ -18,9 +18,7 @@ __pycache__/
 # macOS
 .DS_Store
 
-# Experimental and generated data (small curated fixtures remain allowed)
-*.vgd
-*.VGD
+# Legacy/generated data locations. Tracked raw spectra under data/raw are durable.
 raw_data/
 processed_data/
 processed_xps/

@@ -16,7 +16,7 @@ def main(argv: list[str] | None = None) -> int:
     add_output_argument(parser)
     args = parser.parse_args(argv)
     output = prepare_output(args.output_dir)
-    result = fit_spectrum(synthetic_c1s(), load_config(ROOT / "configs/pdi_h_cooh_c1s_5.json"))
+    result = fit_spectrum(synthetic_c1s(), load_config(ROOT / "configs/fits/pdi_h_cooh_c1s_5.json"))
     paths = export_result(result, output, "pdi_h_cooh_c1s", overwrite=args.overwrite)
     reloaded = load_curve_result(paths["xlsx"], paths["json"])
     figure, _ = plot_xps_fit(

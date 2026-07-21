@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 
 GENERATED_DIRECTORIES = (Path("outputs"), Path("figures") / "diagnostic")
-PROTECTED_DIRECTORIES = (Path("data") / "raw", Path("example_data"), Path("artifacts") / "reviewed")
+PROTECTED_DIRECTORIES = (Path("data") / "raw", Path("artifacts") / "reviewed")
 
 
 def generated_cleanup_plan(repository_root: str | Path) -> tuple[Path, ...]:

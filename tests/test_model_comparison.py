@@ -21,7 +21,7 @@ def test_five_component_signal_supports_five_component_candidate() -> None:
             (150, 290.7, 2.2),
         ]
     )
-    configs = [load_config(root / "configs" / f"pdi_h_cooh_c1s_{n}.json") for n in (4, 5)]
+    configs = [load_config(root / "configs" / "fits" / f"pdi_h_cooh_c1s_{n}.json") for n in (4, 5)]
     table = comparison_table(compare_models(Spectrum(x, y), configs))
     assert {row["model"] for row in table} == {"C1s_4", "C1s_5"}
     assert (

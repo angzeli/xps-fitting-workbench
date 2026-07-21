@@ -27,7 +27,7 @@ def _candidate(root):
         configuration={"name": "candidate", "region": "C 1s", "peaks": []},
         metadata={"data_origin": "experimental"},
     )
-    source = root / "example_data" / "PDI-H-COOH" / "C1s Scan.VGD"
+    source = root / "data" / "raw" / "PDI-H-COOH" / "C1s Scan.VGD"
     source.parent.mkdir(parents=True)
     source.write_bytes(b"raw")
     bundle = root / "artifacts" / "candidates" / "PDI-H-COOH" / "C1s" / "candidate.bundle"

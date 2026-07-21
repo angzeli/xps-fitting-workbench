@@ -34,7 +34,7 @@ def candidate_result() -> FitResult:
 
 
 def make_candidate(tmp_path):
-    source = tmp_path / "example_data" / "PDI-H-COOH" / "C1s Scan.VGD"
+    source = tmp_path / "data" / "raw" / "PDI-H-COOH" / "C1s Scan.VGD"
     source.parent.mkdir(parents=True)
     source.write_bytes(b"raw experimental bytes")
     bundle = tmp_path / "artifacts" / "candidates" / "PDI-H-COOH" / "C1s" / "c1s-5.bundle"

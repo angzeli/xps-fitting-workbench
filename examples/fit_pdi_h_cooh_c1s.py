@@ -14,7 +14,7 @@ def main(argv: list[str] | None = None) -> int:
     add_output_argument(parser)
     args = parser.parse_args(argv)
     output = prepare_output(args.output_dir)
-    configs = [load_config(ROOT / "configs" / f"pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
+    configs = [load_config(ROOT / "configs" / "fits" / f"pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
     results = compare_models(synthetic_c1s(561), configs)
     paths = []
     for name, result in results.items():

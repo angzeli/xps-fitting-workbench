@@ -14,7 +14,7 @@ def main(argv: list[str] | None = None) -> int:
     add_output_argument(parser)
     args = parser.parse_args(argv)
     output = prepare_output(args.output_dir)
-    configs = [load_config(ROOT / f"configs/pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
+    configs = [load_config(ROOT / f"configs/fits/pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
     figure, _ = plot_fit_comparison(
         compare_models(synthetic_c1s(), configs),
         show_residual=False,

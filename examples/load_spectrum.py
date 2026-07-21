@@ -29,7 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         from xps_fitting.io_vgd import read_vgd
 
-        experimental = read_vgd(ROOT / "example_data/PDI-H-COOH/C1s Scan.VGD")
+        experimental = read_vgd(ROOT / "data/raw/PDI-H-COOH/C1s Scan.VGD")
         vgd_summary = f"tracked experimental VGD: {experimental.binding_energy.size} points"
     except ImportError:
         pass

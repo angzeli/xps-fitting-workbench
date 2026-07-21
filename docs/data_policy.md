@@ -1,11 +1,14 @@
 # Data policy
 
-Only small, anonymised, scientifically useful text fixtures belong in `tests/data/`
-or `examples/data/`. A reduced experimental fixture must remove private paths and
-sample identifiers and document the source range, columns, downsampling, and any
-normalisation. Raw VGD files and bulk `raw_data/` or `processed_data/` directories
-are excluded because they may contain private metadata and are unsuitable for Git.
+The project-owned experimental acquisitions live under `data/raw/SAMPLE/`. They
+are immutable scientific inputs: preserve acquisition names and metadata, record
+SHA-256 values, and never overwrite them during fitting or calibration. The data
+owner must review privacy and repository-size implications before adding a new raw
+dataset; Git LFS or an external backed-up store may be more appropriate for large
+collections.
 
-The raw files already tracked in this repository predate this policy. They are left
-untouched, are not copied into tests, and should be reviewed by the data owner.
-Deterministic synthetic spectra are the default for tests and examples.
+Only small, anonymised fixtures belong under `tests/fixtures/` or synthetic example
+data locations. A reduced experimental fixture must document its source range,
+columns, downsampling, and normalisation. Automated tests use unmistakably marked
+synthetic spectra by default. Synthetic artifacts set `data_origin = synthetic`
+and `publication_eligible = false`.
