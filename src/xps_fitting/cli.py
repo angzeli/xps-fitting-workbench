@@ -12,6 +12,7 @@ from ._version import __version__
 from .artifacts import validate_fit_bundle
 from .calibration_workflow import calibrate_reviewed_sample, prepare_sample_calibration
 from .cleanup import clean_generated
+from .io_vgd import read_vgd
 from .naming import make_output_name, result_output_name, validate_output_stem
 from .plotting.configuration import load_plot_config
 from .plotting.io import load_curve_result
@@ -23,12 +24,13 @@ from .project_workflow import (
     fit_region_candidates,
     inspect_sample,
     sample_manifest_path,
+    sample_raw_directory,
     validate_sample,
 )
 from .publication import plot_publication_region
 from .review import candidate_review_summary, review_candidate
-from .sample_manifest import activate_reviewed_bundle
-from .spectrum_artifacts import validate_spectrum_bundle
+from .sample_manifest import activate_reviewed_bundle, discover_raw_regions, load_sample_manifest
+from .spectrum_artifacts import review_spectrum, validate_spectrum_bundle
 
 
 def _metadata_sources(values: list[str] | None, count: int) -> list[str | None]:
@@ -146,6 +148,12 @@ def _run_review(args: argparse.Namespace) -> int:
     if not candidates:
         raise FileNotFoundError(f"no persisted candidates found for {args.sample} {args.region}")
     summaries = [candidate_review_summary(path) for path in candidates]
+    for summary in summaries:
+        stem = str(summary["model"]).casefold()
+        figure_root = root / "figures" / "diagnostic" / args.sample / args.region.replace(" ", "")
+        summary["diagnostic_figures"] = [
+            str(path) for path in (figure_root / f"{stem}.png", figure_root / f"{stem}.pdf") if path.is_file()
+        ]
     for index, summary in enumerate(summaries, 1):
         print(f"\n[{index}] {summary['model']}")
         print(json.dumps(summary, indent=2, default=str))
@@ -205,6 +213,48 @@ def _run_review(args: argparse.Namespace) -> int:
             "reviewed_bundle": str(promotion.reviewed_bundle),
             "review_record": str(promotion.review_record),
             "active_review_version": manifest.active_review_versions[promotion.record.region],
+        }
+    )
+    return 0
+
+
+def _run_review_spectrum(args: argparse.Namespace) -> int:
+    root = _repository(args)
+    region = args.region.strip().replace(" ", "")
+    if region != "Survey":
+        raise ValueError("review-spectrum is reserved for raw Survey scans; fitted regions use review-region")
+    sources = discover_raw_regions(sample_raw_directory(root, args.sample))
+    if region not in sources:
+        raise FileNotFoundError(f"raw {region} VGD file is unavailable for {args.sample}")
+    spectrum = read_vgd(sources[region])
+    print(
+        f"{args.sample} {region}: {spectrum.binding_energy.size} points, "
+        f"{spectrum.binding_energy.min():.6g} to {spectrum.binding_energy.max():.6g} eV"
+    )
+    if not args.approve and not _yes("Approve this acquired Survey as a reviewed raw-spectrum artifact?"):
+        print("Spectrum review cancelled; no artifact was created.")
+        return 0
+    reviewer = args.reviewer or input("Reviewer name: ").strip()
+    promotion = review_spectrum(
+        spectrum,
+        root / "artifacts" / "reviewed",
+        source_path=sources[region],
+        reviewer=reviewer,
+        notes=tuple(args.note or ()),
+        repository_root=root,
+    )
+    ensure_sample_manifest(root, args.sample)
+    manifest = activate_reviewed_bundle(
+        sample_manifest_path(root, args.sample),
+        promotion.reviewed_spectrum,
+        repository_root=root,
+        replace_active=args.replace_active,
+    )
+    _json_output(
+        {
+            "reviewed_spectrum": str(promotion.reviewed_spectrum),
+            "review_record": str(promotion.review_record),
+            "active_review_version": manifest.active_review_versions[region],
         }
     )
     return 0
@@ -319,7 +369,7 @@ def _run_cleanup(args: argparse.Namespace) -> int:
 
 def _run_wizard(args: argparse.Namespace) -> int:
     root = _repository(args)
-    samples = sorted(path.name for path in (root / "example_data").iterdir() if path.is_dir())
+    samples = sorted(path.name for path in (root / "data" / "raw").iterdir() if path.is_dir())
     print("Available samples:")
     for index, sample in enumerate(samples, 1):
         print(f"[{index}] {sample}")
@@ -330,9 +380,87 @@ def _run_wizard(args: argparse.Namespace) -> int:
         return 0
     sample = samples[int(choice) - 1]
     _json_output(inspect_sample(root, sample))
-    print("\nNext safe step:")
-    print(f"  xps-fit fit-sample --sample {sample}")
-    print("The wizard stops here so candidate fitting and scientific review remain explicit.")
+    ensure_sample_manifest(root, sample)
+    if not _candidate_paths(root, sample, "C1s") and _yes("Fit the configured candidate models now?"):
+        _run_fit_sample(
+            argparse.Namespace(
+                repository=str(root),
+                sample=sample,
+                overwrite_candidates=False,
+                overwrite_figures=False,
+            )
+        )
+    for region in ("C1s", "N1s", "O1s", "Cl2p"):
+        manifest = load_sample_manifest(sample_manifest_path(root, sample))
+        if _candidate_paths(root, sample, region) and region not in manifest.reviewed_uncalibrated:
+            if _yes(f"Review persisted {region} candidates now?"):
+                _run_review(
+                    argparse.Namespace(
+                        repository=str(root),
+                        sample=sample,
+                        region=region,
+                        candidate=None,
+                        reviewer=None,
+                        note=None,
+                        approve=False,
+                        confirm_checks=False,
+                        replace_active=False,
+                    )
+                )
+    manifest = load_sample_manifest(sample_manifest_path(root, sample))
+    if "Survey" not in manifest.reviewed_uncalibrated and _yes("Review the raw Survey acquisition now?"):
+        _run_review_spectrum(
+            argparse.Namespace(
+                repository=str(root),
+                sample=sample,
+                region="Survey",
+                reviewer=None,
+                note=None,
+                approve=False,
+                replace_active=False,
+            )
+        )
+    manifest = load_sample_manifest(sample_manifest_path(root, sample))
+    missing = [
+        region for region in ("C1s", "N1s", "O1s", "Cl2p", "Survey") if region not in manifest.reviewed_uncalibrated
+    ]
+    if missing:
+        print("Calibration is not ready. Missing reviewed regions: " + ", ".join(missing))
+        print("No region was silently omitted. Fit and review the missing regions, then rerun the wizard.")
+        return 0
+    if manifest.calibration_status != "calibrated" and _yes("Prepare sample-wide calibration now?"):
+        component = input("C 1s reference component key: ").strip()
+        label = input("Reference component display label: ").strip()
+        _run_calibrate(
+            argparse.Namespace(
+                repository=str(root),
+                sample=sample,
+                reference_region="C1s",
+                reference_component=component,
+                reference_component_label=label,
+                target_energy=284.8,
+                reviewer=None,
+                rationale=None,
+                allow_incomplete=False,
+                yes=False,
+            )
+        )
+    manifest = load_sample_manifest(sample_manifest_path(root, sample))
+    if manifest.calibration_status == "calibrated" and _yes("Generate the final C 1s PNG and PDF now?"):
+        _run_plot_region(
+            argparse.Namespace(
+                repository=str(root),
+                sample=sample,
+                region="C1s",
+                recipe=str(root / "configs" / "plots" / "c1s_publication.json"),
+                output_dir=None,
+                overwrite=False,
+                dry_run=False,
+            )
+        )
+    validation = validate_sample(root, sample, require_calibrated=manifest.calibration_status == "calibrated")
+    _json_output(validation)
+    print("Back up data/raw, artifacts/reviewed, and configs. Figures can be regenerated.")
     return 0
 
 
@@ -389,6 +517,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     review_parser.add_argument("--replace-active", action="store_true")
 
+    review_spectrum_parser = subparsers.add_parser(
+        "review-spectrum", help="review a raw Survey without inventing fit components"
+    )
+    review_spectrum_parser.add_argument("--sample", required=True)
+    review_spectrum_parser.add_argument("--region", default="Survey")
+    review_spectrum_parser.add_argument("--reviewer")
+    review_spectrum_parser.add_argument("--note", action="append")
+    review_spectrum_parser.add_argument("--approve", action="store_true")
+    review_spectrum_parser.add_argument("--replace-active", action="store_true")
+
     calibrate_parser = subparsers.add_parser("calibrate-sample", help="apply one reviewed C 1s shift sample-wide")
     calibrate_parser.add_argument("--sample", required=True)
     calibrate_parser.add_argument("--reference-region", default="C1s")
@@ -441,6 +579,7 @@ def main(argv: list[str] | None = None) -> int:
             "fit-region": _run_fit_region,
             "fit-sample": _run_fit_sample,
             "review-region": _run_review,
+            "review-spectrum": _run_review_spectrum,
             "calibrate-sample": _run_calibrate,
             "plot-region": _run_plot_region,
             "plot-sample": _run_plot_sample,
