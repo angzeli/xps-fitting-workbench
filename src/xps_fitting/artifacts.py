@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -352,6 +353,37 @@ def validate_fit_bundle(
             publication_reasons.append("artifact has not been scientifically reviewed")
         if state == "reviewed" and not descriptor.review_record:
             errors.append("reviewed artifact has no review record")
+        elif state == "reviewed" and descriptor.review_record:
+            resolved_review = _resolve_source(descriptor.review_record, bundle, repository_root)
+            if resolved_review is None:
+                errors.append("review record does not resolve from artifact provenance")
+            else:
+                expected_review_sha256 = descriptor.lineage.get("review_record_sha256")
+                if not expected_review_sha256:
+                    errors.append("review record SHA-256 is missing from artifact lineage")
+                elif sha256_file(resolved_review) != expected_review_sha256:
+                    errors.append("review record SHA-256 does not match the artifact lineage")
+                try:
+                    review = json.loads(resolved_review.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError) as exc:
+                    errors.append(f"review record is unreadable: {exc}")
+                else:
+                    if review.get("decision") != "accepted" or review.get("review_status") != "reviewed":
+                        errors.append("review record does not contain an accepted decision")
+                    if (
+                        review.get("sample") != descriptor.sample
+                        or canonical_region(str(review.get("region"))) != region
+                    ):
+                        errors.append("review record sample or region does not match the bundle")
+                    if review.get("selected_model") != descriptor.model:
+                        errors.append("review record model does not match the bundle")
+                    if review.get("source_sha256") != descriptor.source_sha256:
+                        errors.append("review record source SHA-256 does not match the bundle")
+                    if review.get("configuration_sha256") != descriptor.configuration_sha256:
+                        errors.append("review record configuration SHA-256 does not match the bundle")
+                    parent_id = descriptor.lineage.get("parent_artifact_id")
+                    if review.get("candidate_artifact_id") != parent_id:
+                        errors.append("review record candidate lineage does not match the bundle")
         if require_calibrated and calibration_status != "calibrated":
             publication_reasons.append("publication workflow requires a calibrated reviewed artifact")
         if calibration_status == "calibrated" and not descriptor.calibration_record:
