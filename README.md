@@ -230,6 +230,9 @@ from xps_fitting.plotting import export_figure, plot_xps_fit
 fig, axes = plot_xps_fit(
     result, theme="angze_publication", core_level="C 1s",
     component_display_mode="filled_to_background", sample_label="PDI-H-COOH",
+    show_sample_title=False, core_level_label_position=(0.97, 0.96),
+    show_y_ticks=False, show_top_ticks=False,
+    tick_spacing=5, x_minor_interval=2.5,
     show_peak_positions=True, peak_position_precision=1,
     peak_position_unit=True, peak_annotation_leaders=True,
 )
@@ -254,6 +257,45 @@ close. `peak_annotation_leaders=False` removes leader lines;
 `peak_annotation_offsets={"component": (dx, dy)}` adds per-component point offsets.
 Hidden and negligible components stay unlabelled unless explicitly requested. The
 committed detailed C 1s recipe enables these labels by default.
+
+### Generating the PDI-H-COOH C 1s publication figure
+
+The exact publication workflow requires the reviewed Phase 1 numerical export, not
+the raw VGD file. Put a bundle created by `save_fit_bundle()` at
+`outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle/`; it must contain
+`manifest.json`, `curves.csv`, and `metadata.json`. A curve CSV/XLSX plus its Phase 1
+metadata JSON is also accepted. The private reviewed bundle is intentionally not
+committed.
+
+Run the dedicated Python API example from the repository root:
+
+```bash
+PYTHONPATH=src MPLBACKEND=Agg python examples/plot_pdi_h_cooh_c1s_publication.py \
+  --fit-result outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle \
+  --output-dir outputs/manuscript
+```
+
+The equivalent CLI command is:
+
+```bash
+PYTHONPATH=src python -m xps_fitting.cli plot \
+  outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle \
+  --recipe configs/plots/c1s_publication.json \
+  --output-dir outputs/manuscript
+```
+
+Both commands create `pdi_h_cooh_c1s_publication.png` at 600 dpi and
+`pdi_h_cooh_c1s_publication.pdf`; neither command imports or calls the optimiser.
+For a curve table instead of a bundle, add `--metadata PATH` to either command.
+The example prints the resolved input, recipe, metadata (when separate), and output
+paths, and fails if the source lacks any of the five components or fitted centres.
+
+`configs/plots/c1s_publication.json` is the complete visual provenance. Edit
+`peak_annotation_offsets` to change component-specific `(x, y)` point offsets;
+`show_sample_title` and `core_level_label_position` control the two title elements.
+To reuse the style for N 1s, O 1s, or Cl 2p, copy the recipe, change `core_level`,
+`x_limits`, `output_filename`, and the assignment-specific offsets, then pass the
+matching reviewed FitResult export. No plotting code change is required.
 
 PNG and PDF are the only supported figure formats. Exports preserve exact physical
 theme dimensions, DPI, metadata, and format-appropriate transparent backgrounds.

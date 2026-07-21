@@ -18,6 +18,11 @@ figure, a separate residual diagnostic, an annotated candidate-model comparison,
 and an annotated Cl 2p fit in both PNG and PDF. Experimental plots use the sample
 title `PDI-H-COOH`; the word `Synthetic` is reserved for generated validation data.
 
+For manuscript reproduction after scientific review, use the plotting-only command
+in `README.md` with the accepted Phase 1 fit bundle and
+`configs/plots/c1s_publication.json`. Unlike this broader validation script, that
+route never invokes the optimiser and suppresses the sample title in the final panel.
+
 ## Tracked-data inventory
 
 All paths below are repository-relative. The VGD adapter parsed every tracked VGD

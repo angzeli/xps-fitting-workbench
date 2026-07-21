@@ -12,6 +12,12 @@
   component controls, manual offsets, multipanel support, and recipe serialization.
 - Polished the publication, diagnostic, model-comparison, monochrome, PDI-series,
   core-level-panel, and Cl 2p examples while retaining PNG/PDF-only export.
+- Added recipe-controlled y/top tick visibility, one-minor-tick spacing, optional
+  sample titles, axes-relative core labels, and 600 dpi output for the final C 1s plot.
+- Refined binding-energy annotation clearance against visible curves, other labels,
+  legends, and figure bounds while preserving fitted centres and component arrays.
+- Added a plotting-only PDI-H-COOH C 1s example that requires a reviewed Phase 1
+  export and writes only the named PNG and vector PDF.
 
 ## [0.2.0] - 2026-07-21
 

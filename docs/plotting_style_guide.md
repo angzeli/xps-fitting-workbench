@@ -26,8 +26,15 @@ figures add deterministic line styles.
 
 All four spines in `angze_publication`, `monochrome_publication`, and `presentation`
 are visible and exactly 1.8 pt. The same central theme value is applied to main,
-residual, multipanel, and inset axes; plotting functions do not override it. Ticks
-point inward, use the audited 1.8 pt width, and have bold 14 pt labels on both axes.
+residual, multipanel, and inset axes; plotting functions do not override it. Major
+ticks point inward and use the audited 1.8 pt width. Minor ticks use 1.2 pt lines and
+are shorter. Tick visibility is independent of spine visibility.
+
+The detailed PDI-H-COOH C 1s recipe removes y marks and labels on both sides while
+retaining the y-axis label and complete box. It uses 5 eV bottom-only major ticks and
+one unlabelled 2.5 eV minor tick between neighbours; top x ticks are disabled. Other
+recipes retain the backward-compatible tick defaults unless they opt into these
+controls. Visible major tick labels are bold 14 pt.
 Detailed axis labels are 22 pt bold, sample titles are 18 pt bold, and core-level
 labels are 16.5 pt. Multipanel figures retain those weights and line values but use
 the theme's compact 10 pt axis labels, 9 pt ticks, 9 pt titles, 8.5 pt core-level
@@ -45,7 +52,8 @@ Named physical presets are:
 | `presentation` | 8 × 5 | Slide figure |
 
 The detailed publication theme uses 10% vertical headroom above the highest
-displayed curve so peaks and later annotations do not touch the complete box.
+displayed curve. Annotation layout can add further data-scaled headroom when needed
+so point-offset labels do not touch the complete box.
 
 ## Component binding-energy annotations
 
@@ -56,8 +64,10 @@ the apex of the component as it is displayed, including its fitted background.
 Values use one decimal place and `eV` by default and are not added to the legend.
 
 Close fitted centres are detected from a theme-controlled fraction of the displayed
-energy span and staggered vertically in point units. Short colour-matched leaders
-preserve association. `peak_annotation_leaders=False` disables them, while
+energy span and staggered vertically in point units. The rendered text boxes are
+also checked against each other and every visible curve across their full width;
+labels are lifted and headroom is expanded when necessary. Short colour-matched
+leaders preserve association. `peak_annotation_leaders=False` disables them, while
 `peak_annotation_offsets={"component": (dx, dy)}` applies finite manual point
 offsets after staggering. Anchors are clamped just inside either orientation of the
 x axis; rendered text bounds are then kept inside the axes and shifted clear of a
@@ -65,6 +75,16 @@ framed per-axis legend while colour-matched leaders preserve the fitted-centre
 association. Negligible and hidden components are omitted unless their explicit
 include options are enabled. Multipanels use the same algorithm with compact 8 pt
 text.
+
+The C 1s recipe records balanced overrides for all five assignments. In particular,
+the C–N/C–Cl text is shifted towards higher binding energy, the imide/carboxylic
+pair is staggered, and the satellite keeps a small offset and short connector.
+`peak_label_fontsize` and `peak_annotation_leader_width` are recipe-level controls.
+
+For the final single-spectrum recipe, `show_sample_title=false` suppresses the sample
+heading and `core_level_label_position=[0.97, 0.96]` places `C 1s` inside the upper
+right corner in axes coordinates. Change `core_level` to apply the same placement to
+N 1s, O 1s, or Cl 2p. The recipe records `dpi=600` for its PNG; PDF remains vector.
 
 PNG is the supported raster output and PDF is the supported vector output. Format
 validation happens before directory creation or rendering, so an unsupported request

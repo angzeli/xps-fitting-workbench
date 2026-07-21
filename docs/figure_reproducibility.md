@@ -29,7 +29,43 @@ component policy, and finite per-component point offsets are serialized in
 `PlotConfig`. The deterministic collision stagger depends only on fitted centres and
 the plotted energy span, so reversed binding-energy axes produce the same labels.
 
-The tracked-data workflow can be repeated with
+## Exact PDI-H-COOH C 1s figure
+
+The repository previously provided a real-data validation script that called the
+optimiser and a generic curve-table CLI, but it did not provide a dedicated
+plotting-only command for the accepted experimental C 1s result. The reproducible
+route is now:
+
+```bash
+PYTHONPATH=src MPLBACKEND=Agg python examples/plot_pdi_h_cooh_c1s_publication.py \
+  --fit-result outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle \
+  --output-dir outputs/manuscript
+```
+
+The default bundle directory must contain `manifest.json`, `curves.csv`, and
+`metadata.json`. The curve table supplies binding energy, raw intensity, background,
+five component arrays, total fit, and residual. Metadata supplies the accepted fitted
+centres and the rest of the `FitResult` contract. The example loads those files with
+`load_curve_result()`, applies `configs/plots/c1s_publication.json` through
+`plot_from_config()`, and writes only the named 600 dpi PNG and vector PDF.
+
+For the direct CLI, run:
+
+```bash
+PYTHONPATH=src python -m xps_fitting.cli plot \
+  outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle \
+  --recipe configs/plots/c1s_publication.json \
+  --output-dir outputs/manuscript
+```
+
+The reviewed experimental bundle is not committed because it is a private project
+artifact. There is intentionally no fallback to fitting raw data: a missing or
+incomplete export is reported as an error. Clone the recipe and change the core
+level, energy limits, output name, and per-assignment annotation offsets to reproduce
+the same style for another region.
+
+The broader tracked-data validation workflow can be repeated with
 `PYTHONPATH=src MPLBACKEND=Agg python scripts/validate_experimental_workflow.py`.
-Its local outputs are deliberately ignored; numerical observations and manual-
-review cautions are recorded in `docs/experimental_validation.md`.
+It performs fitting checks and is not the accepted plotting-only reproduction route.
+Its local outputs are deliberately ignored; numerical observations and manual-review
+cautions are recorded in `docs/experimental_validation.md`.

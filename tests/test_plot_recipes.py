@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -127,3 +128,22 @@ def test_multi_input_bundle_cli_collision_dry_run_and_errors(tmp_path, capsys) -
     assert main(["plot", bundles[0], "--recipe", str(invalid_recipe), "--output-dir", str(tmp_path)]) == 2
     error = capsys.readouterr().err
     assert "unsupported output" in error and "Traceback" not in error
+
+
+def test_c1s_publication_recipe_records_final_layout() -> None:
+    root = Path(__file__).parents[1]
+    config = load_plot_config(root / "configs" / "plots" / "c1s_publication.json")
+    assert config.output_formats == ("png", "pdf")
+    assert config.output_filename == "pdi_h_cooh_c1s_publication"
+    assert config.figure_size_preset == "detailed-publication" and config.dpi == 600
+    assert config.tick_spacing == 5 and config.x_minor_interval == 2.5
+    assert not config.show_y_ticks and config.show_top_ticks is False
+    assert not config.show_sample_title
+    assert config.core_level_label_position == (0.97, 0.96)
+    assert set(config.peak_annotation_offsets) == {
+        "aromatic_C-C_C=C",
+        "C-N_C-Cl",
+        "imide_N-C=O",
+        "acid_O-C=O",
+        "pi-pi_star",
+    }

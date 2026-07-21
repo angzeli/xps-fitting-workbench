@@ -25,8 +25,12 @@ PYTHONPATH=src MPLBACKEND=Agg python examples/plot_single_fit.py
 Run every retained example independently:
 
 ```bash
-python scripts/run_all_examples.py
+python scripts/run_all_examples.py \
+  --pdi-h-c1s-fit-result outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle
 ```
+
+Omitting the reviewed source makes the experimental example fail clearly; the
+runner does not substitute synthetic data or invoke fitting for that figure.
 
 The runner and individual examples refuse to replace existing files by default.
 Pass `--overwrite` only when intentionally regenerating an example's dedicated

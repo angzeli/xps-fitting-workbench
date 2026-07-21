@@ -67,5 +67,10 @@ def test_example_smoke(example: Path, tmp_path: Path) -> None:
     assert not list(tmp_path.rglob("*.tif")) and not list(tmp_path.rglob("*.tiff"))
     if example.stem == "plot_pdi_h_cooh_c1s_publication":
         output = tmp_path / example.stem
-        assert (output / "pdi_h_cooh_c1s_publication.png").is_file()
+        png = output / "pdi_h_cooh_c1s_publication.png"
+        assert png.is_file()
         assert (output / "pdi_h_cooh_c1s_publication.pdf").is_file()
+        data = png.read_bytes()
+        physical_chunk = data.index(b"pHYs")
+        pixels_per_metre = int.from_bytes(data[physical_chunk + 4 : physical_chunk + 8], "big")
+        assert pixels_per_metre * 0.0254 == pytest.approx(600, abs=0.1)

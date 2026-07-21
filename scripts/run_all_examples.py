@@ -15,6 +15,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--overwrite", action="store_true", help="Allow examples to replace their own existing outputs."
     )
+    parser.add_argument(
+        "--pdi-h-c1s-fit-result", type=Path, help="Reviewed FitResult source for the experimental example."
+    )
+    parser.add_argument("--pdi-h-c1s-metadata", type=Path, help="Metadata JSON when that source is a curve table.")
     args = parser.parse_args(argv)
     root = Path(__file__).resolve().parents[1]
     examples = sorted(path for path in (root / "examples").glob("*.py") if not path.name.startswith("_"))
@@ -26,6 +30,10 @@ def main(argv: list[str] | None = None) -> int:
     for example in examples:
         destination = args.output_dir / example.stem
         command = [sys.executable, str(example), "--output-dir", str(destination)]
+        if example.stem == "plot_pdi_h_cooh_c1s_publication" and args.pdi_h_c1s_fit_result:
+            command.extend(("--fit-result", str(args.pdi_h_c1s_fit_result)))
+            if args.pdi_h_c1s_metadata:
+                command.extend(("--metadata", str(args.pdi_h_c1s_metadata)))
         if args.overwrite:
             command.append("--overwrite")
         completed = subprocess.run(command, cwd=root, env=environment, text=True, capture_output=True)

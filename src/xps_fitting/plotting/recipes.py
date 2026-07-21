@@ -19,7 +19,7 @@ def _theme_from_config(config: PlotConfig) -> PlotTheme:
     overrides = {}
     if config.figure_size_preset is not None:
         overrides["figure_size"] = figure_size_preset(config.figure_size_preset)
-    for field_name in ("figure_size", "fit_line_width", "component_line_width", "marker_size"):
+    for field_name in ("figure_size", "fit_line_width", "component_line_width", "marker_size", "dpi"):
         value = getattr(config, field_name)
         if value is not None:
             overrides[field_name] = value

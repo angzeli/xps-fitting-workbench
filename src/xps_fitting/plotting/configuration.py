@@ -27,6 +27,7 @@ class PlotConfig:
     fit_line_width: float | None = None
     component_line_width: float | None = None
     marker_size: float | None = None
+    dpi: int | None = None
     show_peak_positions: bool = False
     peak_position_precision: int = 1
     peak_position_unit: bool = True
@@ -64,6 +65,8 @@ class PlotConfig:
         if not self.output_formats:
             raise ValueError("output_formats must contain PNG and/or PDF")
         validate_theme(theme, output_formats=self.output_formats)
+        if self.dpi is not None and (isinstance(self.dpi, bool) or not isinstance(self.dpi, int) or self.dpi <= 0):
+            raise ValueError("dpi must be a positive integer")
         for value in (
             self.fit_line_width,
             self.component_line_width,
