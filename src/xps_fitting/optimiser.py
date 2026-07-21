@@ -209,6 +209,14 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
         import lmfit
 
         versions["lmfit"] = lmfit.__version__
+    result_metadata = dict(spectrum.metadata)
+    for metadata_key, metadata_value in (
+        ("source_file", spectrum.source_file),
+        ("sample_name", spectrum.sample_name),
+        ("region", spectrum.region),
+    ):
+        if metadata_value:
+            result_metadata.setdefault(metadata_key, metadata_value)
     return FitResult(
         x,
         y,
@@ -222,7 +230,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
         stats,
         warnings,
         config.to_dict(),
-        dict(spectrum.metadata),
+        result_metadata,
         {
             "success": bool(raw_result.success),
             "message": raw_result.message,

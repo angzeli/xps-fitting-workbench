@@ -18,6 +18,10 @@
   legends, and figure bounds while preserving fitted centres and component arrays.
 - Added a plotting-only PDI-H-COOH C 1s example that requires a reviewed Phase 1
   export and writes only the named PNG and vector PDF.
+- Removed the synthetic publication smoke-test bundle and added strict experimental
+  provenance, stored raw/background, numerical-audit, and plot-immutability checks.
+- Preserved source-file, sample, and region metadata in new `FitResult` exports and
+  marked VGD acquisitions explicitly as experimental provenance.
 
 ## [0.2.0] - 2026-07-21
 

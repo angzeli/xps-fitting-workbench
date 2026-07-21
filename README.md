@@ -275,20 +275,15 @@ PYTHONPATH=src MPLBACKEND=Agg python examples/plot_pdi_h_cooh_c1s_publication.py
   --output-dir outputs/manuscript
 ```
 
-The equivalent CLI command is:
-
-```bash
-PYTHONPATH=src python -m xps_fitting.cli plot \
-  outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle \
-  --recipe configs/plots/c1s_publication.json \
-  --output-dir outputs/manuscript
-```
-
-Both commands create `pdi_h_cooh_c1s_publication.png` at 600 dpi and
-`pdi_h_cooh_c1s_publication.pdf`; neither command imports or calls the optimiser.
-For a curve table instead of a bundle, add `--metadata PATH` to either command.
-The example prints the resolved input, recipe, metadata (when separate), and output
-paths, and fails if the source lacks any of the five components or fitted centres.
+The command creates `pdi_h_cooh_c1s_publication.png` at 600 dpi and
+`pdi_h_cooh_c1s_publication.pdf` without importing or calling the optimiser. For a
+curve table instead of a bundle, add `--metadata PATH`. Use this dedicated example,
+not the generic plotting CLI, when the experimental-provenance gate is required.
+It prints the resolved curve-table and metadata paths, source classification,
+source-file metadata, numerical curve identities, recipe, and output paths. It rejects
+synthetic or unclassified provenance, an identical raw/fit trace, a zero background,
+and sources lacking required stored arrays, components, or fitted centres. It never
+reconstructs missing raw intensity or background.
 
 `configs/plots/c1s_publication.json` is the complete visual provenance. Edit
 `peak_annotation_offsets` to change component-specific `(x, y)` point offsets;

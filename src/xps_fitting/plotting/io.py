@@ -11,10 +11,28 @@ import pandas as pd
 
 from ..result import FitResult
 
+_REQUIRED_ARRAY_KEYS = ("energy", "raw_intensity", "background", "total_fit", "residual")
+_REQUIRED_CURVE_COLUMNS = (
+    "binding_energy_eV",
+    "raw_intensity",
+    "background",
+    "total_fit",
+    "residual",
+)
+
+
+def _require_fields(available: set[str], required: tuple[str, ...], source: str) -> None:
+    missing = [name for name in required if name not in available]
+    if missing:
+        raise ValueError(
+            f"{source} is missing required stored fields: {', '.join(missing)}; "
+            "raw_intensity and background must be supplied and are never reconstructed"
+        )
+
 
 def fit_result_from_dict(data: dict[str, Any]) -> FitResult:
-    array_keys = ("energy", "raw_intensity", "background", "total_fit", "residual")
-    arrays = {key: np.asarray(data[key], dtype=float) for key in array_keys}
+    _require_fields(set(data), _REQUIRED_ARRAY_KEYS, "full FitResult JSON")
+    arrays = {key: np.asarray(data[key], dtype=float) for key in _REQUIRED_ARRAY_KEYS}
     components = {label: np.asarray(curve, dtype=float) for label, curve in data.get("components", {}).items()}
     return FitResult(
         **arrays,
@@ -48,6 +66,7 @@ def load_curve_result(path: str | Path, metadata: str | Path | dict[str, Any] | 
         table = pd.read_excel(path, sheet_name="curves")
     else:
         raise ValueError("plot source must be a full JSON result or CSV/XLSX curve table")
+    _require_fields(set(table.columns), _REQUIRED_CURVE_COLUMNS, "curve table")
     details = (
         json.loads(Path(metadata).read_text(encoding="utf-8"))
         if isinstance(metadata, (str, Path))

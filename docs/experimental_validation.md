@@ -22,6 +22,8 @@ For manuscript reproduction after scientific review, use the plotting-only comma
 in `README.md` with the accepted Phase 1 fit bundle and
 `configs/plots/c1s_publication.json`. Unlike this broader validation script, that
 route never invokes the optimiser and suppresses the sample title in the final panel.
+The historical validation command saved PNG/PDF figures only; it did not persist its
+in-memory `FitResult`, so those figures cannot provide the exact reviewed arrays.
 
 ## Tracked-data inventory
 

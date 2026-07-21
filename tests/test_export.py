@@ -15,7 +15,14 @@ def test_export_bundle_and_curve_consistency(tmp_path) -> None:
     x = np.linspace(0, 10, 101)
     y = 2 + gaussian(x, 100, 5, 1)
     result = fit_spectrum(
-        Spectrum(x, y, metadata={"id": "synthetic"}),
+        Spectrum(
+            x,
+            y,
+            region="C 1s",
+            sample_name="PDI-H-COOH",
+            source_file="raw/C1s Scan.VGD",
+            metadata={"id": "synthetic"},
+        ),
         FitConfig(
             "export", "test", [PeakConfig("p", 5, (4, 6), 90, fwhm=1, fwhm_bounds=(0.8, 1.2), line_shape="gaussian")]
         ),
@@ -26,6 +33,9 @@ def test_export_bundle_and_curve_consistency(tmp_path) -> None:
     xlsx = pd.read_excel(paths["xlsx"], sheet_name="curves")
     assert list(csv.columns) == list(xlsx.columns)
     assert json.loads(paths["json"].read_text())["metadata"]["id"] == "synthetic"
+    assert result.metadata["source_file"] == "raw/C1s Scan.VGD"
+    assert result.metadata["sample_name"] == "PDI-H-COOH"
+    assert result.metadata["region"] == "C 1s"
     assert result.software_versions["xps_fitting"] == "0.2.0"
     with pytest.raises(FileExistsError, match="pass overwrite=True"):
         export_result(result, tmp_path)

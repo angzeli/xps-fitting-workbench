@@ -39,7 +39,10 @@ ignored output directory.
 The experimental publication example deliberately has no fitting fallback. Pass a
 reviewed Phase 1 bundle with `--fit-result PATH`; CSV/XLSX inputs also require their
 metadata JSON via `--metadata PATH`. It fails clearly if the numerical export is
-missing or does not contain the recipe's five components and fitted centres.
+missing, synthetic/unclassified, has identical raw and fitted curves or a zero
+background, or does not contain the stored raw/background arrays, recipe's five
+components, and fitted centres. Its output prints the resolved curve-table and
+metadata paths plus the numerical provenance audit and post-plot immutability check.
 
 The VGD path is exercised only when `vgd-reader` is installed; the example clearly
 reports when this optional dependency is unavailable. Existing tracked experimental

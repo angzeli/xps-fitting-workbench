@@ -84,6 +84,15 @@ def test_curve_and_serialised_loading_and_cli(tmp_path) -> None:
     assert (tmp_path / "cli.pdf").stat().st_size > 100
 
 
+@pytest.mark.parametrize("missing", ["raw_intensity", "background"])
+def test_curve_loading_never_reconstructs_required_arrays(tmp_path, missing) -> None:
+    table = curve_table(fixture()).drop(columns=missing)
+    curves = tmp_path / "incomplete.csv"
+    table.to_csv(curves, index=False)
+    with pytest.raises(ValueError, match=rf"missing required stored fields: {missing}.*never reconstructed"):
+        load_curve_result(curves, {})
+
+
 def test_multi_input_bundle_cli_collision_dry_run_and_errors(tmp_path, capsys) -> None:
     bundles = []
     for index, sample in enumerate(("PDI-H", "PDI-Me", "PDI-OMe")):

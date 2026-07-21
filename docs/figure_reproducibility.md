@@ -16,6 +16,8 @@ the stored total and that raw minus total reproduces the stored residual. Render
 uses the source sample points directly: there is no fitting, smoothing, interpolation,
 normalisation, background calculation, or replacement envelope. Tests compare every
 plotted y array against in-memory, CSV, XLSX, and full-JSON sources.
+New fits also preserve the spectrum's source file, sample name, and region in
+`FitResult.metadata`; VGD ingestion records `data_origin` as experimental.
 
 Use a committed recipe and run headlessly for repeatable automation. PDF metadata
 and exact bytes may vary with Matplotlib/font versions; numerical curves, colours,
@@ -47,20 +49,16 @@ The default bundle directory must contain `manifest.json`, `curves.csv`, and
 five component arrays, total fit, and residual. Metadata supplies the accepted fitted
 centres and the rest of the `FitResult` contract. The example loads those files with
 `load_curve_result()`, applies `configs/plots/c1s_publication.json` through
-`plot_from_config()`, and writes only the named 600 dpi PNG and vector PDF.
-
-For the direct CLI, run:
-
-```bash
-PYTHONPATH=src python -m xps_fitting.cli plot \
-  outputs/experimental_validation/pdi_h_cooh_c1s_reviewed.bundle \
-  --recipe configs/plots/c1s_publication.json \
-  --output-dir outputs/manuscript
-```
+`plot_from_config()`, and writes only the named 600 dpi PNG and vector PDF. Before
+rendering it prints the two resolved member paths, acquisition metadata, and numerical
+identity checks. Synthetic/test-fixture provenance, identical raw and fitted curves,
+zero backgrounds, and absent raw/background columns are hard errors.
 
 The reviewed experimental bundle is not committed because it is a private project
 artifact. There is intentionally no fallback to fitting raw data: a missing or
-incomplete export is reported as an error. Clone the recipe and change the core
+incomplete export is reported as an error. The generic plotting CLI does not certify
+experimental provenance and is therefore not the accepted route for this exact
+figure. Clone the recipe and change the core
 level, energy limits, output name, and per-assignment annotation offsets to reproduce
 the same style for another region.
 
@@ -69,3 +67,8 @@ The broader tracked-data validation workflow can be repeated with
 It performs fitting checks and is not the accepted plotting-only reproduction route.
 Its local outputs are deliberately ignored; numerical observations and manual-review
 cautions are recorded in `docs/experimental_validation.md`.
+
+The historical validation run saved figures but did not save its in-memory C 1s
+`FitResult`. Consequently those PNG/PDF files are not a substitute for the reviewed
+curve table, and the plotting-only workflow cannot recover arrays from them. Supply
+the archived Phase 1 bundle rather than rerunning the optimiser.

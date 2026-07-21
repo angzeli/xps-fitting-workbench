@@ -37,6 +37,7 @@ def read_vgd(path: str | Path, *, spectrum_index: int = 0, intensity_column: str
         sample_name=str(selected.sample_id),
         source_file=str(path),
         metadata={
+            "data_origin": "experimental",
             "vgd_spectrum_index": spectrum_index,
             "title": selected.title,
             "technique": selected.technique,
