@@ -36,7 +36,7 @@ def test_export_bundle_and_curve_consistency(tmp_path) -> None:
     assert result.metadata["source_file"] == "raw/C1s Scan.VGD"
     assert result.metadata["sample_name"] == "PDI-H-COOH"
     assert result.metadata["region"] == "C 1s"
-    assert result.software_versions["xps_fitting"] == "0.2.0"
+    assert result.software_versions["xps_fitting"] == "0.3.0"
     with pytest.raises(FileExistsError, match="pass overwrite=True"):
         export_result(result, tmp_path)
 

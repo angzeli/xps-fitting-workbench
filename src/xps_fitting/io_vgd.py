@@ -1,4 +1,4 @@
-"""Optional adapter for the repository's existing VGD reader workflow."""
+"""Adapter for the repository's VGD reader workflow."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ def read_vgd(path: str | Path, *, spectrum_index: int = 0, intensity_column: str
     try:
         from vgd_reader import read_vgd as parse_vgd
     except ImportError as exc:
-        raise ImportError("VGD input requires the optional vgd-reader package") from exc
+        raise ImportError("VGD input requires the declared vgd-reader dependency; run 'uv sync'") from exc
 
     parsed = parse_vgd(Path(path))
     selected = next((item for item in parsed.spectra if item.spectrum_index == spectrum_index), None)

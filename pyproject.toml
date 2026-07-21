@@ -11,6 +11,7 @@ dependencies = [
   "openpyxl>=3.0",
   "pandas>=2.0",
   "scipy>=1.10",
+  "vgd-reader>=0.1",
 ]
 
 [project.optional-dependencies]
@@ -64,4 +65,5 @@ files = [
 disallow_untyped_defs = true
 follow_imports = "skip"
 ignore_missing_imports = true
+no_site_packages = true
 warn_unused_configs = true

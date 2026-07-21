@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## [0.3.0] - 2026-07-21
+
+- Added durable experimental candidate bundles with source/configuration hashes,
+  strict validation, and mandatory persistence before diagnostic plotting.
+- Added explicit immutable review versions and review records; structurally invalid,
+  synthetic, fixture-like, and raw-equals-fit bundles cannot be promoted.
+- Added sample manifests and persisted sample-wide calibration from the exact stored
+  C 1s centre, including reviewed raw Survey spectra and intensity-invariance checks.
+- Added plotting-only final PNG/PDF export from calibrated reviewed artifacts plus a
+  provenance JSON sidecar.
+- Added inspect, fit, review, calibrate, plot, validate, cleanup, and guided-wizard
+  CLI commands with conservative confirmation defaults.
+- Reorganised tracked acquisitions under `data/raw/`, fit hypotheses under
+  `configs/fits/`, and generated three raw-only sample manifests without changing
+  any VGD file bytes.
+- Added the beginner quick start, launcher, scientific workflow, review, calibration,
+  artifact/backup, schema, and troubleshooting documentation.
+
 - Refined detailed single-spectrum publication figures to 8 × 6 in with a complete
   1.8 pt box, bold ticks, restrained markers/fills, a thinner total fit, additional
   headroom, and compact framed legends without a background entry.
