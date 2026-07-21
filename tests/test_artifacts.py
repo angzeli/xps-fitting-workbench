@@ -7,6 +7,7 @@ import pytest
 from xps_fitting.artifacts import save_candidate_bundle, validate_fit_bundle
 from xps_fitting.export import load_fit_bundle, save_fit_bundle
 from xps_fitting.result import FitResult
+from xps_fitting.workflows import persist_candidate_results
 
 
 def experimental_result() -> FitResult:
@@ -109,3 +110,29 @@ def test_legacy_and_synthetic_results_are_never_publication_eligible(tmp_path) -
             region="C1s",
             source_path=source,
         )
+
+
+def test_all_candidates_exist_before_diagnostic_failure(tmp_path) -> None:
+    source = tmp_path / "C1s Scan.VGD"
+    source.write_bytes(b"experimental")
+    four = experimental_result()
+    five = copy.deepcopy(four)
+    four.configuration["name"] = "C1s_4"
+    five.configuration["name"] = "C1s_5"
+
+    bundles = persist_candidate_results(
+        {"C1s_4": four, "C1s_5": five},
+        sample="PDI-H-COOH",
+        region="C1s",
+        source_path=source,
+        artifacts_root=tmp_path / "artifacts" / "candidates",
+        repository_root=tmp_path,
+    )
+
+    def failing_diagnostic() -> None:
+        assert all((path / "manifest.json").is_file() for path in bundles.values())
+        raise RuntimeError("renderer failed")
+
+    with pytest.raises(RuntimeError, match="renderer failed"):
+        failing_diagnostic()
+    assert all(load_fit_bundle(path).metadata["review_status"] == "candidate" for path in bundles.values())

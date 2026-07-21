@@ -25,6 +25,7 @@ from xps_fitting.plotting import (
     style_axes,
     theme_context,
 )
+from xps_fitting.workflows import persist_candidate_results
 
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLES = ("PDI-H-COOH", "PDI-Me-COOH", "PDI-OMe-COOH")
@@ -75,35 +76,39 @@ def _export(figure, output: Path, *, overwrite: bool) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "experimental_validation")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "figures" / "diagnostic" / "experimental_validation")
+    parser.add_argument("--artifacts-dir", type=Path, default=ROOT / "artifacts" / "candidates")
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--overwrite-candidates", action="store_true")
     args = parser.parse_args(argv)
 
     configs = [load_config(ROOT / "configs" / f"pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
     c1s = read_vgd(ROOT / "example_data" / "PDI-H-COOH" / "C1s Scan.VGD")
     c1s_results = compare_models(c1s, configs)
+    c1s_bundles = persist_candidate_results(
+        c1s_results,
+        sample="PDI-H-COOH",
+        region="C1s",
+        source_path=ROOT / "example_data" / "PDI-H-COOH" / "C1s Scan.VGD",
+        artifacts_root=args.artifacts_dir,
+        repository_root=ROOT,
+        overwrite=args.overwrite_candidates,
+    )
     created: list[str] = []
-    preferred_result = c1s_results["C1s_5"]
-    publication, _ = plot_xps_fit(
-        preferred_result,
-        theme="angze_publication",
-        core_level="C 1s",
-        sample_label="PDI-H-COOH",
-        component_display_mode="filled_to_background",
-        show_peak_positions=True,
-    )
-    created.extend(_export(publication, args.output_dir / "pdi_h_cooh_c1s_publication", overwrite=args.overwrite))
-    diagnostic, _ = plot_xps_fit(
-        preferred_result,
-        theme="angze_diagnostic",
-        core_level="C 1s",
-        sample_label="PDI-H-COOH",
-        component_display_mode="filled_to_background",
-        show_peak_positions=True,
-        show_residual=True,
-        fit_statistics=True,
-    )
-    created.extend(_export(diagnostic, args.output_dir / "pdi_h_cooh_c1s_diagnostic", overwrite=args.overwrite))
+    for model, result in c1s_results.items():
+        diagnostic, _ = plot_xps_fit(
+            result,
+            theme="angze_diagnostic",
+            core_level="C 1s",
+            sample_label=f"PDI-H-COOH — {model} candidate",
+            component_display_mode="filled_to_background",
+            show_peak_positions=True,
+            show_residual=True,
+            fit_statistics=True,
+        )
+        created.extend(
+            _export(diagnostic, args.output_dir / f"pdi_h_cooh_{model.casefold()}_candidate", overwrite=args.overwrite)
+        )
     comparison, _ = plot_fit_comparison(c1s_results, show_residual=False, show_peak_positions=True)
     created.extend(_export(comparison, args.output_dir / "pdi_h_cooh_c1s_model_comparison", overwrite=args.overwrite))
 
@@ -116,6 +121,15 @@ def main(argv: list[str] | None = None) -> int:
         random_seed=42,
     )
     cl_result = fit_spectrum(cl2p, cl_config)
+    cl_bundles = persist_candidate_results(
+        {cl_config.name: cl_result},
+        sample="PDI-H-COOH",
+        region="Cl2p",
+        source_path=ROOT / "example_data" / "PDI-H-COOH" / "Cl2p Scan.VGD",
+        artifacts_root=args.artifacts_dir,
+        repository_root=ROOT,
+        overwrite=args.overwrite_candidates,
+    )
     cl_figure, _ = plot_xps_fit(
         cl_result,
         theme="angze_publication",
@@ -138,6 +152,10 @@ def main(argv: list[str] | None = None) -> int:
 
     summary = {
         "c1s_candidate_models": comparison_table(c1s_results),
+        "candidate_bundles": {
+            "C1s": {model: str(path) for model, path in c1s_bundles.items()},
+            "Cl2p": {model: str(path) for model, path in cl_bundles.items()},
+        },
         "cl2p": {
             "fit_statistics": cl_result.fit_statistics,
             "warnings": cl_result.warnings,
@@ -147,6 +165,8 @@ def main(argv: list[str] | None = None) -> int:
         "raw_spectra_plotted": [f"{sample}/C1s Scan.VGD" for sample in SAMPLES]
         + ["PDI-H-COOH/N1s Scan.VGD", "PDI-H-COOH/O1s Scan.VGD"],
         "created": created,
+        "review_required": True,
+        "publication_figure_created": False,
         "scientific_caution": "Convergence and information criteria do not establish chemical assignments.",
     }
     print(json.dumps(summary, indent=2))
