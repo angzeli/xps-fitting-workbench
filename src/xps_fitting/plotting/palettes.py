@@ -33,7 +33,9 @@ COMPONENT_COLOURS = {
     "acid_carbonyl_O": "#E66101",
     "acid_hydroxyl_OH": "#C2185B",
     "methyl_C": "#A16207",
-    "methoxy_C": "#0891B2",
+    "methoxy_C": "#8C564B",
+    "methoxy_O": "#17A2B8",
+    "C-N_C-Cl_methoxy_C": "#4C78A8",
 }
 UNKNOWN_COMPONENT_COLOUR = "#6B7280"
 MONOCHROME_STYLES = ("-", "--", "-.", ":")

@@ -24,6 +24,9 @@ PDI_H_C1S_LABELS = {
     "imide_carbonyl_O": "Imide C=O",
     "acid_carbonyl_O": "Acid C=O",
     "acid_hydroxyl_OH": "Acid O–H",
+    "methoxy_C": "Methoxy C",
+    "methoxy_O": "Methoxy O",
+    "C-N_C-Cl_methoxy_C": "C–N/C–Cl/methoxy C",
 }
 
 _HORIZONTAL_ALIGNMENTS = frozenset({"left", "center", "right"})
