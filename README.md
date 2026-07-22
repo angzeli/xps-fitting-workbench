@@ -478,3 +478,7 @@ assignment or unrestricted peak discovery is planned.
 Further guidance: [plotting style](docs/plotting_style_guide.md),
 [figure reproducibility](docs/figure_reproducibility.md), and
 [FitResult contract](docs/fitresult_contract.md).
+
+## Author
+
+Angze Li
