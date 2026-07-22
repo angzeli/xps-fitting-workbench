@@ -1,0 +1,301 @@
+{
+  "fitted_parameters": {
+    "imide_carbonyl_O.area": 112852.62810367084,
+    "imide_carbonyl_O.centre": 531.0399661152153,
+    "imide_carbonyl_O.fwhm": 1.3864233733321754,
+    "imide_carbonyl_O.fraction": 0.5,
+    "acid_carbonyl_O.area": 42991.0525939108,
+    "acid_carbonyl_O.centre": 532.3588400750123,
+    "acid_carbonyl_O.fwhm": 1.3864233733321754,
+    "acid_carbonyl_O.fraction": 0.5,
+    "acid_hydroxyl_OH.area": 31586.653175977146,
+    "acid_hydroxyl_OH.centre": 533.2044722489532,
+    "acid_hydroxyl_OH.fwhm": 1.3864233733321754,
+    "acid_hydroxyl_OH.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "imide_carbonyl_O.area": 1685.8065127116406,
+    "imide_carbonyl_O.centre": 0.009032710506491,
+    "imide_carbonyl_O.fwhm": 0.018602447692116077,
+    "imide_carbonyl_O.fraction": null,
+    "acid_carbonyl_O.area": 2389.0925887560234,
+    "acid_carbonyl_O.centre": 0.05154498550218014,
+    "acid_carbonyl_O.fwhm": null,
+    "acid_carbonyl_O.fraction": null,
+    "acid_hydroxyl_OH.area": 2896.0628946683646,
+    "acid_hydroxyl_OH.centre": 0.04461672633710491,
+    "acid_hydroxyl_OH.fwhm": null,
+    "acid_hydroxyl_OH.fraction": null
+  },
+  "correlation_matrix": {
+    "imide_carbonyl_O.area": {
+      "imide_carbonyl_O.area": 1.0,
+      "imide_carbonyl_O.centre": 0.7736319916908411,
+      "imide_carbonyl_O.fwhm": 0.8124356543872286,
+      "acid_carbonyl_O.area": 0.1779627276301655,
+      "acid_carbonyl_O.centre": 0.7823857614522414,
+      "acid_hydroxyl_OH.area": -0.5560089599109801,
+      "acid_hydroxyl_OH.centre": 0.3316318834509485
+    },
+    "imide_carbonyl_O.centre": {
+      "imide_carbonyl_O.area": 0.7736319916908408,
+      "imide_carbonyl_O.centre": 1.0,
+      "imide_carbonyl_O.fwhm": 0.6084355127154257,
+      "acid_carbonyl_O.area": 0.15993871300290177,
+      "acid_carbonyl_O.centre": 0.7367316505576013,
+      "acid_hydroxyl_OH.area": -0.5260256039452084,
+      "acid_hydroxyl_OH.centre": 0.3355042748313076
+    },
+    "imide_carbonyl_O.fwhm": {
+      "imide_carbonyl_O.area": 0.8124356543872285,
+      "imide_carbonyl_O.centre": 0.6084355127154256,
+      "imide_carbonyl_O.fwhm": 0.9999999999999999,
+      "acid_carbonyl_O.area": -0.0039116659061074295,
+      "acid_carbonyl_O.centre": 0.5410263991834869,
+      "acid_hydroxyl_OH.area": -0.3123551264764121,
+      "acid_hydroxyl_OH.centre": 0.10239246675687394
+    },
+    "acid_carbonyl_O.area": {
+      "imide_carbonyl_O.area": 0.17796272763016605,
+      "imide_carbonyl_O.centre": 0.15993871300290224,
+      "imide_carbonyl_O.fwhm": -0.003911665906106957,
+      "acid_carbonyl_O.area": 0.9999999999999999,
+      "acid_carbonyl_O.centre": 0.6517033653556334,
+      "acid_hydroxyl_OH.area": -0.8706270569803991,
+      "acid_hydroxyl_OH.centre": 0.904900646330249
+    },
+    "acid_carbonyl_O.centre": {
+      "imide_carbonyl_O.area": 0.7823857614522417,
+      "imide_carbonyl_O.centre": 0.7367316505576014,
+      "imide_carbonyl_O.fwhm": 0.5410263991834875,
+      "acid_carbonyl_O.area": 0.6517033653556328,
+      "acid_carbonyl_O.centre": 0.9999999999999999,
+      "acid_hydroxyl_OH.area": -0.9056473530817137,
+      "acid_hydroxyl_OH.centre": 0.7294234725128942
+    },
+    "acid_hydroxyl_OH.area": {
+      "imide_carbonyl_O.area": -0.5560089599109804,
+      "imide_carbonyl_O.centre": -0.5260256039452088,
+      "imide_carbonyl_O.fwhm": -0.31235512647641256,
+      "acid_carbonyl_O.area": -0.8706270569803988,
+      "acid_carbonyl_O.centre": -0.905647353081714,
+      "acid_hydroxyl_OH.area": 1.0,
+      "acid_hydroxyl_OH.centre": -0.8736188325380353
+    },
+    "acid_hydroxyl_OH.centre": {
+      "imide_carbonyl_O.area": 0.3316318834509483,
+      "imide_carbonyl_O.centre": 0.3355042748313076,
+      "imide_carbonyl_O.fwhm": 0.10239246675687376,
+      "acid_carbonyl_O.area": 0.9049006463302492,
+      "acid_carbonyl_O.centre": 0.7294234725128944,
+      "acid_hydroxyl_OH.area": -0.8736188325380355,
+      "acid_hydroxyl_OH.centre": 1.0
+    }
+  },
+  "fit_statistics": {
+    "rss": 228768315.6487695,
+    "rms_residual": 1066.8415178100406,
+    "residual_mean": -48.44765725367089,
+    "max_abs_residual": 2903.50184790443,
+    "reduced_chi_square": 1179218.1219008737,
+    "aic": 2816.9279992723546,
+    "aicc": 2817.5083101531836,
+    "bic": 2840.051133628768,
+    "durbin_watson": 0.257706798090572,
+    "residual_runs": 25.0,
+    "n_parameters": 7.0,
+    "n_points": 201.0
+  },
+  "warnings": [
+    "Multiple initialisations produced materially different solutions."
+  ],
+  "configuration": {
+    "name": "O1s_3_shirley",
+    "region": "O 1s",
+    "peaks": [
+      {
+        "label": "imide_carbonyl_O",
+        "centre": 530.9,
+        "centre_bounds": [
+          529.8,
+          531.5
+        ],
+        "area": 100000.0,
+        "area_bounds": [
+          0.0,
+          400000.0
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          0.8,
+          2.5
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "structural_O",
+        "fraction_group": "structural_O",
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "acid_carbonyl_O",
+        "centre": 531.6,
+        "centre_bounds": [
+          531.0,
+          532.4
+        ],
+        "area": 50000.0,
+        "area_bounds": [
+          0.0,
+          400000.0
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          0.8,
+          2.5
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "structural_O",
+        "fraction_group": "structural_O",
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "acid_hydroxyl_OH",
+        "centre": 532.8,
+        "centre_bounds": [
+          531.8,
+          534.2
+        ],
+        "area": 50000.0,
+        "area_bounds": [
+          0.0,
+          400000.0
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          0.8,
+          2.5
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "structural_O",
+        "fraction_group": "structural_O",
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      }
+    ],
+    "background": "shirley",
+    "robust_loss": "linear",
+    "multistart": 12,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 6,
+    "width_penalty": 0.0,
+    "metadata": {
+      "candidate_family": "O1s_3",
+      "background_identity": "shirley",
+      "sensitivity_only": false,
+      "publication_eligible_without_review": false,
+      "chemistry_rationale": "Chemical-resolution hypothesis separating imide carbonyl, carboxylic-acid carbonyl, and carboxylic-acid hydroxyl oxygen; acceptance requires the line shape to support both carbonyl environments.",
+      "position_basis": "Absolute uncalibrated guesses spanning the asymmetric 531.100054 eV envelope; sample-wide C 1s calibration is applied only after review.",
+      "nominal_structural_ratio": {
+        "imide_carbonyl_O": 2.0,
+        "acid_carbonyl_O": 1.0,
+        "acid_hydroxyl_OH": 1.0
+      },
+      "stoichiometry_treatment": "benchmark_only_not_constrained"
+    }
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "O1s Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 3,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 201,
+    "clean_rows": 201,
+    "source_file": "data/raw/PDI-H-COOH/O1s Scan.VGD",
+    "sample_name": "PDI-H-COOH",
+    "region": "O1s",
+    "configuration_file": "configs/fits/pdi_h_cooh_o1s_3_shirley.json",
+    "configuration_file_sha256": "951fdb69cbb20a64d5bc95286b30d7e2372ccc9f871f07843b2aa596d93e33ef",
+    "artifact_id": "pdi-h-cooh-o1s-7c7486804f8a8dae",
+    "artifact_state": "candidate",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "acad209a5f0967125a6ab3519623219cc01533f4573e5dc56a3465f964e1bc37",
+    "configuration_sha256": "9c16e558860066ab1d7274e1031d0741f7b77464eb06a99f29754df26e9998d4",
+    "artifact_created_at": "2026-07-22T03:06:51.496779+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 128,
+    "backend": "lmfit",
+    "multistart_rss": [
+      499052993.70496225,
+      601479194.6645153,
+      621729884.7987437,
+      228768315.6487695,
+      622265445.4620051,
+      485419210.641317,
+      613182495.5883337,
+      484549082.3654129,
+      618968966.5227113,
+      490574710.4337051,
+      610924882.4040153,
+      617898904.2205644
+    ],
+    "background_iterations": 18,
+    "stoichiometric_area_ratio": {
+      "imide_carbonyl_O": {
+        "fitted_relative": 1.0,
+        "nominal_relative": 1.0,
+        "ratio_to_nominal": 1.0
+      },
+      "acid_carbonyl_O": {
+        "fitted_relative": 0.3809486169379904,
+        "nominal_relative": 0.5,
+        "ratio_to_nominal": 0.7618972338759809
+      },
+      "acid_hydroxyl_OH": {
+        "fitted_relative": 0.27989293387975345,
+        "nominal_relative": 0.5,
+        "ratio_to_nominal": 0.5597858677595069
+      }
+    }
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

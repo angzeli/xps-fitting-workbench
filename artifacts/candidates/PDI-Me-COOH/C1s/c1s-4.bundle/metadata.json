@@ -1,0 +1,414 @@
+{
+  "fitted_parameters": {
+    "aromatic_C-C_C=C.area": 244715.42951650353,
+    "aromatic_C-C_C=C.centre": 284.44429283445663,
+    "aromatic_C-C_C=C.fwhm": 1.2486575059212242,
+    "aromatic_C-C_C=C.fraction": 0.5,
+    "C-N_C-Cl.area": 65373.65469145843,
+    "C-N_C-Cl.centre": 285.30000000000007,
+    "C-N_C-Cl.fwhm": 1.1306479865492252,
+    "C-N_C-Cl.fraction": 0.5,
+    "imide_N-C=O.area": 48351.09044383764,
+    "imide_N-C=O.centre": 287.9237065775649,
+    "imide_N-C=O.fwhm": 1.409601573174533,
+    "imide_N-C=O.fraction": 0.5,
+    "acid_O-C=O.area": 23584.093884033282,
+    "acid_O-C=O.centre": 289.69999999999993,
+    "acid_O-C=O.fwhm": 1.9999999999999998,
+    "acid_O-C=O.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "aromatic_C-C_C=C.area": 17009.30553683098,
+    "aromatic_C-C_C=C.centre": 0.02968951775966145,
+    "aromatic_C-C_C=C.fwhm": 0.03663907483169213,
+    "aromatic_C-C_C=C.fraction": null,
+    "C-N_C-Cl.area": 16892.02261459985,
+    "C-N_C-Cl.centre": 0.08226395395616927,
+    "C-N_C-Cl.fwhm": 0.11500663010531896,
+    "C-N_C-Cl.fraction": null,
+    "imide_N-C=O.area": 6422.697661798379,
+    "imide_N-C=O.centre": 0.05764738887279898,
+    "imide_N-C=O.fwhm": 0.13771134331983323,
+    "imide_N-C=O.fraction": null,
+    "acid_O-C=O.area": 6901.210937779345,
+    "acid_O-C=O.centre": 0.24315705781478092,
+    "acid_O-C=O.fwhm": 0.5302251019447716,
+    "acid_O-C=O.fraction": null
+  },
+  "correlation_matrix": {
+    "aromatic_C-C_C=C.area": {
+      "aromatic_C-C_C=C.area": 0.9999999999999998,
+      "aromatic_C-C_C=C.centre": 0.9747744027550244,
+      "aromatic_C-C_C=C.fwhm": 0.8900869122015939,
+      "C-N_C-Cl.area": -0.9895774355314422,
+      "C-N_C-Cl.centre": 0.9621031812492223,
+      "C-N_C-Cl.fwhm": -0.8426808607271145,
+      "imide_N-C=O.area": 0.11643228231183397,
+      "imide_N-C=O.centre": 0.031709706641836866,
+      "imide_N-C=O.fwhm": 0.13811158446261979,
+      "acid_O-C=O.area": -0.08328071531927587,
+      "acid_O-C=O.centre": 0.07663027442119065,
+      "acid_O-C=O.fwhm": -0.06147705988950966
+    },
+    "aromatic_C-C_C=C.centre": {
+      "aromatic_C-C_C=C.area": 0.9747744027550234,
+      "aromatic_C-C_C=C.centre": 1.0,
+      "aromatic_C-C_C=C.fwhm": 0.8739079802390589,
+      "C-N_C-Cl.area": -0.9731503581330495,
+      "C-N_C-Cl.centre": 0.947001964428861,
+      "C-N_C-Cl.fwhm": -0.7933324938304315,
+      "imide_N-C=O.area": 0.10245528708170344,
+      "imide_N-C=O.centre": 0.02716210449770602,
+      "imide_N-C=O.fwhm": 0.12342975587693818,
+      "acid_O-C=O.area": -0.07276864850658382,
+      "acid_O-C=O.centre": 0.06709448842592386,
+      "acid_O-C=O.fwhm": -0.052403423912601166
+    },
+    "aromatic_C-C_C=C.fwhm": {
+      "aromatic_C-C_C=C.area": 0.8900869122015967,
+      "aromatic_C-C_C=C.centre": 0.8739079802390632,
+      "aromatic_C-C_C=C.fwhm": 1.0000000000000002,
+      "C-N_C-Cl.area": -0.850362053490702,
+      "C-N_C-Cl.centre": 0.7772814221504419,
+      "C-N_C-Cl.fwhm": -0.5841376814206034,
+      "imide_N-C=O.area": 0.054870033508114965,
+      "imide_N-C=O.centre": 0.026099683891917733,
+      "imide_N-C=O.fwhm": 0.06617335714596394,
+      "acid_O-C=O.area": -0.05523963197682049,
+      "acid_O-C=O.centre": 0.04323279791313022,
+      "acid_O-C=O.fwhm": -0.04281867181680619
+    },
+    "C-N_C-Cl.area": {
+      "aromatic_C-C_C=C.area": -0.989577435531441,
+      "aromatic_C-C_C=C.centre": -0.9731503581330488,
+      "aromatic_C-C_C=C.fwhm": -0.8503620534906978,
+      "C-N_C-Cl.area": 1.0,
+      "C-N_C-Cl.centre": -0.9648512991166804,
+      "C-N_C-Cl.fwhm": 0.8843582372503204,
+      "imide_N-C=O.area": -0.14020038538549232,
+      "imide_N-C=O.centre": -0.03269302845220115,
+      "imide_N-C=O.fwhm": -0.16900576147461477,
+      "acid_O-C=O.area": 0.09224604277674334,
+      "acid_O-C=O.centre": -0.08874106710540348,
+      "acid_O-C=O.fwhm": 0.06498259353719825
+    },
+    "C-N_C-Cl.centre": {
+      "aromatic_C-C_C=C.area": 0.9621031812492234,
+      "aromatic_C-C_C=C.centre": 0.9470019644288622,
+      "aromatic_C-C_C=C.fwhm": 0.7772814221504397,
+      "C-N_C-Cl.area": -0.9648512991166824,
+      "C-N_C-Cl.centre": 0.9999999999999999,
+      "C-N_C-Cl.fwhm": -0.865615308307366,
+      "imide_N-C=O.area": 0.10911881487853385,
+      "imide_N-C=O.centre": 0.025361326016438444,
+      "imide_N-C=O.fwhm": 0.12893980891480727,
+      "acid_O-C=O.area": -0.07295789339378417,
+      "acid_O-C=O.centre": 0.06923905043441189,
+      "acid_O-C=O.fwhm": -0.05322598233482403
+    },
+    "C-N_C-Cl.fwhm": {
+      "aromatic_C-C_C=C.area": -0.8426808607271064,
+      "aromatic_C-C_C=C.centre": -0.7933324938304231,
+      "aromatic_C-C_C=C.fwhm": -0.5841376814205936,
+      "C-N_C-Cl.area": 0.8843582372503127,
+      "C-N_C-Cl.centre": -0.8656153083073567,
+      "C-N_C-Cl.fwhm": 0.9999999999999999,
+      "imide_N-C=O.area": -0.20211110253280354,
+      "imide_N-C=O.centre": -0.03823376422049062,
+      "imide_N-C=O.fwhm": -0.24150138128443593,
+      "acid_O-C=O.area": 0.11927078222598399,
+      "acid_O-C=O.centre": -0.12216159285969629,
+      "acid_O-C=O.fwhm": 0.08276675050007994
+    },
+    "imide_N-C=O.area": {
+      "aromatic_C-C_C=C.area": 0.11643228231185627,
+      "aromatic_C-C_C=C.centre": 0.10245528708172191,
+      "aromatic_C-C_C=C.fwhm": 0.05487003350814559,
+      "C-N_C-Cl.area": -0.14020038538550708,
+      "C-N_C-Cl.centre": 0.10911881487855056,
+      "C-N_C-Cl.fwhm": -0.20211110253280495,
+      "imide_N-C=O.area": 0.9999999999999998,
+      "imide_N-C=O.centre": 0.7679181770241083,
+      "imide_N-C=O.fwhm": 0.8663127207410404,
+      "acid_O-C=O.area": -0.9093303843343052,
+      "acid_O-C=O.centre": 0.8724697733003953,
+      "acid_O-C=O.fwhm": -0.8105883540419598
+    },
+    "imide_N-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.03170970664183447,
+      "aromatic_C-C_C=C.centre": 0.027162104497701633,
+      "aromatic_C-C_C=C.fwhm": 0.026099683891923003,
+      "C-N_C-Cl.area": -0.03269302845219385,
+      "C-N_C-Cl.centre": 0.025361326016433136,
+      "C-N_C-Cl.fwhm": -0.038233764220476585,
+      "imide_N-C=O.area": 0.7679181770241034,
+      "imide_N-C=O.centre": 1.0,
+      "imide_N-C=O.fwhm": 0.6324677219205262,
+      "acid_O-C=O.area": -0.8009823225804881,
+      "acid_O-C=O.centre": 0.7947301517559737,
+      "acid_O-C=O.fwhm": -0.700483516884529
+    },
+    "imide_N-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": 0.138111584462609,
+      "aromatic_C-C_C=C.centre": 0.12342975587692431,
+      "aromatic_C-C_C=C.fwhm": 0.06617335714596458,
+      "C-N_C-Cl.area": -0.169005761474597,
+      "C-N_C-Cl.centre": 0.12893980891479212,
+      "C-N_C-Cl.fwhm": -0.24150138128441043,
+      "imide_N-C=O.area": 0.8663127207410403,
+      "imide_N-C=O.centre": 0.6324677219205329,
+      "imide_N-C=O.fwhm": 1.0,
+      "acid_O-C=O.area": -0.7442117619662044,
+      "acid_O-C=O.centre": 0.7237299295949401,
+      "acid_O-C=O.fwhm": -0.5829725147688103
+    },
+    "acid_O-C=O.area": {
+      "aromatic_C-C_C=C.area": -0.0832807153192997,
+      "aromatic_C-C_C=C.centre": -0.07276864850660472,
+      "aromatic_C-C_C=C.fwhm": -0.05523963197684969,
+      "C-N_C-Cl.area": 0.0922460427767615,
+      "C-N_C-Cl.centre": -0.0729578933938037,
+      "C-N_C-Cl.fwhm": 0.11927078222599119,
+      "imide_N-C=O.area": -0.9093303843343027,
+      "imide_N-C=O.centre": -0.8009823225804893,
+      "imide_N-C=O.fwhm": -0.7442117619662024,
+      "acid_O-C=O.area": 0.9999999999999999,
+      "acid_O-C=O.centre": -0.8290158658025396,
+      "acid_O-C=O.fwhm": 0.8997668141898247
+    },
+    "acid_O-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.07663027442117759,
+      "aromatic_C-C_C=C.centre": 0.06709448842590826,
+      "aromatic_C-C_C=C.fwhm": 0.04323279791312835,
+      "C-N_C-Cl.area": -0.08874106710538396,
+      "C-N_C-Cl.centre": 0.06923905043439514,
+      "C-N_C-Cl.fwhm": -0.12216159285966949,
+      "imide_N-C=O.area": 0.8724697733003893,
+      "imide_N-C=O.centre": 0.7947301517559755,
+      "imide_N-C=O.fwhm": 0.723729929594933,
+      "acid_O-C=O.area": -0.8290158658025378,
+      "acid_O-C=O.centre": 1.0,
+      "acid_O-C=O.fwhm": -0.7425513513762735
+    },
+    "acid_O-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": -0.06147705988959521,
+      "aromatic_C-C_C=C.centre": -0.05240342391268135,
+      "aromatic_C-C_C=C.fwhm": -0.042818671816893555,
+      "C-N_C-Cl.area": 0.06498259353727531,
+      "C-N_C-Cl.centre": -0.053225982334901605,
+      "C-N_C-Cl.fwhm": 0.0827667505001337,
+      "imide_N-C=O.area": -0.8105883540419606,
+      "imide_N-C=O.centre": -0.7004835168845304,
+      "imide_N-C=O.fwhm": -0.5829725147688118,
+      "acid_O-C=O.area": 0.8997668141898272,
+      "acid_O-C=O.centre": -0.7425513513762767,
+      "acid_O-C=O.fwhm": 1.0000000000000002
+    }
+  },
+  "fit_statistics": {
+    "rss": 2043143998.118379,
+    "rms_residual": 2974.01735244327,
+    "residual_mean": -801.7696368512312,
+    "max_abs_residual": 6902.522678201387,
+    "reduced_chi_square": 9329424.64894237,
+    "aic": 3718.923060313886,
+    "aicc": 3720.3542529744363,
+    "bic": 3760.2320728401473,
+    "durbin_watson": 0.1249909365270296,
+    "residual_runs": 27.0,
+    "n_parameters": 12.0,
+    "n_points": 231.0
+  },
+  "warnings": [
+    "Parameter correlation exceeds 0.95.",
+    "C-N_C-Cl.centre is at or near a bound.",
+    "acid_O-C=O.centre is at or near a bound.",
+    "acid_O-C=O.fwhm is at or near a bound.",
+    "Structural component FWHMs diverge by more than 50%."
+  ],
+  "configuration": {
+    "name": "C1s_4",
+    "region": "C 1s",
+    "peaks": [
+      {
+        "label": "aromatic_C-C_C=C",
+        "centre": 284.65,
+        "centre_bounds": [
+          284.35,
+          284.95
+        ],
+        "area": 1000,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "C-N_C-Cl",
+        "centre": 285.85,
+        "centre_bounds": [
+          285.3,
+          286.4
+        ],
+        "area": 500,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "imide_N-C=O",
+        "centre": 287.9,
+        "centre_bounds": [
+          287.4,
+          288.4
+        ],
+        "area": 400,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "acid_O-C=O",
+        "centre": 289.15,
+        "centre_bounds": [
+          288.7,
+          289.7
+        ],
+        "area": 250,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      }
+    ],
+    "background": "linear",
+    "robust_loss": "linear",
+    "multistart": 2,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 3,
+    "width_penalty": 0.0,
+    "metadata": {
+      "candidate_family": "C1s_common_4",
+      "sensitivity_only": false,
+      "publication_eligible_without_review": false,
+      "chemistry_rationale": "Four-envelope PDI-Me-COOH hypothesis. The two aryl-methyl carbons are treated as unresolved within aromatic_C-C_C=C because they share a hydrocarbon-like environment and the raw C 1s line shape does not show an isolated methyl feature.",
+      "position_basis": "Absolute uncalibrated guesses transferred from the homologous PDI-H-COOH model; the PDI-Me-COOH raw maximum is 284.500054 eV and sample-wide calibration is applied only after review."
+    }
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "C1s Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 2,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 231,
+    "clean_rows": 231,
+    "source_file": "data/raw/PDI-Me-COOH/C1s Scan.VGD",
+    "sample_name": "PDI-Me-COOH",
+    "region": "C1s",
+    "configuration_file": "configs/fits/pdi_me_cooh_c1s_4.json",
+    "configuration_file_sha256": "10aff5f2daec593f01fe482442f4a450b9419a999f202b96a386977c9b2a652e",
+    "artifact_id": "pdi-me-cooh-c1s-a9f62594b2753368",
+    "artifact_state": "candidate",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "f96afe0a462497f038eef5f945281b49e96b331d92fb6209df526cb8087f8f2b",
+    "configuration_sha256": "8b1392002819b477e700b07cec1e5f647e9b87799e30df4fcbca49fe2dedcce4",
+    "artifact_created_at": "2026-07-22T08:19:55.088912+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 117,
+    "backend": "lmfit",
+    "multistart_rss": [
+      2043143998.210506,
+      2043143998.118379
+    ],
+    "background_iterations": 0,
+    "stoichiometric_area_ratio": {}
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

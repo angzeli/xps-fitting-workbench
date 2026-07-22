@@ -17,3 +17,15 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Legacy/generated data locations. Tracked raw spectra under data/raw are durable.
+raw_data/
+processed_data/
+processed_xps/
+outputs/
+figures/
+reports/
+graphify-out/
+build/
+dist/
+*.egg-info/

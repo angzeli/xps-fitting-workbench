@@ -1,5 +1,70 @@
 [project]
 name = "xps-fitting-workbench"
-version = "0.1.0"
-requires-python = ">=3.14"
-dependencies = []
+version = "0.3.0"
+description = "Reproducible, chemistry-constrained XPS peak fitting"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "lmfit>=1.2",
+  "matplotlib>=3.7",
+  "numpy>=1.24",
+  "openpyxl>=3.0",
+  "pandas>=2.0",
+  "scipy>=1.10",
+  "vgd-reader>=0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2",
+  "mypy>=1.8",
+  "pre-commit>=3.7",
+  "pytest>=8",
+  "ruff>=0.9",
+  "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.scripts]
+xps-fit = "xps_fitting.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.11.3,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "xps_fitting"
+
+[tool.uv]
+link-mode = "copy"
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+filterwarnings = [
+  "ignore:The py23 module has been deprecated.*:DeprecationWarning:fontTools\\.misc\\.py23",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+extend-exclude = ["xps_vgd_extraction_and_plotting.ipynb", "xps_vgd_utils.py"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.mypy]
+python_version = "3.10"
+files = [
+  "src/xps_fitting/_version.py",
+  "src/xps_fitting/spectrum.py",
+  "src/xps_fitting/result.py",
+  "src/xps_fitting/configuration.py",
+  "src/xps_fitting/naming.py",
+  "src/xps_fitting/export.py",
+]
+disallow_untyped_defs = true
+follow_imports = "skip"
+ignore_missing_imports = true
+no_site_packages = true
+warn_unused_configs = true

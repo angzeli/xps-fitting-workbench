@@ -1,0 +1,39 @@
+{
+  "format": "xps-fitting-workbench-spectrum-bundle",
+  "format_version": 1,
+  "package_version": "0.3.0",
+  "files": {
+    "spectrum": "spectrum.csv",
+    "metadata": "metadata.json"
+  },
+  "integrity": {
+    "spectrum.csv": "c38360ad5b8d9d62c9e29b464b138f335c8dd046a85666f267733c02f44a304e",
+    "metadata.json": "f7b2c004f51b1618f5dbbdee669258aadc5add1612c82ad641658679beb7b2c9"
+  },
+  "artifact": {
+    "artifact_id": "3-10-3-xpssurvey-spectrum-review-v1",
+    "state": "reviewed",
+    "sample": "3.10-3",
+    "region": "XPSSurvey",
+    "model": "raw_spectrum",
+    "created_at": "2026-07-22T04:37:57.433865+00:00",
+    "data_origin": "experimental",
+    "review_status": "reviewed",
+    "calibration_status": "uncalibrated",
+    "lineage": {
+      "review_version": 1,
+      "review_record_sha256": "fd975b8c0ea8b45d1e4ec52e55b762b64f439fdfd276b7b5ce8296160cf40922"
+    },
+    "review_record": "artifacts/reviewed/3.10-3/review_records/XPSSurvey.review-v1.json",
+    "calibration_record": null,
+    "schema_version": 1,
+    "source": {
+      "path": "data/raw/PDI-H-COOH/XPS Survey.VGD",
+      "sha256": "7f662cefe1e428d4c72ed7ffbdf6209af6e1d16ccd08b824dbab09bd7e067afb",
+      "point_count": 1361
+    },
+    "configuration": {
+      "sha256": "9f273b69864d6c67b1fa15f0128457afaa9d4eaf63fe0a159bbb43ac36f108c3"
+    }
+  }
+}

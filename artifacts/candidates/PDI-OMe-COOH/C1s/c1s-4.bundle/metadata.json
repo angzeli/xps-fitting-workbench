@@ -1,0 +1,412 @@
+{
+  "fitted_parameters": {
+    "aromatic_C-C_C=C.area": 213863.5619515805,
+    "aromatic_C-C_C=C.centre": 284.42042874868304,
+    "aromatic_C-C_C=C.fwhm": 1.3454643849354389,
+    "aromatic_C-C_C=C.fraction": 0.5,
+    "C-N_C-Cl_methoxy_C.area": 86991.88247641145,
+    "C-N_C-Cl_methoxy_C.centre": 285.4418620941957,
+    "C-N_C-Cl_methoxy_C.fwhm": 1.375874513355499,
+    "C-N_C-Cl_methoxy_C.fraction": 0.5,
+    "imide_N-C=O.area": 44987.064951326094,
+    "imide_N-C=O.centre": 287.84822534874303,
+    "imide_N-C=O.fwhm": 1.3957941588327796,
+    "imide_N-C=O.fraction": 0.5,
+    "acid_O-C=O.area": 18551.099065811974,
+    "acid_O-C=O.centre": 289.69999999999993,
+    "acid_O-C=O.fwhm": 1.9999999999999998,
+    "acid_O-C=O.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "aromatic_C-C_C=C.area": 17035.134171941263,
+    "aromatic_C-C_C=C.centre": 0.03345772483804824,
+    "aromatic_C-C_C=C.fwhm": 0.043710387911614544,
+    "aromatic_C-C_C=C.fraction": null,
+    "C-N_C-Cl_methoxy_C.area": 17710.3155894526,
+    "C-N_C-Cl_methoxy_C.centre": 0.0880440821666615,
+    "C-N_C-Cl_methoxy_C.fwhm": 0.1345938638065006,
+    "C-N_C-Cl_methoxy_C.fraction": null,
+    "imide_N-C=O.area": 6246.661395308475,
+    "imide_N-C=O.centre": 0.0559506745273937,
+    "imide_N-C=O.fwhm": 0.1576473965759635,
+    "imide_N-C=O.fraction": null,
+    "acid_O-C=O.area": 6275.240145900496,
+    "acid_O-C=O.centre": 0.2820105353179068,
+    "acid_O-C=O.fwhm": 0.6433122914294116,
+    "acid_O-C=O.fraction": null
+  },
+  "correlation_matrix": {
+    "aromatic_C-C_C=C.area": {
+      "aromatic_C-C_C=C.area": 1.0,
+      "aromatic_C-C_C=C.centre": 0.968247004716001,
+      "aromatic_C-C_C=C.fwhm": 0.879698757023926,
+      "C-N_C-Cl_methoxy_C.area": -0.9865468648065387,
+      "C-N_C-Cl_methoxy_C.centre": 0.9700444028222877,
+      "C-N_C-Cl_methoxy_C.fwhm": -0.8582833593774866,
+      "imide_N-C=O.area": 0.2604898051862808,
+      "imide_N-C=O.centre": -0.010687788017402972,
+      "imide_N-C=O.fwhm": 0.280773043869502,
+      "acid_O-C=O.area": -0.14290437673151124,
+      "acid_O-C=O.centre": 0.14446156014678313,
+      "acid_O-C=O.fwhm": -0.10832086543432619
+    },
+    "aromatic_C-C_C=C.centre": {
+      "aromatic_C-C_C=C.area": 0.9682470047160094,
+      "aromatic_C-C_C=C.centre": 1.0,
+      "aromatic_C-C_C=C.fwhm": 0.8637933640002824,
+      "C-N_C-Cl_methoxy_C.area": -0.9612193049992893,
+      "C-N_C-Cl_methoxy_C.centre": 0.9520798969073921,
+      "C-N_C-Cl_methoxy_C.fwhm": -0.7961268548294337,
+      "imide_N-C=O.area": 0.22562745587961913,
+      "imide_N-C=O.centre": -0.012215860979288038,
+      "imide_N-C=O.fwhm": 0.24380796180927608,
+      "acid_O-C=O.area": -0.12114086044994042,
+      "acid_O-C=O.centre": 0.1236058857211933,
+      "acid_O-C=O.fwhm": -0.0907376239329244
+    },
+    "aromatic_C-C_C=C.fwhm": {
+      "aromatic_C-C_C=C.area": 0.8796987570239472,
+      "aromatic_C-C_C=C.centre": 0.8637933640002953,
+      "aromatic_C-C_C=C.fwhm": 1.0,
+      "C-N_C-Cl_methoxy_C.area": -0.8295744825268598,
+      "C-N_C-Cl_methoxy_C.centre": 0.7951814432226164,
+      "C-N_C-Cl_methoxy_C.fwhm": -0.5871495544970166,
+      "imide_N-C=O.area": 0.14145931325189093,
+      "imide_N-C=O.centre": -0.0009113453798391092,
+      "imide_N-C=O.fwhm": 0.15244834146717307,
+      "acid_O-C=O.area": -0.08845741972577562,
+      "acid_O-C=O.centre": 0.08224054013678886,
+      "acid_O-C=O.fwhm": -0.0684928376135656
+    },
+    "C-N_C-Cl_methoxy_C.area": {
+      "aromatic_C-C_C=C.area": -0.9865468648065306,
+      "aromatic_C-C_C=C.centre": -0.9612193049992735,
+      "aromatic_C-C_C=C.fwhm": -0.8295744825268322,
+      "C-N_C-Cl_methoxy_C.area": 1.0,
+      "C-N_C-Cl_methoxy_C.centre": -0.9646903459752951,
+      "C-N_C-Cl_methoxy_C.fwhm": 0.9072773201248591,
+      "imide_N-C=O.area": -0.3113240786131359,
+      "imide_N-C=O.centre": 0.012139207383244175,
+      "imide_N-C=O.fwhm": -0.3395841799460043,
+      "acid_O-C=O.area": 0.1667692226516062,
+      "acid_O-C=O.centre": -0.17215233206334127,
+      "acid_O-C=O.fwhm": 0.12331556771081657
+    },
+    "C-N_C-Cl_methoxy_C.centre": {
+      "aromatic_C-C_C=C.area": 0.9700444028222953,
+      "aromatic_C-C_C=C.centre": 0.9520798969073913,
+      "aromatic_C-C_C=C.fwhm": 0.7951814432226028,
+      "C-N_C-Cl_methoxy_C.area": -0.9646903459753102,
+      "C-N_C-Cl_methoxy_C.centre": 0.9999999999999999,
+      "C-N_C-Cl_methoxy_C.fwhm": -0.8588975889314846,
+      "imide_N-C=O.area": 0.22673415586738271,
+      "imide_N-C=O.centre": -0.01836269960079195,
+      "imide_N-C=O.fwhm": 0.24169733753963285,
+      "acid_O-C=O.area": -0.11654296686585565,
+      "acid_O-C=O.centre": 0.12101363808973029,
+      "acid_O-C=O.fwhm": -0.08833605606973692
+    },
+    "C-N_C-Cl_methoxy_C.fwhm": {
+      "aromatic_C-C_C=C.area": -0.8582833593774437,
+      "aromatic_C-C_C=C.centre": -0.796126854829385,
+      "aromatic_C-C_C=C.fwhm": -0.5871495544969602,
+      "C-N_C-Cl_methoxy_C.area": 0.9072773201248242,
+      "C-N_C-Cl_methoxy_C.centre": -0.8588975889314372,
+      "C-N_C-Cl_methoxy_C.fwhm": 0.9999999999999998,
+      "imide_N-C=O.area": -0.40161840282510114,
+      "imide_N-C=O.centre": 0.015221788672142017,
+      "imide_N-C=O.fwhm": -0.4387734183662474,
+      "acid_O-C=O.area": 0.21177412664671183,
+      "acid_O-C=O.centre": -0.22191888973636772,
+      "acid_O-C=O.fwhm": 0.15628245357095555
+    },
+    "imide_N-C=O.area": {
+      "aromatic_C-C_C=C.area": 0.2604898051860063,
+      "aromatic_C-C_C=C.centre": 0.225627455879352,
+      "aromatic_C-C_C=C.fwhm": 0.14145931325164304,
+      "C-N_C-Cl_methoxy_C.area": -0.3113240786128687,
+      "C-N_C-Cl_methoxy_C.centre": 0.22673415586711532,
+      "C-N_C-Cl_methoxy_C.fwhm": -0.40161840282487726,
+      "imide_N-C=O.area": 1.0000000000000002,
+      "imide_N-C=O.centre": 0.6429235733811072,
+      "imide_N-C=O.fwhm": 0.8874381145088271,
+      "acid_O-C=O.area": -0.8763637505771577,
+      "acid_O-C=O.centre": 0.837367338716412,
+      "acid_O-C=O.fwhm": -0.7761965963148122
+    },
+    "imide_N-C=O.centre": {
+      "aromatic_C-C_C=C.area": -0.010687788017632557,
+      "aromatic_C-C_C=C.centre": -0.01221586097951038,
+      "aromatic_C-C_C=C.fwhm": -0.0009113453800399438,
+      "C-N_C-Cl_methoxy_C.area": 0.012139207383471223,
+      "C-N_C-Cl_methoxy_C.centre": -0.018362699601014814,
+      "C-N_C-Cl_methoxy_C.fwhm": 0.015221788672340806,
+      "imide_N-C=O.area": 0.6429235733810442,
+      "imide_N-C=O.centre": 1.0,
+      "imide_N-C=O.fwhm": 0.5085067791909487,
+      "acid_O-C=O.area": -0.7384934324482987,
+      "acid_O-C=O.centre": 0.724488372757859,
+      "acid_O-C=O.fwhm": -0.6621203300442275
+    },
+    "imide_N-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": 0.2807730438692749,
+      "aromatic_C-C_C=C.centre": 0.24380796180905387,
+      "aromatic_C-C_C=C.fwhm": 0.15244834146696942,
+      "C-N_C-Cl_methoxy_C.area": -0.3395841799457819,
+      "C-N_C-Cl_methoxy_C.centre": 0.24169733753941053,
+      "C-N_C-Cl_methoxy_C.fwhm": -0.43877341836606043,
+      "imide_N-C=O.area": 0.8874381145088422,
+      "imide_N-C=O.centre": 0.5085067791910164,
+      "imide_N-C=O.fwhm": 1.0,
+      "acid_O-C=O.area": -0.7272249431931606,
+      "acid_O-C=O.centre": 0.7089567391751365,
+      "acid_O-C=O.fwhm": -0.5743999169210385
+    },
+    "acid_O-C=O.area": {
+      "aromatic_C-C_C=C.area": -0.14290437673126305,
+      "aromatic_C-C_C=C.centre": -0.12114086044969864,
+      "aromatic_C-C_C=C.fwhm": -0.08845741972555862,
+      "C-N_C-Cl_methoxy_C.area": 0.16676922265135996,
+      "C-N_C-Cl_methoxy_C.centre": -0.1165429668656133,
+      "C-N_C-Cl_methoxy_C.fwhm": 0.2117741266464976,
+      "imide_N-C=O.area": -0.876363750577125,
+      "imide_N-C=O.centre": -0.7384934324483337,
+      "imide_N-C=O.fwhm": -0.7272249431931169,
+      "acid_O-C=O.area": 0.9999999999999998,
+      "acid_O-C=O.centre": -0.7947098032778875,
+      "acid_O-C=O.fwhm": 0.893385934342189
+    },
+    "acid_O-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.144461560146539,
+      "aromatic_C-C_C=C.centre": 0.12360588572095582,
+      "aromatic_C-C_C=C.fwhm": 0.08224054013657241,
+      "C-N_C-Cl_methoxy_C.area": -0.1721523320631011,
+      "C-N_C-Cl_methoxy_C.centre": 0.12101363808949243,
+      "C-N_C-Cl_methoxy_C.fwhm": -0.2219188897361618,
+      "imide_N-C=O.area": 0.8373673387163856,
+      "imide_N-C=O.centre": 0.7244883727578947,
+      "imide_N-C=O.fwhm": 0.7089567391750994,
+      "acid_O-C=O.area": -0.7947098032778913,
+      "acid_O-C=O.centre": 0.9999999999999998,
+      "acid_O-C=O.fwhm": -0.7119694860435515
+    },
+    "acid_O-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": -0.10832086543404938,
+      "aromatic_C-C_C=C.centre": -0.09073762393265575,
+      "aromatic_C-C_C=C.fwhm": -0.06849283761331956,
+      "C-N_C-Cl_methoxy_C.area": 0.12331556771054492,
+      "C-N_C-Cl_methoxy_C.centre": -0.08833605606946787,
+      "C-N_C-Cl_methoxy_C.fwhm": 0.15628245357072273,
+      "imide_N-C=O.area": -0.77619659631477,
+      "imide_N-C=O.centre": -0.6621203300442552,
+      "imide_N-C=O.fwhm": -0.5743999169209867,
+      "acid_O-C=O.area": 0.8933859343421796,
+      "acid_O-C=O.centre": -0.7119694860435389,
+      "acid_O-C=O.fwhm": 1.0000000000000002
+    }
+  },
+  "fit_statistics": {
+    "rss": 2034896706.5115342,
+    "rms_residual": 2968.00886985957,
+    "residual_mean": -1059.0757019299358,
+    "max_abs_residual": 7694.231493957426,
+    "reduced_chi_square": 9291765.783157691,
+    "aic": 3717.988725864344,
+    "aicc": 3719.4199185248945,
+    "bic": 3759.2977383906054,
+    "durbin_watson": 0.09163456357769473,
+    "residual_runs": 25.0,
+    "n_parameters": 12.0,
+    "n_points": 231.0
+  },
+  "warnings": [
+    "Parameter correlation exceeds 0.95.",
+    "acid_O-C=O.centre is at or near a bound.",
+    "acid_O-C=O.fwhm is at or near a bound."
+  ],
+  "configuration": {
+    "name": "C1s_4",
+    "region": "C 1s",
+    "peaks": [
+      {
+        "label": "aromatic_C-C_C=C",
+        "centre": 284.65,
+        "centre_bounds": [
+          284.35,
+          284.95
+        ],
+        "area": 1000,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "C-N_C-Cl_methoxy_C",
+        "centre": 285.95,
+        "centre_bounds": [
+          285.3,
+          286.8
+        ],
+        "area": 500,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "imide_N-C=O",
+        "centre": 287.9,
+        "centre_bounds": [
+          287.4,
+          288.4
+        ],
+        "area": 400,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "acid_O-C=O",
+        "centre": 289.15,
+        "centre_bounds": [
+          288.7,
+          289.7
+        ],
+        "area": 250,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      }
+    ],
+    "background": "linear",
+    "robust_loss": "linear",
+    "multistart": 2,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 3,
+    "width_penalty": 0.0,
+    "metadata": {
+      "candidate_family": "C1s_lumped_methoxy_4",
+      "sensitivity_only": false,
+      "publication_eligible_without_review": false,
+      "chemistry_rationale": "Parsimonious PDI-OMe-COOH hypothesis in which methoxy carbon is unresolved from the broader heteroatom-bound C-N/C-Cl envelope.",
+      "position_basis": "Absolute uncalibrated guesses anchored to the 284.500054 eV raw maximum. The widened heteroatom-carbon bounds test unresolved C-O intensity without asserting a separate methoxy peak."
+    }
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "C1s Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 2,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 231,
+    "clean_rows": 231,
+    "source_file": "data/raw/PDI-OMe-COOH/C1s Scan.VGD",
+    "sample_name": "PDI-OMe-COOH",
+    "region": "C1s",
+    "configuration_file": "configs/fits/pdi_ome_cooh_c1s_4.json",
+    "configuration_file_sha256": "32b0c82cf7ff4ec2a19828ac9c58e8341d241e8adf2d06f9a46d4db0962f283e",
+    "artifact_id": "pdi-ome-cooh-c1s-3601cb8cefd2882a",
+    "artifact_state": "candidate",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "101b3c171da663937f81f78d19087efe9f2ac7df27ab2182722750d503578a19",
+    "configuration_sha256": "12e0fa5dc618229d1a107a9d196d7e6dd0765da3fe6a3f9e054ed5f4f744b594",
+    "artifact_created_at": "2026-07-22T08:20:57.299837+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 143,
+    "backend": "lmfit",
+    "multistart_rss": [
+      2034896706.5115342,
+      2034896707.5314205
+    ],
+    "background_iterations": 0,
+    "stoichiometric_area_ratio": {}
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

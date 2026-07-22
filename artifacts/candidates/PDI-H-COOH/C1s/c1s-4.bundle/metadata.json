@@ -1,0 +1,400 @@
+{
+  "fitted_parameters": {
+    "aromatic_C-C_C=C.area": 220822.29865213533,
+    "aromatic_C-C_C=C.centre": 284.4443727910463,
+    "aromatic_C-C_C=C.fwhm": 1.3231635585799875,
+    "aromatic_C-C_C=C.fraction": 0.5,
+    "C-N_C-Cl.area": 70261.63561741331,
+    "C-N_C-Cl.centre": 285.30000000000007,
+    "C-N_C-Cl.fwhm": 1.2577453822633646,
+    "C-N_C-Cl.fraction": 0.5,
+    "imide_N-C=O.area": 45019.26557207527,
+    "imide_N-C=O.centre": 287.9370450521026,
+    "imide_N-C=O.fwhm": 1.3493706641530416,
+    "imide_N-C=O.fraction": 0.5,
+    "acid_O-C=O.area": 19968.85351204553,
+    "acid_O-C=O.centre": 289.69999999999993,
+    "acid_O-C=O.fwhm": 1.9999999999842142,
+    "acid_O-C=O.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "aromatic_C-C_C=C.area": 20130.800294555098,
+    "aromatic_C-C_C=C.centre": 0.037620845512376815,
+    "aromatic_C-C_C=C.fwhm": 0.042055634153772954,
+    "aromatic_C-C_C=C.fraction": null,
+    "C-N_C-Cl.area": 20164.987471264933,
+    "C-N_C-Cl.centre": 0.10080099161244041,
+    "C-N_C-Cl.fwhm": 0.12577667677613064,
+    "C-N_C-Cl.fraction": null,
+    "imide_N-C=O.area": 5537.285251940266,
+    "imide_N-C=O.centre": 0.049948166267832994,
+    "imide_N-C=O.fwhm": 0.12399582003319447,
+    "imide_N-C=O.fraction": null,
+    "acid_O-C=O.area": 5993.221962966651,
+    "acid_O-C=O.centre": 0.2510770930321384,
+    "acid_O-C=O.fwhm": 0.5599776839974884,
+    "acid_O-C=O.fraction": null
+  },
+  "correlation_matrix": {
+    "aromatic_C-C_C=C.area": {
+      "aromatic_C-C_C=C.area": 1.0,
+      "aromatic_C-C_C=C.centre": 0.9787125055674158,
+      "aromatic_C-C_C=C.fwhm": 0.8747067019146498,
+      "C-N_C-Cl.area": -0.9931200409086804,
+      "C-N_C-Cl.centre": 0.9701102846427647,
+      "C-N_C-Cl.fwhm": -0.8438285590242036,
+      "imide_N-C=O.area": 0.13683768271473387,
+      "imide_N-C=O.centre": 0.022170850059929224,
+      "imide_N-C=O.fwhm": 0.15979238251060174,
+      "acid_O-C=O.area": -0.08670662868120607,
+      "acid_O-C=O.centre": 0.08353832999548194,
+      "acid_O-C=O.fwhm": -0.06419831253135601
+    },
+    "aromatic_C-C_C=C.centre": {
+      "aromatic_C-C_C=C.area": 0.9787125055674197,
+      "aromatic_C-C_C=C.centre": 1.0,
+      "aromatic_C-C_C=C.fwhm": 0.8776205176324701,
+      "C-N_C-Cl.area": -0.9743825294024576,
+      "C-N_C-Cl.centre": 0.947161886147027,
+      "C-N_C-Cl.fwhm": -0.7784369004676156,
+      "imide_N-C=O.area": 0.11507509621380282,
+      "imide_N-C=O.centre": 0.01862534566095563,
+      "imide_N-C=O.fwhm": 0.13586214775715824,
+      "acid_O-C=O.area": -0.07377402408143585,
+      "acid_O-C=O.centre": 0.07042956549970719,
+      "acid_O-C=O.fwhm": -0.0537662859747286
+    },
+    "aromatic_C-C_C=C.fwhm": {
+      "aromatic_C-C_C=C.area": 0.8747067019146572,
+      "aromatic_C-C_C=C.centre": 0.8776205176324734,
+      "aromatic_C-C_C=C.fwhm": 1.0000000000000002,
+      "C-N_C-Cl.area": -0.8394488782696929,
+      "C-N_C-Cl.centre": 0.7635948653894528,
+      "C-N_C-Cl.fwhm": -0.5552944653400805,
+      "imide_N-C=O.area": 0.06140980673481293,
+      "imide_N-C=O.centre": 0.021471222296265365,
+      "imide_N-C=O.fwhm": 0.07247134102181918,
+      "acid_O-C=O.area": -0.05657081441103842,
+      "acid_O-C=O.centre": 0.04494690963320676,
+      "acid_O-C=O.fwhm": -0.0438905676739017
+    },
+    "C-N_C-Cl.area": {
+      "aromatic_C-C_C=C.area": -0.9931200409086735,
+      "aromatic_C-C_C=C.centre": -0.974382529402447,
+      "aromatic_C-C_C=C.fwhm": -0.8394488782696788,
+      "C-N_C-Cl.area": 0.9999999999999999,
+      "C-N_C-Cl.centre": -0.9739479840588692,
+      "C-N_C-Cl.fwhm": 0.87952378090167,
+      "imide_N-C=O.area": -0.15747384660869296,
+      "imide_N-C=O.centre": -0.02127988257084902,
+      "imide_N-C=O.fwhm": -0.186335455210826,
+      "acid_O-C=O.area": 0.09345143849783179,
+      "acid_O-C=O.centre": -0.09343943761344835,
+      "acid_O-C=O.fwhm": 0.06673924359772386
+    },
+    "C-N_C-Cl.centre": {
+      "aromatic_C-C_C=C.area": 0.9701102846427633,
+      "aromatic_C-C_C=C.centre": 0.9471618861470217,
+      "aromatic_C-C_C=C.fwhm": 0.7635948653894447,
+      "C-N_C-Cl.area": -0.9739479840588741,
+      "C-N_C-Cl.centre": 1.0,
+      "C-N_C-Cl.fwhm": -0.8780043059330922,
+      "imide_N-C=O.area": 0.1352247328937224,
+      "imide_N-C=O.centre": 0.01710199373413229,
+      "imide_N-C=O.fwhm": 0.1571143036881339,
+      "acid_O-C=O.area": -0.07943768397479109,
+      "acid_O-C=O.centre": 0.07963581488774021,
+      "acid_O-C=O.fwhm": -0.05837278295838632
+    },
+    "C-N_C-Cl.fwhm": {
+      "aromatic_C-C_C=C.area": -0.8438285590241831,
+      "aromatic_C-C_C=C.centre": -0.7784369004675925,
+      "aromatic_C-C_C=C.fwhm": -0.5552944653400561,
+      "C-N_C-Cl.area": 0.8795237809016548,
+      "C-N_C-Cl.centre": -0.8780043059330737,
+      "C-N_C-Cl.fwhm": 1.0000000000000002,
+      "imide_N-C=O.area": -0.22930105834106632,
+      "imide_N-C=O.centre": -0.022945333511926815,
+      "imide_N-C=O.fwhm": -0.270175553155867,
+      "acid_O-C=O.area": 0.12229096706710749,
+      "acid_O-C=O.centre": -0.13072593087147988,
+      "acid_O-C=O.fwhm": 0.0860055509488778
+    },
+    "imide_N-C=O.area": {
+      "aromatic_C-C_C=C.area": 0.13683768271451904,
+      "aromatic_C-C_C=C.centre": 0.11507509621359192,
+      "aromatic_C-C_C=C.fwhm": 0.06140980673462837,
+      "C-N_C-Cl.area": -0.157473846608478,
+      "C-N_C-Cl.centre": 0.13522473289351253,
+      "C-N_C-Cl.fwhm": -0.22930105834088105,
+      "imide_N-C=O.area": 1.0000000000000002,
+      "imide_N-C=O.centre": 0.7360471965535524,
+      "imide_N-C=O.fwhm": 0.8634236318853225,
+      "acid_O-C=O.area": -0.8992548877194129,
+      "acid_O-C=O.centre": 0.861621642296142,
+      "acid_O-C=O.fwhm": -0.8036176750927821
+    },
+    "imide_N-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.022170850059675014,
+      "aromatic_C-C_C=C.centre": 0.018625345660706567,
+      "aromatic_C-C_C=C.fwhm": 0.02147122229604578,
+      "C-N_C-Cl.area": -0.021279882570595224,
+      "C-N_C-Cl.centre": 0.017101993733884557,
+      "C-N_C-Cl.fwhm": -0.022945333511708386,
+      "imide_N-C=O.area": 0.7360471965535215,
+      "imide_N-C=O.centre": 1.0,
+      "imide_N-C=O.fwhm": 0.5984886946649612,
+      "acid_O-C=O.area": -0.776080913643696,
+      "acid_O-C=O.centre": 0.7700536059412187,
+      "acid_O-C=O.fwhm": -0.6797048971733481
+    },
+    "imide_N-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": 0.15979238251037078,
+      "aromatic_C-C_C=C.centre": 0.135862147756932,
+      "aromatic_C-C_C=C.fwhm": 0.072471341021614,
+      "C-N_C-Cl.area": -0.18633545521059813,
+      "C-N_C-Cl.centre": 0.1571143036879107,
+      "C-N_C-Cl.fwhm": -0.2701755531556776,
+      "imide_N-C=O.area": 0.8634236318853319,
+      "imide_N-C=O.centre": 0.5984886946649998,
+      "imide_N-C=O.fwhm": 1.0,
+      "acid_O-C=O.area": -0.7300128130625951,
+      "acid_O-C=O.centre": 0.7112144174459523,
+      "acid_O-C=O.fwhm": -0.5747247434705619
+    },
+    "acid_O-C=O.area": {
+      "aromatic_C-C_C=C.area": -0.08670662868108663,
+      "aromatic_C-C_C=C.centre": -0.07377402408131767,
+      "aromatic_C-C_C=C.fwhm": -0.0565708144109467,
+      "C-N_C-Cl.area": 0.09345143849770718,
+      "C-N_C-Cl.centre": -0.07943768397467048,
+      "C-N_C-Cl.fwhm": 0.12229096706698903,
+      "imide_N-C=O.area": -0.8992548877194034,
+      "imide_N-C=O.centre": -0.7760809136437119,
+      "imide_N-C=O.fwhm": -0.7300128130625788,
+      "acid_O-C=O.area": 1.0,
+      "acid_O-C=O.centre": -0.8138093304044102,
+      "acid_O-C=O.fwhm": 0.8977891569001001
+    },
+    "acid_O-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.0835383299951962,
+      "aromatic_C-C_C=C.centre": 0.07042956549942689,
+      "aromatic_C-C_C=C.fwhm": 0.04494690963296102,
+      "C-N_C-Cl.area": -0.09343943761316258,
+      "C-N_C-Cl.centre": 0.07963581488746126,
+      "C-N_C-Cl.fwhm": -0.13072593087123335,
+      "imide_N-C=O.area": 0.861621642296122,
+      "imide_N-C=O.centre": 0.7700536059412361,
+      "imide_N-C=O.fwhm": 0.7112144174459224,
+      "acid_O-C=O.area": -0.8138093304044051,
+      "acid_O-C=O.centre": 1.0,
+      "acid_O-C=O.fwhm": -0.73041153355059
+    },
+    "acid_O-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": -0.06419831253122038,
+      "aromatic_C-C_C=C.centre": -0.05376628597459547,
+      "aromatic_C-C_C=C.fwhm": -0.04389056767378587,
+      "C-N_C-Cl.area": 0.06673924359758783,
+      "C-N_C-Cl.centre": -0.0583727829582536,
+      "C-N_C-Cl.fwhm": 0.08600555094875965,
+      "imide_N-C=O.area": -0.803617675092776,
+      "imide_N-C=O.centre": -0.6797048971733608,
+      "imide_N-C=O.fwhm": -0.5747247434705502,
+      "acid_O-C=O.area": 0.8977891569001007,
+      "acid_O-C=O.centre": -0.7304115335505938,
+      "acid_O-C=O.fwhm": 0.9999999999999998
+    }
+  },
+  "fit_statistics": {
+    "rss": 1689912219.368682,
+    "reduced_chi_square": 7716494.1523684105,
+    "aic": 3675.0762086587974,
+    "aicc": 3676.507401319348,
+    "bic": 3716.385221185059,
+    "durbin_watson": 0.10307330762291023,
+    "residual_runs": 25.0,
+    "n_parameters": 12.0,
+    "n_points": 231.0
+  },
+  "warnings": [
+    "Parameter correlation exceeds 0.95.",
+    "C-N_C-Cl.centre is at or near a bound.",
+    "acid_O-C=O.centre is at or near a bound.",
+    "acid_O-C=O.fwhm is at or near a bound."
+  ],
+  "configuration": {
+    "name": "C1s_4",
+    "region": "C 1s",
+    "peaks": [
+      {
+        "label": "aromatic_C-C_C=C",
+        "centre": 284.65,
+        "centre_bounds": [
+          284.35,
+          284.95
+        ],
+        "area": 1000,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "C-N_C-Cl",
+        "centre": 285.85,
+        "centre_bounds": [
+          285.3,
+          286.4
+        ],
+        "area": 500,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "imide_N-C=O",
+        "centre": 287.9,
+        "centre_bounds": [
+          287.4,
+          288.4
+        ],
+        "area": 400,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "acid_O-C=O",
+        "centre": 289.15,
+        "centre_bounds": [
+          288.7,
+          289.7
+        ],
+        "area": 250,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      }
+    ],
+    "background": "linear",
+    "robust_loss": "linear",
+    "multistart": 2,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 3,
+    "width_penalty": 0.0,
+    "metadata": {}
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "C1s Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 2,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 231,
+    "clean_rows": 231,
+    "source_file": "data/raw/PDI-H-COOH/C1s Scan.VGD",
+    "sample_name": "PDI-H-COOH",
+    "region": "C1s",
+    "artifact_id": "pdi-h-cooh-c1s-4d98595f0f8c61cd",
+    "artifact_state": "candidate",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "080a8d87490cbf883c4c9becabc3982eeff35b1d7533a49e9a0bc30cf8a2f9f5",
+    "configuration_sha256": "19c3f236a77f726131899980d94768781fc444a48f1d88d8f4162a440be93493",
+    "artifact_created_at": "2026-07-21T15:17:58.961836+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 91,
+    "backend": "lmfit",
+    "multistart_rss": [
+      1689912219.3686821,
+      1689912219.7527163
+    ]
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

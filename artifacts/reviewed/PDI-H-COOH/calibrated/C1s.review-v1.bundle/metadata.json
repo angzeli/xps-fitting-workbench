@@ -1,0 +1,509 @@
+{
+  "fitted_parameters": {
+    "aromatic_C-C_C=C.area": 220369.09117800434,
+    "aromatic_C-C_C=C.centre": 284.8,
+    "aromatic_C-C_C=C.fwhm": 1.3231259722269826,
+    "aromatic_C-C_C=C.fraction": 0.5,
+    "C-N_C-Cl.area": 71139.27356128357,
+    "C-N_C-Cl.centre": 285.6557544877094,
+    "C-N_C-Cl.fwhm": 1.2714335802757029,
+    "C-N_C-Cl.fraction": 0.5,
+    "imide_N-C=O.area": 34963.884656265065,
+    "imide_N-C=O.centre": 288.17829262086184,
+    "imide_N-C=O.fwhm": 1.1202727319787693,
+    "imide_N-C=O.fraction": 0.5,
+    "acid_O-C=O.area": 11906.364789278612,
+    "acid_O-C=O.centre": 289.0557544877096,
+    "acid_O-C=O.fwhm": 1.1000000000011734,
+    "acid_O-C=O.fraction": 0.5,
+    "pi-pi_star.area": 23645.404314877313,
+    "pi-pi_star.centre": 290.85,
+    "pi-pi_star.fwhm": 3.0241238958861985,
+    "pi-pi_star.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "aromatic_C-C_C=C.area": 19087.73485408643,
+    "aromatic_C-C_C=C.centre": 0.03524366724639039,
+    "aromatic_C-C_C=C.fwhm": 0.03939890642358069,
+    "aromatic_C-C_C=C.fraction": null,
+    "C-N_C-Cl.area": 19133.82935904333,
+    "C-N_C-Cl.centre": 0.09645316289680225,
+    "C-N_C-Cl.fwhm": 0.11872093794334618,
+    "C-N_C-Cl.fraction": null,
+    "imide_N-C=O.area": 11387.989793280658,
+    "imide_N-C=O.centre": 0.12053957250468432,
+    "imide_N-C=O.fwhm": 0.17838350204758138,
+    "imide_N-C=O.fraction": null,
+    "acid_O-C=O.area": 11407.354988573585,
+    "acid_O-C=O.centre": 0.33552030232750246,
+    "acid_O-C=O.fwhm": 0.5130449376858829,
+    "acid_O-C=O.fraction": null,
+    "pi-pi_star.area": 4010.5203033823714,
+    "pi-pi_star.centre": null,
+    "pi-pi_star.fwhm": 0.5731195591627438,
+    "pi-pi_star.fraction": null
+  },
+  "correlation_matrix": {
+    "aromatic_C-C_C=C.area": {
+      "aromatic_C-C_C=C.area": 1.0,
+      "aromatic_C-C_C=C.centre": 0.9783188167561119,
+      "aromatic_C-C_C=C.fwhm": 0.8720958433469219,
+      "C-N_C-Cl.area": -0.9930938978200927,
+      "C-N_C-Cl.centre": 0.9708218628359446,
+      "C-N_C-Cl.fwhm": -0.8407319011770783,
+      "imide_N-C=O.area": 0.09567709704478725,
+      "imide_N-C=O.centre": 0.05494863836953291,
+      "imide_N-C=O.fwhm": 0.14529771223354732,
+      "acid_O-C=O.area": -0.03210165042804171,
+      "acid_O-C=O.centre": 0.06832483583795625,
+      "acid_O-C=O.fwhm": 0.015531685029747678,
+      "pi-pi_star.area": -0.1327522716677345,
+      "pi-pi_star.fwhm": -0.09605216997078043
+    },
+    "aromatic_C-C_C=C.centre": {
+      "aromatic_C-C_C=C.area": 0.9783188167561048,
+      "aromatic_C-C_C=C.centre": 1.0,
+      "aromatic_C-C_C=C.fwhm": 0.8767711647199328,
+      "C-N_C-Cl.area": -0.9734571879711935,
+      "C-N_C-Cl.centre": 0.9465694837762179,
+      "C-N_C-Cl.fwhm": -0.7722562637823449,
+      "imide_N-C=O.area": 0.07740934717485053,
+      "imide_N-C=O.centre": 0.04250021742657998,
+      "imide_N-C=O.fwhm": 0.12217865803212347,
+      "acid_O-C=O.area": -0.017290700199701376,
+      "acid_O-C=O.centre": 0.05530430079718341,
+      "acid_O-C=O.fwhm": 0.02459622077169442,
+      "pi-pi_star.area": -0.13583917327104714,
+      "pi-pi_star.fwhm": -0.09668423211835132
+    },
+    "aromatic_C-C_C=C.fwhm": {
+      "aromatic_C-C_C=C.area": 0.8720958433469067,
+      "aromatic_C-C_C=C.centre": 0.876771164719924,
+      "aromatic_C-C_C=C.fwhm": 0.9999999999999999,
+      "C-N_C-Cl.area": -0.8362087641550362,
+      "C-N_C-Cl.centre": 0.7613793372803049,
+      "C-N_C-Cl.fwhm": -0.5462122895041519,
+      "imide_N-C=O.area": 0.029903010408218553,
+      "imide_N-C=O.centre": 0.01254415925673064,
+      "imide_N-C=O.fwhm": 0.05580215034385384,
+      "acid_O-C=O.area": 0.013238591664396976,
+      "acid_O-C=O.centre": 0.022911960711756447,
+      "acid_O-C=O.fwhm": 0.03384695917908384,
+      "pi-pi_star.area": -0.14203847346277246,
+      "pi-pi_star.fwhm": -0.10284179850779608
+    },
+    "C-N_C-Cl.area": {
+      "aromatic_C-C_C=C.area": -0.9930938978200946,
+      "aromatic_C-C_C=C.centre": -0.9734571879712023,
+      "aromatic_C-C_C=C.fwhm": -0.8362087641550524,
+      "C-N_C-Cl.area": 1.0,
+      "C-N_C-Cl.centre": -0.9745817788485824,
+      "C-N_C-Cl.fwhm": 0.8772132714400421,
+      "imide_N-C=O.area": -0.11716682887338853,
+      "imide_N-C=O.centre": -0.07078662289971602,
+      "imide_N-C=O.fwhm": -0.17496537443219726,
+      "acid_O-C=O.area": 0.04960802328279797,
+      "acid_O-C=O.centre": -0.08365565224447816,
+      "acid_O-C=O.fwhm": -0.008097809425897154,
+      "pi-pi_star.area": 0.12104071422700037,
+      "pi-pi_star.fwhm": 0.08476150322300327
+    },
+    "C-N_C-Cl.centre": {
+      "aromatic_C-C_C=C.area": 0.9708218628359462,
+      "aromatic_C-C_C=C.centre": 0.9465694837762263,
+      "aromatic_C-C_C=C.fwhm": 0.7613793372803217,
+      "C-N_C-Cl.area": -0.9745817788485822,
+      "C-N_C-Cl.centre": 1.0000000000000002,
+      "C-N_C-Cl.fwhm": -0.8761999259667415,
+      "imide_N-C=O.area": 0.09638175080106941,
+      "imide_N-C=O.centre": 0.054279997043721946,
+      "imide_N-C=O.fwhm": 0.14564473445689663,
+      "acid_O-C=O.area": -0.03296593314532887,
+      "acid_O-C=O.centre": 0.06784463043934973,
+      "acid_O-C=O.fwhm": 0.014579089736198758,
+      "pi-pi_star.area": -0.12183231116362551,
+      "pi-pi_star.fwhm": -0.08873850918793076
+    },
+    "C-N_C-Cl.fwhm": {
+      "aromatic_C-C_C=C.area": -0.840731901177119,
+      "aromatic_C-C_C=C.centre": -0.7722562637823905,
+      "aromatic_C-C_C=C.fwhm": -0.5462122895042015,
+      "C-N_C-Cl.area": 0.87721327144008,
+      "C-N_C-Cl.centre": -0.8761999259667793,
+      "C-N_C-Cl.fwhm": 1.0,
+      "imide_N-C=O.area": -0.1853948272461724,
+      "imide_N-C=O.centre": -0.11960367552110258,
+      "imide_N-C=O.fwhm": -0.2619659275583757,
+      "acid_O-C=O.area": 0.11097906375162694,
+      "acid_O-C=O.centre": -0.1316721330716336,
+      "acid_O-C=O.fwhm": 0.029029316054079376,
+      "pi-pi_star.area": 0.07016115161603595,
+      "pi-pi_star.fwhm": 0.047681532528475096
+    },
+    "imide_N-C=O.area": {
+      "aromatic_C-C_C=C.area": 0.09567709704501239,
+      "aromatic_C-C_C=C.centre": 0.07740934717507156,
+      "aromatic_C-C_C=C.fwhm": 0.029903010408409546,
+      "C-N_C-Cl.area": -0.11716682887361493,
+      "C-N_C-Cl.centre": 0.09638175080129037,
+      "C-N_C-Cl.fwhm": -0.18539482724636974,
+      "imide_N-C=O.area": 0.9999999999999999,
+      "imide_N-C=O.centre": 0.9584744675972129,
+      "imide_N-C=O.fwhm": 0.8948961626839508,
+      "acid_O-C=O.area": -0.9698824058831395,
+      "acid_O-C=O.centre": 0.9583924312531157,
+      "acid_O-C=O.fwhm": -0.8274600597564097,
+      "pi-pi_star.area": 0.03987054981281906,
+      "pi-pi_star.fwhm": -0.12833052692838892
+    },
+    "imide_N-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.054948638369776495,
+      "aromatic_C-C_C=C.centre": 0.042500217426819004,
+      "aromatic_C-C_C=C.fwhm": 0.012544159256937065,
+      "C-N_C-Cl.area": -0.07078662289996097,
+      "C-N_C-Cl.centre": 0.054279997043960866,
+      "C-N_C-Cl.fwhm": -0.11960367552131618,
+      "imide_N-C=O.area": 0.958474467597224,
+      "imide_N-C=O.centre": 1.0000000000000002,
+      "imide_N-C=O.fwhm": 0.8495689378938049,
+      "acid_O-C=O.area": -0.9564860349947674,
+      "acid_O-C=O.centre": 0.9470618689292168,
+      "acid_O-C=O.fwhm": -0.7903331873864831,
+      "pi-pi_star.area": 0.08266936386712227,
+      "pi-pi_star.fwhm": -0.06332088570541063
+    },
+    "imide_N-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": 0.14529771223376045,
+      "aromatic_C-C_C=C.centre": 0.1221786580323332,
+      "aromatic_C-C_C=C.fwhm": 0.05580215034403489,
+      "C-N_C-Cl.area": -0.1749653744324116,
+      "C-N_C-Cl.centre": 0.1456447344571062,
+      "C-N_C-Cl.fwhm": -0.2619659275585615,
+      "imide_N-C=O.area": 0.8948961626839299,
+      "imide_N-C=O.centre": 0.8495689378937742,
+      "imide_N-C=O.fwhm": 1.0,
+      "acid_O-C=O.area": -0.8244794016933534,
+      "acid_O-C=O.centre": 0.7955473284396674,
+      "acid_O-C=O.fwhm": -0.572702629985355,
+      "pi-pi_star.area": -0.018609325387234553,
+      "pi-pi_star.fwhm": -0.09795969210896516
+    },
+    "acid_O-C=O.area": {
+      "aromatic_C-C_C=C.area": -0.0321016504282796,
+      "aromatic_C-C_C=C.centre": -0.01729070019993484,
+      "aromatic_C-C_C=C.fwhm": 0.013238591664198397,
+      "C-N_C-Cl.area": 0.049608023283038566,
+      "C-N_C-Cl.centre": -0.03296593314556312,
+      "C-N_C-Cl.fwhm": 0.11097906375184002,
+      "imide_N-C=O.area": -0.9698824058831611,
+      "imide_N-C=O.centre": -0.9564860349947774,
+      "imide_N-C=O.fwhm": -0.8244794016933943,
+      "acid_O-C=O.area": 0.9999999999999999,
+      "acid_O-C=O.centre": -0.9493245726394219,
+      "acid_O-C=O.fwhm": 0.8953690812687453,
+      "pi-pi_star.area": -0.2045688420241182,
+      "pi-pi_star.fwhm": 0.0045574795887906505
+    },
+    "acid_O-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.06832483583821441,
+      "aromatic_C-C_C=C.centre": 0.05530430079743646,
+      "aromatic_C-C_C=C.fwhm": 0.022911960711979394,
+      "C-N_C-Cl.area": -0.08365565224473584,
+      "C-N_C-Cl.centre": 0.0678446304396015,
+      "C-N_C-Cl.fwhm": -0.13167213307185408,
+      "imide_N-C=O.area": 0.9583924312531229,
+      "imide_N-C=O.centre": 0.9470618689292132,
+      "imide_N-C=O.fwhm": 0.7955473284396939,
+      "acid_O-C=O.area": -0.9493245726394084,
+      "acid_O-C=O.centre": 1.0,
+      "acid_O-C=O.fwhm": -0.8361875266143762,
+      "pi-pi_star.area": 0.05604271768236769,
+      "pi-pi_star.fwhm": -0.07801482678356388
+    },
+    "acid_O-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": 0.015531685029556543,
+      "aromatic_C-C_C=C.centre": 0.02459622077150702,
+      "aromatic_C-C_C=C.fwhm": 0.03384695917892842,
+      "C-N_C-Cl.area": -0.008097809425702089,
+      "C-N_C-Cl.centre": 0.014579089736009536,
+      "C-N_C-Cl.fwhm": 0.029029316054256866,
+      "imide_N-C=O.area": -0.8274600597564492,
+      "imide_N-C=O.centre": -0.7903331873865118,
+      "imide_N-C=O.fwhm": -0.5727026299854093,
+      "acid_O-C=O.area": 0.895369081268766,
+      "acid_O-C=O.centre": -0.836187526614408,
+      "acid_O-C=O.fwhm": 1.0000000000000002,
+      "pi-pi_star.area": -0.23629027380412934,
+      "pi-pi_star.fwhm": 0.04790691198415344
+    },
+    "pi-pi_star.area": {
+      "aromatic_C-C_C=C.area": -0.1327522716676912,
+      "aromatic_C-C_C=C.centre": -0.13583917327100542,
+      "aromatic_C-C_C=C.fwhm": -0.14203847346273968,
+      "C-N_C-Cl.area": 0.1210407142269553,
+      "C-N_C-Cl.centre": -0.12183231116358248,
+      "C-N_C-Cl.fwhm": 0.07016115161599144,
+      "imide_N-C=O.area": 0.03987054981287151,
+      "imide_N-C=O.centre": 0.08266936386717182,
+      "imide_N-C=O.fwhm": -0.0186093253871833,
+      "acid_O-C=O.area": -0.20456884202416709,
+      "acid_O-C=O.centre": 0.05604271768241678,
+      "acid_O-C=O.fwhm": -0.23629027380416784,
+      "pi-pi_star.area": 0.9999999999999999,
+      "pi-pi_star.fwhm": 0.7420631372664582
+    },
+    "pi-pi_star.fwhm": {
+      "aromatic_C-C_C=C.area": -0.09605216997078411,
+      "aromatic_C-C_C=C.centre": -0.0966842321183554,
+      "aromatic_C-C_C=C.fwhm": -0.1028417985078,
+      "C-N_C-Cl.area": 0.08476150322300671,
+      "C-N_C-Cl.centre": -0.08873850918793447,
+      "C-N_C-Cl.fwhm": 0.04768153252847666,
+      "imide_N-C=O.area": -0.1283305269283636,
+      "imide_N-C=O.centre": -0.06332088570538533,
+      "imide_N-C=O.fwhm": -0.09795969210894269,
+      "acid_O-C=O.area": 0.004557479588764838,
+      "acid_O-C=O.centre": -0.07801482678353941,
+      "acid_O-C=O.fwhm": 0.04790691198413085,
+      "pi-pi_star.area": 0.7420631372664627,
+      "pi-pi_star.fwhm": 1.0
+    }
+  },
+  "fit_statistics": {
+    "rss": 1471719840.3524296,
+    "reduced_chi_square": 6782119.079965114,
+    "aic": 3647.1416344397558,
+    "aicc": 3649.0860788842,
+    "bic": 3695.335482387061,
+    "durbin_watson": 0.11186858392488729,
+    "residual_runs": 53.0,
+    "n_parameters": 14.0,
+    "n_points": 231.0
+  },
+  "warnings": [
+    "Parameter correlation exceeds 0.95.",
+    "C-N_C-Cl.centre is at or near a bound.",
+    "acid_O-C=O.centre is at or near a bound.",
+    "acid_O-C=O.fwhm is at or near a bound."
+  ],
+  "configuration": {
+    "name": "C1s_5",
+    "region": "C 1s",
+    "peaks": [
+      {
+        "label": "aromatic_C-C_C=C",
+        "centre": 285.0057544877093,
+        "centre_bounds": [
+          284.7057544877093,
+          285.3057544877093
+        ],
+        "area": 1000,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "C-N_C-Cl",
+        "centre": 286.2057544877093,
+        "centre_bounds": [
+          285.6557544877093,
+          286.7557544877093
+        ],
+        "area": 500,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "imide_N-C=O",
+        "centre": 288.2557544877093,
+        "centre_bounds": [
+          287.7557544877093,
+          288.7557544877093
+        ],
+        "area": 400,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "acid_O-C=O",
+        "centre": 289.5057544877093,
+        "centre_bounds": [
+          289.0557544877093,
+          290.0557544877093
+        ],
+        "area": 250,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "pi-pi_star",
+        "centre": 291.0557544877093,
+        "centre_bounds": [
+          290.4557544877093,
+          292.1557544877093
+        ],
+        "area": 100,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 2.2,
+        "fwhm_bounds": [
+          1.5,
+          3.5
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": [
+          "aromatic_C-C_C=C",
+          6.05
+        ],
+        "area_ratio_to": null
+      }
+    ],
+    "background": "linear",
+    "robust_loss": "linear",
+    "multistart": 2,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 3,
+    "width_penalty": 0.0,
+    "metadata": {}
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "C1s Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 2,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 231,
+    "clean_rows": 231,
+    "source_file": "data/raw/PDI-H-COOH/C1s Scan.VGD",
+    "sample_name": "PDI-H-COOH",
+    "region": "C1s",
+    "artifact_id": "pdi-h-cooh-c1s-review-v1-calibrated",
+    "artifact_state": "reviewed",
+    "review_status": "reviewed",
+    "calibration_status": "calibrated",
+    "publication_eligible": true,
+    "source_sha256": "080a8d87490cbf883c4c9becabc3982eeff35b1d7533a49e9a0bc30cf8a2f9f5",
+    "configuration_sha256": "a39c993e912b1db9060276e9adabccd3406a81463c01b3f5d1ebca28ba64dc99",
+    "artifact_created_at": "2026-07-21T15:17:58.966149+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true,
+    "review_version": 1,
+    "review_record": "artifacts/reviewed/PDI-H-COOH/review_records/C1s.review-v1.json",
+    "reviewer": "Angze",
+    "review_date": "2026-07-22T02:06:14.261555+00:00",
+    "binding_energy_calibration": {
+      "reference_core_level": "C1s",
+      "reference_component": "aromatic_C-C_C=C",
+      "observed_eV": 284.4442455122907,
+      "target_eV": 284.8,
+      "offset_eV": 0.35575448770930507,
+      "method": "rigid sample-wide binding-energy shift"
+    },
+    "calibration_record": "artifacts/reviewed/PDI-H-COOH/calibration.json"
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 165,
+    "backend": "lmfit",
+    "multistart_rss": [
+      1471719840.3532684,
+      1471719840.3524299
+    ]
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

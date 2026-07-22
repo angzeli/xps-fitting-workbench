@@ -1,0 +1,181 @@
+{
+  "fitted_parameters": {
+    "Cl_2p3/2.area": 63802.55753099195,
+    "Cl_2p3/2.centre": 199.94588482740184,
+    "Cl_2p3/2.fwhm": 0.948468435901778,
+    "Cl_2p3/2.fraction": 0.5,
+    "Cl_2p1/2.area": 31901.278765495976,
+    "Cl_2p1/2.centre": 201.54588482740184,
+    "Cl_2p1/2.fwhm": 0.948468435901778,
+    "Cl_2p1/2.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "Cl_2p3/2.area": 283.64525815770696,
+    "Cl_2p3/2.centre": 0.0025352373882326857,
+    "Cl_2p3/2.fwhm": 0.00553016439579725,
+    "Cl_2p3/2.fraction": null,
+    "Cl_2p1/2.area": null,
+    "Cl_2p1/2.centre": null,
+    "Cl_2p1/2.fwhm": null,
+    "Cl_2p1/2.fraction": null
+  },
+  "correlation_matrix": {
+    "Cl_2p3/2.area": {
+      "Cl_2p3/2.area": 1.0,
+      "Cl_2p3/2.centre": -1.4201776653381846e-06,
+      "Cl_2p3/2.fwhm": 0.5310698725536915
+    },
+    "Cl_2p3/2.centre": {
+      "Cl_2p3/2.area": -1.4201776653381876e-06,
+      "Cl_2p3/2.centre": 0.9999999999999999,
+      "Cl_2p3/2.fwhm": -5.5331091463579235e-06
+    },
+    "Cl_2p3/2.fwhm": {
+      "Cl_2p3/2.area": 0.5310698725536916,
+      "Cl_2p3/2.centre": -5.5331091463579235e-06,
+      "Cl_2p3/2.fwhm": 1.0
+    }
+  },
+  "fit_statistics": {
+    "rss": 100958164.04458201,
+    "rms_residual": 621.9428342377627,
+    "residual_mean": -350.729825786631,
+    "max_abs_residual": 1484.2214450797374,
+    "reduced_chi_square": 391310.71335109306,
+    "aic": 3363.9467510798854,
+    "aicc": 3364.0401362938933,
+    "bic": 3374.6403123018536,
+    "durbin_watson": 0.09160301214053106,
+    "residual_runs": 17.0,
+    "n_parameters": 3.0,
+    "n_points": 261.0
+  },
+  "warnings": [],
+  "configuration": {
+    "name": "Cl2p_constrained",
+    "region": "Cl 2p",
+    "peaks": [
+      {
+        "label": "Cl_2p3/2",
+        "centre": 200.0,
+        "centre_bounds": [
+          199.5,
+          200.5
+        ],
+        "area": 65000.0,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.2,
+        "fwhm_bounds": [
+          0.2,
+          3.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "Cl_doublet",
+        "fraction_group": "Cl_doublet",
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "Cl_2p1/2",
+        "centre": 201.6,
+        "centre_bounds": [
+          201.1,
+          202.1
+        ],
+        "area": 32500.0,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.2,
+        "fwhm_bounds": [
+          0.2,
+          3.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "Cl_doublet",
+        "fraction_group": "Cl_doublet",
+        "centre_offset_from": [
+          "Cl_2p3/2",
+          1.6
+        ],
+        "area_ratio_to": [
+          "Cl_2p3/2",
+          0.5
+        ]
+      }
+    ],
+    "background": "linear",
+    "robust_loss": "linear",
+    "multistart": 2,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 3,
+    "width_penalty": 0.0,
+    "metadata": {}
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "Cl2p Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 10,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 261,
+    "clean_rows": 261,
+    "source_file": "data/raw/PDI-Me-COOH/Cl2p Scan.VGD",
+    "sample_name": "PDI-Me-COOH",
+    "region": "Cl2p",
+    "configuration_file": "configs/fits/pdi_me_cooh_cl2p_constrained.json",
+    "configuration_file_sha256": "c8896d61e002b8bff400ac283c1a6aa5290e5121d2d1290ce1ae2eddea341fd2",
+    "artifact_id": "pdi-me-cooh-cl2p-91fd8525d735557e",
+    "artifact_state": "candidate",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "eb3da44f6e2b37fcaa1adac97419fabc528108f938fbc69bcbd1a395f593fcae",
+    "configuration_sha256": "39466c4c065cf1f46a3fbba283a844d17055b01b1164e0a5635581f94eeb434d",
+    "artifact_created_at": "2026-07-22T08:19:54.899409+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 24,
+    "backend": "lmfit",
+    "multistart_rss": [
+      100958164.044582,
+      100958164.04459348
+    ],
+    "background_iterations": 0,
+    "stoichiometric_area_ratio": {}
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

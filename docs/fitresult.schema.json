@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "xps_fitting.FitResult",
+  "type": "object",
+  "required": ["energy", "raw_intensity", "background", "components", "total_fit", "residual", "fitted_parameters", "parameter_uncertainties", "correlation_matrix", "fit_statistics", "warnings", "configuration", "metadata", "convergence", "software_versions"],
+  "properties": {
+    "energy": {"type": "array", "items": {"type": "number"}},
+    "raw_intensity": {"type": "array", "items": {"type": "number"}},
+    "background": {"type": "array", "items": {"type": "number"}},
+    "components": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "number"}}},
+    "total_fit": {"type": "array", "items": {"type": "number"}},
+    "residual": {"type": "array", "items": {"type": "number"}},
+    "fitted_parameters": {"type": "object", "additionalProperties": {"type": "number"}},
+    "parameter_uncertainties": {"type": "object"}, "correlation_matrix": {"type": "object"},
+    "fit_statistics": {"type": "object"}, "warnings": {"type": "array", "items": {"type": "string"}},
+    "configuration": {"type": "object"}, "metadata": {"type": "object"}, "convergence": {"type": "object"}, "software_versions": {"type": "object"}
+  }
+}

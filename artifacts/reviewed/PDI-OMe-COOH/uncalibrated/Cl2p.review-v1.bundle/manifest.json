@@ -1,0 +1,41 @@
+{
+  "format": "xps-fitting-workbench-fit-bundle",
+  "format_version": 1,
+  "package_version": "0.3.0",
+  "files": {
+    "curves": "curves.csv",
+    "metadata": "metadata.json"
+  },
+  "integrity": {
+    "curves.csv": "e67c7758069081b3261ccffa6392c7f639cc4a42837252320e826d9f0e61e3d1",
+    "metadata.json": "e70b9dbb711792b3d786bceee5245be13f4e5d80f37a71d4ba5b22196d9f56bd"
+  },
+  "artifact": {
+    "artifact_id": "pdi-ome-cooh-cl2p-review-v1",
+    "state": "reviewed",
+    "sample": "PDI-OMe-COOH",
+    "region": "Cl2p",
+    "model": "Cl2p_constrained",
+    "created_at": "2026-07-22T08:58:15.532630+00:00",
+    "data_origin": "experimental",
+    "review_status": "reviewed",
+    "calibration_status": "uncalibrated",
+    "lineage": {
+      "parent_artifact_id": "pdi-ome-cooh-cl2p-f83dad38ee40b475",
+      "candidate_bundle_sha256": "253bd9fafc703d0e019e30fbda2f8e993925e69cc37c2b17f5c1df1fd04751e5",
+      "review_record_sha256": "f3b72faf77326fc269e435e97907bed8b66f32bb4f03094c3da5c3dc5af0ce3d",
+      "review_version": 1
+    },
+    "review_record": "artifacts/reviewed/PDI-OMe-COOH/review_records/Cl2p.review-v1.json",
+    "calibration_record": null,
+    "schema_version": 1,
+    "source": {
+      "path": "data/raw/PDI-OMe-COOH/Cl2p Scan.VGD",
+      "sha256": "36287ea04f175b62f61a44fff907ad9cbb43df5eee49d395c3f254aab5ff4863",
+      "point_count": 261
+    },
+    "configuration": {
+      "sha256": "39466c4c065cf1f46a3fbba283a844d17055b01b1164e0a5635581f94eeb434d"
+    }
+  }
+}

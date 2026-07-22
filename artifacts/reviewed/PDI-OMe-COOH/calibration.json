@@ -1,0 +1,37 @@
+{
+  "sample": "PDI-OMe-COOH",
+  "reference_region": "C1s",
+  "reference_component": "aromatic_C-C_C=C",
+  "reference_component_label": "Aromatic C=C/C-C",
+  "reference_center_before_eV": 284.4203358664135,
+  "target_energy_eV": 284.8,
+  "energy_offset_eV": 0.3796641335865161,
+  "sign_convention": "calibrated_energy = uncalibrated_energy + energy_offset_eV",
+  "applied_regions": [
+    "C1s",
+    "O1s",
+    "N1s",
+    "Cl2p",
+    "Survey"
+  ],
+  "missing_regions": [],
+  "calibration_date": "2026-07-22T09:11:40.777199+00:00",
+  "reviewer": "Angze",
+  "scientific_rationale": "284.8 is the standard reference",
+  "source_reviewed_bundle_sha256": {
+    "C1s": "da4d28dee25ae717f4dd51194a4462316592d17f6c81333a12e6d864154af46f",
+    "O1s": "ccb0e9cf43e7224d8acd9cc43073fe9c25275142de63418008ffe3c7cefd6dea",
+    "N1s": "7699a5dd2b0b51b4c165db70b2dce252a4aa4c7ce113673a02f9b592a8e2000f",
+    "Cl2p": "dc5d52345c8f36f93bb2afba33eb29cb2b8011beb6bf35bd570e7d837c3a0c9c",
+    "Survey": "7b98aa6fae1f691a38510dfc247fe0e9517bf3344f58d92ac42b16cafe347078"
+  },
+  "calibrated_bundle_sha256": {
+    "C1s": "fd62df9fcbecd95019ead876117d7b995fd00d8be92fb9301c559c120ad7709b",
+    "O1s": "df4ccd21bfe40f44ed2b01e90a7d08cd3ea6f0efd8e745d8a81e1b1db4806498",
+    "N1s": "a759f59cb462052a8a009f1833632681bd0d867417969d0a0ce31b33811a735d",
+    "Cl2p": "de9b7a21ed8b516adb1344f65a61b4916ea86e76bcfed6ef05d7ffded0d2b3c3",
+    "Survey": "608f0270962c872939983dd159319494b927fe2a4e8207d38074abdc96984f19"
+  },
+  "software_version": "0.3.0",
+  "schema_version": 1
+}

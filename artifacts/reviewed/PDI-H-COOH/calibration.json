@@ -1,0 +1,37 @@
+{
+  "sample": "PDI-H-COOH",
+  "reference_region": "C1s",
+  "reference_component": "aromatic_C-C_C=C",
+  "reference_component_label": "Aromatic C=C/C-C",
+  "reference_center_before_eV": 284.4442455122907,
+  "target_energy_eV": 284.8,
+  "energy_offset_eV": 0.35575448770930507,
+  "sign_convention": "calibrated_energy = uncalibrated_energy + energy_offset_eV",
+  "applied_regions": [
+    "C1s",
+    "N1s",
+    "O1s",
+    "Cl2p",
+    "Survey"
+  ],
+  "missing_regions": [],
+  "calibration_date": "2026-07-22T05:37:55.163547+00:00",
+  "reviewer": "Angze",
+  "scientific_rationale": "The C-C component may be set to a binding energy of 284.8eV, by default.",
+  "source_reviewed_bundle_sha256": {
+    "C1s": "2bd510e41161bb318afe4a849c5fa5960dc8204dfbca018769758afad1cc3658",
+    "N1s": "0006eea32c165cb58e7fe92735cfa1e8844539bef68a3cff4055a21f8a1b3301",
+    "O1s": "491e778cc85826dcd3b144c7cdc64e4abc3218be765142c3aabe3cbcf62e3c8f",
+    "Cl2p": "519a5656eb149415b6eff4262cb3c860523b55fb0dfcf7fb47dc94df435b0684",
+    "Survey": "6c31e33889642828dafd15c2ae54758c479796a43b63e5da964354d6beeab76a"
+  },
+  "calibrated_bundle_sha256": {
+    "C1s": "dacbfc8347bc88606fd9f20d753facd7660c3f58979d3a11739af90c9c503453",
+    "N1s": "85a8dbad9b4b1b50910d32abd98220e06155a69d7b895804a4203ffbf4c4fed2",
+    "O1s": "744a410bf2c1c2fd8a83618af30a8d6c373453ccb51a6497cd1a52f92d2deb57",
+    "Cl2p": "6cc5d42da7fa9ad495f5431fb66b0fa988c291861672f3a9e6d17c550aab00d1",
+    "Survey": "6e157e0d0cce9817c9f3f69f6f9c0bb930ed62cbba9ce2c04fb647e0927dedac"
+  },
+  "software_version": "0.3.0",
+  "schema_version": 1
+}

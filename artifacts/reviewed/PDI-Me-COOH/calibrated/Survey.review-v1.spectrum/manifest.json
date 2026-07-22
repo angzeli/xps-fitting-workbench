@@ -1,0 +1,43 @@
+{
+  "format": "xps-fitting-workbench-spectrum-bundle",
+  "format_version": 1,
+  "package_version": "0.3.0",
+  "files": {
+    "spectrum": "spectrum.csv",
+    "metadata": "metadata.json"
+  },
+  "integrity": {
+    "spectrum.csv": "c60dd129fa780be7fa4e36c838d4d4b9c539eb8c2843c1b2703fb5eacfd1969a",
+    "metadata.json": "0b60b318a8fe2142ed673b388333eef44e5b6e219a0ed4dce1bc5bf4339d720b"
+  },
+  "artifact": {
+    "artifact_id": "pdi-me-cooh-survey-spectrum-review-v1-calibrated",
+    "state": "reviewed",
+    "sample": "PDI-Me-COOH",
+    "region": "Survey",
+    "model": "raw_spectrum",
+    "created_at": "2026-07-22T09:06:55.133625+00:00",
+    "data_origin": "experimental",
+    "review_status": "reviewed",
+    "calibration_status": "calibrated",
+    "lineage": {
+      "review_version": 1,
+      "review_record_sha256": "08e8616163422d9f5037d92dff118ebcdc2321620f414348da4f00098a214a22",
+      "parent_artifact_id": "pdi-me-cooh-survey-spectrum-review-v1",
+      "source_reviewed_bundle_sha256": "c303e101f08ff59b4a4cb716551fde7c144b15aa0aff2bea76c57b4b6df30085",
+      "energy_offset_eV": 0.35605400952317723,
+      "calibration_record_sha256": "031aa1150a630ef05639acffef5af7c827df42e960253e4997d403e65993335a"
+    },
+    "review_record": "artifacts/reviewed/PDI-Me-COOH/review_records/Survey.review-v1.json",
+    "calibration_record": "artifacts/reviewed/PDI-Me-COOH/calibration.json",
+    "schema_version": 1,
+    "source": {
+      "path": "data/raw/PDI-Me-COOH/XPS Survey.VGD",
+      "sha256": "0a1c419fba26c6a132577e13b97168240a63f8cf479bb107faeceacec1910999",
+      "point_count": 1361
+    },
+    "configuration": {
+      "sha256": "9f273b69864d6c67b1fa15f0128457afaa9d4eaf63fe0a159bbb43ac36f108c3"
+    }
+  }
+}

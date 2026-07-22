@@ -1,0 +1,16 @@
+{
+  "name": "C1s_4", "region": "C 1s", "background": "linear", "multistart": 2, "random_seed": 42,
+  "peaks": [
+    {"label": "aromatic_C-C_C=C", "centre": 284.65, "centre_bounds": [284.35, 284.95], "area": 1000, "fwhm": 1.4, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "C-N_C-Cl_methoxy_C", "centre": 285.95, "centre_bounds": [285.3, 286.8], "area": 500, "fwhm": 1.4, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "imide_N-C=O", "centre": 287.90, "centre_bounds": [287.4, 288.4], "area": 400, "fwhm": 1.5, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "acid_O-C=O", "centre": 289.15, "centre_bounds": [288.7, 289.7], "area": 250, "fwhm": 1.5, "fwhm_bounds": [1.1, 2.0]}
+  ],
+  "metadata": {
+    "candidate_family": "C1s_lumped_methoxy_4",
+    "sensitivity_only": false,
+    "publication_eligible_without_review": false,
+    "chemistry_rationale": "Parsimonious PDI-OMe-COOH hypothesis in which methoxy carbon is unresolved from the broader heteroatom-bound C-N/C-Cl envelope.",
+    "position_basis": "Absolute uncalibrated guesses anchored to the 284.500054 eV raw maximum. The widened heteroatom-carbon bounds test unresolved C-O intensity without asserting a separate methoxy peak."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "sample": "PDI-Me-COOH",
+  "raw_regions": {
+    "C1s": "data/raw/PDI-Me-COOH/C1s Scan.VGD",
+    "Cl2p": "data/raw/PDI-Me-COOH/Cl2p Scan.VGD",
+    "N1s": "data/raw/PDI-Me-COOH/N1s Scan.VGD",
+    "O1s": "data/raw/PDI-Me-COOH/O1s Scan.VGD",
+    "Survey": "data/raw/PDI-Me-COOH/XPS Survey.VGD"
+  },
+  "raw_sha256": {
+    "C1s": "f96afe0a462497f038eef5f945281b49e96b331d92fb6209df526cb8087f8f2b",
+    "Cl2p": "eb3da44f6e2b37fcaa1adac97419fabc528108f938fbc69bcbd1a395f593fcae",
+    "N1s": "24460b4ba523ce2c2a4132ea55b57147fc3a46372ea1790d294bc4cd48350b1e",
+    "O1s": "b98fae85e251d142b0bb0b0394f8cb1d0ccdd5116c5a2d54c7ed70cd363ccd23",
+    "Survey": "0a1c419fba26c6a132577e13b97168240a63f8cf479bb107faeceacec1910999"
+  },
+  "expected_regions": [
+    "C1s",
+    "N1s",
+    "O1s",
+    "Cl2p",
+    "Survey"
+  ],
+  "reviewed_uncalibrated": {
+    "C1s": "artifacts/reviewed/PDI-Me-COOH/uncalibrated/C1s.review-v1.bundle",
+    "N1s": "artifacts/reviewed/PDI-Me-COOH/uncalibrated/N1s.review-v1.bundle",
+    "O1s": "artifacts/reviewed/PDI-Me-COOH/uncalibrated/O1s.review-v1.bundle",
+    "Cl2p": "artifacts/reviewed/PDI-Me-COOH/uncalibrated/Cl2p.review-v1.bundle",
+    "Survey": "artifacts/reviewed/PDI-Me-COOH/uncalibrated/Survey.review-v1.spectrum"
+  },
+  "active_review_versions": {
+    "C1s": 1,
+    "N1s": 1,
+    "O1s": 1,
+    "Cl2p": 1,
+    "Survey": 1
+  },
+  "calibrated": {
+    "C1s": "artifacts/reviewed/PDI-Me-COOH/calibrated/C1s.review-v1.bundle",
+    "N1s": "artifacts/reviewed/PDI-Me-COOH/calibrated/N1s.review-v1.bundle",
+    "O1s": "artifacts/reviewed/PDI-Me-COOH/calibrated/O1s.review-v1.bundle",
+    "Cl2p": "artifacts/reviewed/PDI-Me-COOH/calibrated/Cl2p.review-v1.bundle",
+    "Survey": "artifacts/reviewed/PDI-Me-COOH/calibrated/Survey.review-v1.spectrum"
+  },
+  "calibration": "artifacts/reviewed/PDI-Me-COOH/calibration.json",
+  "calibration_status": "calibrated",
+  "energy_offset_eV": 0.35605400952317723,
+  "calibrated_at": "2026-07-22T09:06:55.133625+00:00",
+  "created_at": "2026-07-21T14:45:55.289681+00:00",
+  "updated_at": "2026-07-22T09:06:55.133625+00:00",
+  "schema_version": 1,
+  "missing_raw_regions": []
+}

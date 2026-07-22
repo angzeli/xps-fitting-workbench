@@ -1,0 +1,16 @@
+{
+  "name": "C1s_4", "region": "C 1s", "background": "linear", "multistart": 2, "random_seed": 42,
+  "peaks": [
+    {"label": "aromatic_C-C_C=C", "centre": 284.65, "centre_bounds": [284.35, 284.95], "area": 1000, "fwhm": 1.4, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "C-N_C-Cl", "centre": 285.85, "centre_bounds": [285.3, 286.4], "area": 500, "fwhm": 1.4, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "imide_N-C=O", "centre": 287.90, "centre_bounds": [287.4, 288.4], "area": 400, "fwhm": 1.5, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "acid_O-C=O", "centre": 289.15, "centre_bounds": [288.7, 289.7], "area": 250, "fwhm": 1.5, "fwhm_bounds": [1.1, 2.0]}
+  ],
+  "metadata": {
+    "candidate_family": "C1s_common_4",
+    "sensitivity_only": false,
+    "publication_eligible_without_review": false,
+    "chemistry_rationale": "Four-envelope PDI-Me-COOH hypothesis. The two aryl-methyl carbons are treated as unresolved within aromatic_C-C_C=C because they share a hydrocarbon-like environment and the raw C 1s line shape does not show an isolated methyl feature.",
+    "position_basis": "Absolute uncalibrated guesses transferred from the homologous PDI-H-COOH model; the PDI-Me-COOH raw maximum is 284.500054 eV and sample-wide calibration is applied only after review."
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "format": "xps-fitting-workbench-fit-bundle",
+  "format_version": 1,
+  "package_version": "0.3.0",
+  "files": {
+    "curves": "curves.csv",
+    "metadata": "metadata.json"
+  },
+  "integrity": {
+    "curves.csv": "3322c1db898309d937cde0c2b29f7f6da65f4ddea6fab94528e371486390cf5f",
+    "metadata.json": "a86b9edeb35a3733072609d18418f4d1fc5ef687a273d72fe10467ad73b71bab"
+  },
+  "artifact": {
+    "artifact_id": "pdi-me-cooh-n1s-review-v1",
+    "state": "reviewed",
+    "sample": "PDI-Me-COOH",
+    "region": "N1s",
+    "model": "N1s_1_linear",
+    "created_at": "2026-07-22T08:53:35.063640+00:00",
+    "data_origin": "experimental",
+    "review_status": "reviewed",
+    "calibration_status": "uncalibrated",
+    "lineage": {
+      "parent_artifact_id": "pdi-me-cooh-n1s-2975884030f49fdd",
+      "candidate_bundle_sha256": "3e70d31ae6b578b44786b01586ccc22e2e0de0266f64b2b4340e482a07755406",
+      "review_record_sha256": "285a6fc24bd2753790d58b3576175c34d028753633931813cba91b4a5d3e5ba8",
+      "review_version": 1
+    },
+    "review_record": "artifacts/reviewed/PDI-Me-COOH/review_records/N1s.review-v1.json",
+    "calibration_record": null,
+    "schema_version": 1,
+    "source": {
+      "path": "data/raw/PDI-Me-COOH/N1s Scan.VGD",
+      "sha256": "24460b4ba523ce2c2a4132ea55b57147fc3a46372ea1790d294bc4cd48350b1e",
+      "point_count": 181
+    },
+    "configuration": {
+      "sha256": "ba6e17f89bcdabbc904f086284b242a35a4b5f982a70e5a628bd8ce8a3f03fa3"
+    }
+  }
+}

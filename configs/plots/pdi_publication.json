@@ -1,0 +1,1 @@
+{"kind":"pdi_sample_publication","regions":["Survey","C1s","N1s","O1s","Cl2p"],"individual_recipes":{"Survey":"survey_publication.json","C1s":"c1s_publication.json","N1s":"n1s_publication.json","O1s":"o1s_publication.json","Cl2p":"cl2p_publication.json"},"output_filename":"{sample_slug}_xps_panel","output_formats":["png","pdf"],"dpi":600}

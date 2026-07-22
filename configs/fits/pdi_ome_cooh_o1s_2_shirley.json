@@ -1,0 +1,51 @@
+{
+  "name": "O1s_2_shirley",
+  "region": "O 1s",
+  "background": "shirley",
+  "robust_loss": "linear",
+  "multistart": 12,
+  "random_seed": 42,
+  "release_fraction": false,
+  "max_background_iterations": 6,
+  "peaks": [
+    {
+      "label": "carbonyl_O",
+      "centre": 531.05,
+      "centre_bounds": [529.8, 532.2],
+      "area": 140000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.5,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    },
+    {
+      "label": "acid_hydroxyl_methoxy_O",
+      "centre": 532.6,
+      "centre_bounds": [531.6, 533.8],
+      "area": 90000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.5,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    }
+  ],
+  "metadata": {
+    "candidate_family": "O1s_2",
+    "background_identity": "shirley",
+    "sensitivity_only": false,
+    "publication_eligible_without_review": false,
+    "chemistry_rationale": "Parsimonious PDI-OMe-COOH hypothesis combining imide and carboxylic-acid carbonyl oxygen while treating carboxylic-acid hydroxyl and methoxy ether oxygen as one unresolved high-binding-energy envelope.",
+    "position_basis": "Absolute uncalibrated guesses based on the 532.500054 eV raw maximum and its low-binding-energy shoulder; sample-wide C 1s calibration is applied only after review.",
+    "nominal_structural_ratio": {
+      "carbonyl_O": 3.0,
+      "acid_hydroxyl_methoxy_O": 2.0
+    },
+    "stoichiometry_treatment": "benchmark_only_not_constrained"
+  }
+}

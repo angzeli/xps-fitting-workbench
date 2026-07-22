@@ -1,0 +1,26 @@
+{
+  "region": "XPS Survey",
+  "sample_name": "3.10-3",
+  "source_file": "data/raw/PDI-H-COOH/XPS Survey.VGD",
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "XPS Survey",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": null,
+    "dwell_time_s": null,
+    "periods": null,
+    "txf_applied": false,
+    "original_order": "descending",
+    "input_rows": 1361,
+    "clean_rows": 1361,
+    "artifact_id": "3-10-3-xpssurvey-spectrum-review-v1",
+    "artifact_state": "reviewed",
+    "review_status": "reviewed",
+    "review_version": 1,
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false
+  },
+  "acquisition_metadata": {}
+}

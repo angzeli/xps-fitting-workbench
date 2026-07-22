@@ -1,0 +1,46 @@
+{
+  "format": "xps-fitting-workbench-fit-bundle",
+  "format_version": 1,
+  "package_version": "0.3.0",
+  "files": {
+    "curves": "curves.csv",
+    "metadata": "metadata.json"
+  },
+  "integrity": {
+    "curves.csv": "412fbab012aaca70334798a62da29803b279938c4e735c1da81fafd303e74a3d",
+    "metadata.json": "da2d024053c78a5bc90750bee8fcc2637ced96984b80d29e3fc3b07d2f968ad4"
+  },
+  "artifact": {
+    "artifact_id": "pdi-h-cooh-c1s-review-v1-calibrated",
+    "state": "reviewed",
+    "sample": "PDI-H-COOH",
+    "region": "C1s",
+    "model": "C1s_5",
+    "created_at": "2026-07-22T05:37:55.163547+00:00",
+    "data_origin": "experimental",
+    "review_status": "reviewed",
+    "calibration_status": "calibrated",
+    "lineage": {
+      "parent_artifact_id": "pdi-h-cooh-c1s-review-v1",
+      "candidate_bundle_sha256": "cb2f3ba3fe9f3d4527a1bd99611bc29f81a9f198a997fb7872589f65783ff8c6",
+      "review_record_sha256": "145b4408db9bb31b6d06a7f96102b91b72dcf754ac99301df88256481a77ef13",
+      "review_version": 1,
+      "review_candidate_artifact_id": "pdi-h-cooh-c1s-82df5f5d68293967",
+      "reviewed_configuration_sha256": "ce862c8d1a5f3bdbd1465b7f1a288fab383aeac25c8bd59fb7aa0bc07fd0fcc7",
+      "source_reviewed_bundle_sha256": "2bd510e41161bb318afe4a849c5fa5960dc8204dfbca018769758afad1cc3658",
+      "energy_offset_eV": 0.35575448770930507,
+      "calibration_record_sha256": "49f4dc8b2be043643c5572a00b44a5981f68a6ec0e6608d45f0a773a183833f2"
+    },
+    "review_record": "artifacts/reviewed/PDI-H-COOH/review_records/C1s.review-v1.json",
+    "calibration_record": "artifacts/reviewed/PDI-H-COOH/calibration.json",
+    "schema_version": 1,
+    "source": {
+      "path": "data/raw/PDI-H-COOH/C1s Scan.VGD",
+      "sha256": "080a8d87490cbf883c4c9becabc3982eeff35b1d7533a49e9a0bc30cf8a2f9f5",
+      "point_count": 231
+    },
+    "configuration": {
+      "sha256": "a39c993e912b1db9060276e9adabccd3406a81463c01b3f5d1ebca28ba64dc99"
+    }
+  }
+}

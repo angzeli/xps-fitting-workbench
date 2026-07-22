@@ -1,0 +1,79 @@
+{
+  "name": "O1s_4_methoxy_linear",
+  "region": "O 1s",
+  "background": "linear",
+  "robust_loss": "linear",
+  "multistart": 12,
+  "random_seed": 42,
+  "release_fraction": false,
+  "peaks": [
+    {
+      "label": "imide_carbonyl_O",
+      "centre": 530.9,
+      "centre_bounds": [529.8, 531.5],
+      "area": 100000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.4,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    },
+    {
+      "label": "acid_carbonyl_O",
+      "centre": 531.6,
+      "centre_bounds": [531.0, 532.4],
+      "area": 50000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.4,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    },
+    {
+      "label": "methoxy_O",
+      "centre": 532.4,
+      "centre_bounds": [531.7, 533.2],
+      "area": 50000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.4,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    },
+    {
+      "label": "acid_hydroxyl_OH",
+      "centre": 533.2,
+      "centre_bounds": [532.3, 534.4],
+      "area": 50000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.4,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    }
+  ],
+  "metadata": {
+    "candidate_family": "O1s_4_separated_methoxy",
+    "background_identity": "linear",
+    "sensitivity_only": true,
+    "publication_eligible_without_review": false,
+    "chemistry_rationale": "Sensitivity hypothesis separating imide carbonyl, acid carbonyl, methoxy ether, and acid hydroxyl oxygen. Acceptance requires all four envelopes to be resolved and stable rather than merely improving residuals through extra freedom.",
+    "position_basis": "Broad absolute uncalibrated bounds span the 532.500054 eV envelope; sample-wide C 1s calibration is applied only after review.",
+    "nominal_structural_ratio": {
+      "imide_carbonyl_O": 2.0,
+      "acid_carbonyl_O": 1.0,
+      "methoxy_O": 1.0,
+      "acid_hydroxyl_OH": 1.0
+    },
+    "stoichiometry_treatment": "benchmark_only_not_constrained",
+    "structure_assumption": "Two methoxy-oxygen atoms are assumed only for this sensitivity test; confirm the exact PDI-OMe-COOH structure before scientific acceptance."
+  }
+}

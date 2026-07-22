@@ -1,0 +1,174 @@
+{
+  "fitted_parameters": {
+    "Cl_2p3/2.area": 62957.24994104107,
+    "Cl_2p3/2.centre": 199.99244885493627,
+    "Cl_2p3/2.fwhm": 0.9657989182470912,
+    "Cl_2p3/2.fraction": 0.5,
+    "Cl_2p1/2.area": 31478.624970520534,
+    "Cl_2p1/2.centre": 201.59244885493626,
+    "Cl_2p1/2.fwhm": 0.9657989182470912,
+    "Cl_2p1/2.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "Cl_2p3/2.area": 291.3955215937369,
+    "Cl_2p3/2.centre": 0.002712343984565191,
+    "Cl_2p3/2.fwhm": 0.005883561964723018,
+    "Cl_2p3/2.fraction": null,
+    "Cl_2p1/2.area": null,
+    "Cl_2p1/2.centre": null,
+    "Cl_2p1/2.fwhm": null,
+    "Cl_2p1/2.fraction": null
+  },
+  "correlation_matrix": {
+    "Cl_2p3/2.area": {
+      "Cl_2p3/2.area": 1.0000000000000002,
+      "Cl_2p3/2.centre": -1.4567289409113538e-06,
+      "Cl_2p3/2.fwhm": 0.5274465715286679
+    },
+    "Cl_2p3/2.centre": {
+      "Cl_2p3/2.area": -1.4567289409113536e-06,
+      "Cl_2p3/2.centre": 1.0,
+      "Cl_2p3/2.fwhm": -5.525964587043758e-06
+    },
+    "Cl_2p3/2.fwhm": {
+      "Cl_2p3/2.area": 0.5274465715286684,
+      "Cl_2p3/2.centre": -5.525964587043759e-06,
+      "Cl_2p3/2.fwhm": 1.0
+    }
+  },
+  "fit_statistics": {
+    "rss": 105568464.24231716,
+    "reduced_chi_square": 409180.0939624696,
+    "aic": 3375.601309086878,
+    "aicc": 3375.6946943008857,
+    "bic": 3386.294870308846,
+    "durbin_watson": 0.09156983564103251,
+    "residual_runs": 17.0,
+    "n_parameters": 3.0,
+    "n_points": 261.0
+  },
+  "warnings": [],
+  "configuration": {
+    "name": "Cl2p_constrained",
+    "region": "Cl 2p",
+    "peaks": [
+      {
+        "label": "Cl_2p3/2",
+        "centre": 200.0,
+        "centre_bounds": [
+          199.5,
+          200.5
+        ],
+        "area": 65000.0,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.2,
+        "fwhm_bounds": [
+          0.2,
+          3.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "Cl_doublet",
+        "fraction_group": "Cl_doublet",
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "Cl_2p1/2",
+        "centre": 201.6,
+        "centre_bounds": [
+          201.1,
+          202.1
+        ],
+        "area": 32500.0,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.2,
+        "fwhm_bounds": [
+          0.2,
+          3.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "Cl_doublet",
+        "fraction_group": "Cl_doublet",
+        "centre_offset_from": [
+          "Cl_2p3/2",
+          1.6
+        ],
+        "area_ratio_to": [
+          "Cl_2p3/2",
+          0.5
+        ]
+      }
+    ],
+    "background": "linear",
+    "robust_loss": "linear",
+    "multistart": 2,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 3,
+    "width_penalty": 0.0,
+    "metadata": {}
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "Cl2p Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 10,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 261,
+    "clean_rows": 261,
+    "source_file": "data/raw/PDI-H-COOH/Cl2p Scan.VGD",
+    "sample_name": "PDI-H-COOH",
+    "region": "Cl2p",
+    "artifact_id": "pdi-h-cooh-cl2p-69354564f8a1a0d5",
+    "artifact_state": "candidate",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "9cbe567914280393e8c16ba8941c73bfe54e8dd676f8c51506fad01952823728",
+    "configuration_sha256": "39466c4c065cf1f46a3fbba283a844d17055b01b1164e0a5635581f94eeb434d",
+    "artifact_created_at": "2026-07-21T15:18:06.191053+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 24,
+    "backend": "lmfit",
+    "multistart_rss": [
+      105568464.24231714,
+      105568464.2423639
+    ]
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

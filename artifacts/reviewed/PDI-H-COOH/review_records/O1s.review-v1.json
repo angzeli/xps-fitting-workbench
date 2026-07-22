@@ -1,0 +1,23 @@
+{
+  "sample": "PDI-H-COOH",
+  "region": "O1s",
+  "candidate_source": "artifacts/candidates/PDI-H-COOH/O1s/o1s-3-linear.bundle",
+  "selected_model": "O1s_3_linear",
+  "decision": "accepted",
+  "reviewer": "Angze",
+  "review_date": "2026-07-22T04:09:13.767779+00:00",
+  "notes": [],
+  "residual_inspection_status": "approved",
+  "background_approval_status": "approved",
+  "component_assignment_approval_status": "approved",
+  "constraints_reviewed": true,
+  "warnings_acknowledged": true,
+  "source_sha256": "acad209a5f0967125a6ab3519623219cc01533f4573e5dc56a3465f964e1bc37",
+  "configuration_sha256": "1811778726939aa1d12e90b3f5da7f21a5de7082354659699605be5cc2effbe2",
+  "candidate_artifact_id": "pdi-h-cooh-o1s-2d8cf923d13ef54e",
+  "candidate_bundle_sha256": "f4066c4e14c04f7f3f0e15c31d4770bc89607e681ddb1014bc36d96815b50025",
+  "review_version": 1,
+  "software_version": "0.3.0",
+  "review_status": "reviewed",
+  "schema_version": 1
+}
