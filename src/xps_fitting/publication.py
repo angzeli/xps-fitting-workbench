@@ -20,7 +20,7 @@ from .plotting.survey import plot_survey_from_config
 from .result import FitResult
 from .sample_manifest import EXPECTED_REGIONS, load_sample_manifest
 from .spectrum import Spectrum
-from .spectrum_artifacts import load_spectrum_bundle, validate_spectrum_bundle
+from .spectrum_artifacts import _canonical_region_name, load_spectrum_bundle, validate_spectrum_bundle
 
 
 def _repository_root(anchor: Path, explicit: str | Path | None) -> Path | None:
@@ -77,7 +77,7 @@ def load_publication_region(
     else:
         raise ValueError(f"unsupported calibrated artifact bundle: {bundle}")
     metadata = result.metadata.get("binding_energy_calibration", {})
-    if report.sample != manifest.sample or report.region != canonical:
+    if report.sample != manifest.sample or _canonical_region_name(report.region) != canonical:
         raise ValueError("publication bundle sample or region is inconsistent with the sample manifest")
     if calibration.get("sample") != manifest.sample or canonical not in calibration.get("applied_regions", []):
         raise ValueError("calibration record is inconsistent with the requested sample region")

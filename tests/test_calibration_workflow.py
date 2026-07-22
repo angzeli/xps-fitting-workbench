@@ -81,7 +81,7 @@ def _sample(tmp_path, *, complete: bool = True):
     survey = Spectrum(
         np.linspace(0.0, 1200.0, 121),
         np.linspace(50.0, 100.0, 121),
-        region="Survey",
+        region="XPS Survey",
         sample_name="PDI-H-COOH",
         source_file=str(survey_source),
         metadata={"data_origin": "experimental"},
