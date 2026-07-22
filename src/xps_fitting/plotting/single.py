@@ -16,7 +16,7 @@ from ..result import FitResult
 from .annotations import PDI_H_C1S_LABELS, annotate_peak_positions, statistics_text
 from .palettes import component_colour
 from .palettes import component_style as monochrome_component_style
-from .themes import PlotTheme, apply_vertical_headroom, style_axes, style_legend, theme_context
+from .themes import PlotTheme, fitted_region_y_limits, style_axes, style_legend, theme_context
 from .validation import validate_result_curves
 
 DISPLAY_MODES = {"lines", "filled", "filled_to_background", "stacked_visualisation", "outline_only", "hidden"}
@@ -59,7 +59,7 @@ def plot_xps_fit(
     legend_order: Sequence[str] | None = None,
     label_map: Mapping[str, str] | None = None,
     component_colours: Mapping[str, str] | None = None,
-    y_start: float | None = 0.0,
+    y_start: float | None = None,
     title: str | None = None,
     fit_colour: str | None = None,
 ) -> tuple[Figure, Axes | np.ndarray]:
@@ -217,15 +217,14 @@ def plot_xps_fit(
         if x_minor_interval is not None:
             main.xaxis.set_minor_locator(MultipleLocator(x_minor_interval))
         main.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
-        visible_minimum = min(float(np.min(curve)) for curve in displayed_curves)
-        visible_maximum = max(float(np.max(curve)) for curve in displayed_curves)
-        apply_vertical_headroom(
-            main,
-            selected,
-            minimum=visible_minimum,
-            maximum=visible_maximum,
-            bottom=y_start,
-        )
+        y_lower, y_upper = fitted_region_y_limits(raw, background, total, selected)
+        if y_start is not None:
+            signal_span = max(float(np.max((raw, background, total))) - y_start, 1.0)
+            y_lower = y_start
+            y_upper = max(
+                y_upper, float(np.max((raw, background, total))) + selected.fitted_region_upper_padding * signal_span
+            )
+        main.set_ylim(y_lower, y_upper)
         style_axes(main, selected, show_top_ticks=show_top_ticks, show_y_ticks=show_y_ticks)
         if title and selected.show_title:
             main.set_title(title, fontsize=selected.title_size, fontweight="bold")

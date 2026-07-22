@@ -20,7 +20,7 @@ from .configuration import PlotConfig
 from .export import export_figure
 from .palettes import component_colour
 from .survey import draw_survey_axis
-from .themes import PlotTheme, apply_vertical_headroom, load_theme, style_axes, style_legend, theme_context
+from .themes import PlotTheme, fitted_region_y_limits, load_theme, style_axes, style_legend, theme_context
 
 PANEL_REGIONS = ("Survey", "C1s", "N1s", "O1s", "Cl2p")
 
@@ -81,13 +81,7 @@ def _draw_fitted_axis(axis: Axes, result: FitResult, config: PlotConfig, theme: 
         axis.xaxis.set_major_locator(MultipleLocator(config.tick_spacing))
     if config.x_minor_interval is not None:
         axis.xaxis.set_minor_locator(MultipleLocator(config.x_minor_interval))
-    apply_vertical_headroom(
-        axis,
-        theme,
-        minimum=min(float(np.min(curve)) for curve in displayed),
-        maximum=max(float(np.max(curve)) for curve in displayed),
-        bottom=0.0,
-    )
+    axis.set_ylim(fitted_region_y_limits(raw, background, total, theme))
     style_axes(axis, theme, show_top_ticks=False, show_y_ticks=False)
     axis.set_xlabel("Binding energy (eV)")
     legend = axis.legend(loc="best", ncol=2 if len(result.components) > 3 else 1)

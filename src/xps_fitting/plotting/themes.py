@@ -8,6 +8,7 @@ from dataclasses import dataclass, replace
 from typing import Any, Iterator
 
 import matplotlib as mpl
+import numpy as np
 from matplotlib.axes import Axes
 from matplotlib.legend import Legend
 
@@ -75,6 +76,8 @@ class PlotTheme:
     axis_padding: float = 4.0
     figure_size: tuple[float, float] = FIGURE_SIZE_PRESETS["detailed-publication"]
     vertical_headroom: float = 0.1
+    fitted_region_lower_padding: float = 0.06
+    fitted_region_upper_padding: float = 0.12
     dpi: int = 300
     invert_binding_energy: bool = True
     residual_height_ratio: float = 0.28
@@ -97,6 +100,8 @@ class PlotTheme:
             or not 0 <= self.negligible_component_fraction <= 1
             or self.peak_annotation_collision_fraction < 0
             or self.vertical_headroom < 0
+            or self.fitted_region_lower_padding < 0
+            or self.fitted_region_upper_padding < 0
         ):
             raise ValueError("theme dimensions, DPI, and alpha must be valid")
         if (
@@ -313,6 +318,28 @@ def apply_vertical_headroom(
     lower = minimum if bottom is None else bottom
     span = max(maximum - lower, abs(maximum), 1.0)
     axis.set_ylim(bottom=lower, top=maximum + theme.vertical_headroom * span)
+
+
+def fitted_region_y_limits(
+    raw_intensity: np.ndarray,
+    background: np.ndarray,
+    total_fit: np.ndarray,
+    theme: PlotTheme,
+) -> tuple[float, float]:
+    """Return baseline-relative limits from the displayed fitted envelope."""
+    curves = tuple(np.asarray(curve, dtype=float) for curve in (raw_intensity, background, total_fit))
+    finite = tuple(curve[np.isfinite(curve)] for curve in curves)
+    if any(curve.size == 0 for curve in finite):
+        raise ValueError("fitted-region y limits require finite displayed curves")
+    display_minimum = min(float(np.min(curve)) for curve in finite)
+    display_maximum = max(float(np.max(curve)) for curve in finite)
+    signal_span = display_maximum - display_minimum
+    if signal_span <= 0:
+        signal_span = max(abs(display_maximum), 1.0)
+    return (
+        display_minimum - theme.fitted_region_lower_padding * signal_span,
+        display_maximum + theme.fitted_region_upper_padding * signal_span,
+    )
 
 
 @contextmanager

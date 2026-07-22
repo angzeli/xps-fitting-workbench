@@ -17,6 +17,7 @@ from .themes import (
     PlotTheme,
     apply_vertical_headroom,
     figure_size_preset,
+    fitted_region_y_limits,
     load_theme,
     style_axes,
     style_legend,
@@ -191,13 +192,23 @@ def plot_xps_series(
                 axis.invert_xaxis()
             if tick_spacing:
                 axis.xaxis.set_major_locator(MultipleLocator(tick_spacing))
-            apply_vertical_headroom(
-                axis,
-                selected,
-                minimum=min(float(np.min(curve)) for curve in displayed_curves),
-                maximum=max(float(np.max(curve)) for curve in displayed_curves),
-                bottom=None if independent_y else 0.0,
-            )
+            if independent_y:
+                axis.set_ylim(
+                    fitted_region_y_limits(
+                        np.asarray(result.raw_intensity) + offset,
+                        np.asarray(result.background) + offset,
+                        displayed_total,
+                        selected,
+                    )
+                )
+            else:
+                apply_vertical_headroom(
+                    axis,
+                    selected,
+                    minimum=min(float(np.min(curve)) for curve in displayed_curves),
+                    maximum=max(float(np.max(curve)) for curve in displayed_curves),
+                    bottom=0.0,
+                )
             style_axes(axis, selected)
             if index % ncols == 0:
                 axis.set_ylabel("Normalised intensity" if normalised else "Intensity (a.u.)")

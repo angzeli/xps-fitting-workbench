@@ -8,7 +8,14 @@ import pytest
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from xps_fitting.plotting import VISIBLE_SPINE_WIDTH, export_figure, figure_size_preset, load_theme, plot_xps_fit
+from xps_fitting.plotting import (
+    VISIBLE_SPINE_WIDTH,
+    export_figure,
+    figure_size_preset,
+    fitted_region_y_limits,
+    load_theme,
+    plot_xps_fit,
+)
 from xps_fitting.plotting.configuration import load_plot_config
 from xps_fitting.result import FitResult
 
@@ -33,6 +40,35 @@ def result_fixture() -> FitResult:
         fit_statistics={"aicc": 10, "bic": 12},
         configuration={"region": "C 1s"},
     )
+
+
+@pytest.mark.parametrize(("region", "baseline"), [("C 1s", 4.0), ("N 1s", 24.0), ("O 1s", 22.0), ("Cl 2p", 2.0)])
+def test_fitted_region_limits_are_baseline_relative_for_every_region(region, baseline) -> None:
+    energy = np.linspace(0, 10, 101)
+    background = np.linspace(baseline, baseline + 0.5, energy.size)
+    component = 10 * np.exp(-(((energy - 5) / 0.8) ** 2))
+    total = background + component
+    raw = total + 0.02 * np.sin(energy)
+    result = FitResult(
+        energy,
+        raw,
+        background,
+        {"aromatic_C-C_C=C": component},
+        total,
+        raw - total,
+        {},
+        configuration={"region": region},
+    )
+
+    figure, axis = plot_xps_fit(result, core_level=region, component_display_mode="filled_to_background")
+    expected = fitted_region_y_limits(raw, background, total, load_theme("angze_publication"))
+    assert axis.get_ylim() == pytest.approx(expected)
+    assert axis.get_ylim()[0] > 0
+    baseline_fraction = (float(np.median(background)) - expected[0]) / (expected[1] - expected[0])
+    assert 0.03 <= baseline_fraction <= 0.18
+    assert expected[1] > max(float(np.max(raw)), float(np.max(total)))
+    assert expected[0] < min(float(np.min(raw)), float(np.min(background)), float(np.min(total)))
+    plt.close(figure)
 
 
 def test_single_plot_layers_residual_and_no_mutation() -> None:
