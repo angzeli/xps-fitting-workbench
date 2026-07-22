@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 
 import numpy as np
 from matplotlib.artist import Artist
@@ -25,6 +26,61 @@ PDI_H_C1S_LABELS = {
     "acid_hydroxyl_OH": "Acid O–H",
 }
 
+_HORIZONTAL_ALIGNMENTS = frozenset({"left", "center", "right"})
+_VERTICAL_ALIGNMENTS = frozenset({"bottom", "center", "top"})
+_PEAK_ANNOTATION_KEYS = frozenset({"offset_points", "connector", "horizontal_alignment", "vertical_alignment"})
+
+
+@dataclass(frozen=True)
+class PeakAnnotationOptions:
+    offset_points: tuple[float, float]
+    connector: bool
+    horizontal_alignment: str
+    vertical_alignment: str
+
+
+def validate_peak_annotation_options(
+    options_by_label: Mapping[str, Mapping[str, object]],
+    *,
+    default_connector: bool,
+    max_connector_points: float,
+) -> dict[str, PeakAnnotationOptions]:
+    """Validate and normalise exact per-component annotation presentation."""
+    normalised: dict[str, PeakAnnotationOptions] = {}
+    for label, options in options_by_label.items():
+        unknown = set(options) - _PEAK_ANNOTATION_KEYS
+        if unknown:
+            raise ValueError(f"unknown peak annotation option(s) for {label!r}: {', '.join(sorted(unknown))}")
+        raw_offset = options.get("offset_points", (0.0, 0.0))
+        if not isinstance(raw_offset, (list, tuple)) or len(raw_offset) != 2:
+            raise ValueError(f"peak annotation offset for {label!r} must contain two finite values")
+        raw_x, raw_y = raw_offset
+        if any(isinstance(value, bool) for value in (raw_x, raw_y)):
+            raise ValueError(f"peak annotation offset for {label!r} must contain two finite values")
+        offset = (float(raw_x), float(raw_y))
+        if not all(np.isfinite(value) for value in offset):
+            raise ValueError(f"peak annotation offset for {label!r} must contain two finite values")
+        connector = options.get("connector", default_connector)
+        if not isinstance(connector, bool):
+            raise ValueError(f"peak annotation connector for {label!r} must be true or false")
+        if connector and float(np.hypot(*offset)) > max_connector_points:
+            raise ValueError(
+                f"peak annotation connector for {label!r} exceeds the {max_connector_points:g}-point limit"
+            )
+        horizontal_alignment = options.get("horizontal_alignment", "center")
+        vertical_alignment = options.get("vertical_alignment", "bottom")
+        if horizontal_alignment not in _HORIZONTAL_ALIGNMENTS:
+            raise ValueError(f"invalid peak annotation horizontal alignment for {label!r}")
+        if vertical_alignment not in _VERTICAL_ALIGNMENTS:
+            raise ValueError(f"invalid peak annotation vertical alignment for {label!r}")
+        normalised[label] = PeakAnnotationOptions(
+            offset_points=offset,
+            connector=connector,
+            horizontal_alignment=str(horizontal_alignment),
+            vertical_alignment=str(vertical_alignment),
+        )
+    return normalised
+
 
 def statistics_text(result: FitResult) -> str:
     parts = []
@@ -45,6 +101,7 @@ def annotate_peak_positions(
     include_unit: bool = True,
     leaders: bool = True,
     offsets: Mapping[str, tuple[float, float]] | None = None,
+    annotation_options: Mapping[str, Mapping[str, object]] | None = None,
     include_negligible: bool = False,
     clearance_curves: Sequence[np.ndarray] = (),
     obstacles: tuple[Artist, ...] = (),
@@ -60,6 +117,11 @@ def annotate_peak_positions(
             raise ValueError(f"peak annotation offset for {label!r} must contain two finite values") from exc
         if not all(np.isfinite(value) for value in (offset_x, offset_y)):
             raise ValueError(f"peak annotation offset for {label!r} must contain two finite values")
+    configured_options = validate_peak_annotation_options(
+        annotation_options or {},
+        default_connector=leaders,
+        max_connector_points=theme.peak_annotation_max_connector_points,
+    )
 
     if not displayed_components:
         return []
@@ -104,15 +166,19 @@ def annotate_peak_positions(
         else:
             stagger_level = 0
         previous_centre = centre
-        manual_x, manual_y = manual_offsets.get(label, (0.0, 0.0))
+        configured = configured_options.get(label)
+        manual_x, manual_y = (
+            configured.offset_points if configured is not None else manual_offsets.get(label, (0.0, 0.0))
+        )
         anchor_x = min(max(centre, x_lower + x_margin), x_upper - x_margin)
         apex_y_pixels = axis.transData.transform((anchor_x, apex_height))[1]
         clearance_y_pixels = axis.transData.transform((anchor_x, clearance_height))[1]
         clearance_points = max(0.0, clearance_y_pixels - apex_y_pixels) * 72.0 / axis.figure.dpi
         text = f"{centre:.{precision}f}" + (" eV" if include_unit else "")
         colour = component_colours[label]
+        connector = configured.connector if configured is not None else leaders
         arrowprops = None
-        if leaders:
+        if connector:
             arrowprops = {
                 "arrowstyle": "-",
                 "color": colour,
@@ -120,19 +186,29 @@ def annotate_peak_positions(
                 "shrinkA": 2,
                 "shrinkB": 2,
             }
+        if configured is None:
+            text_offset_y = (
+                theme.peak_annotation_offset_points
+                + clearance_points
+                + stagger_level * theme.peak_annotation_stagger_points
+                + manual_y
+            )
+            horizontal_alignment = "center"
+            vertical_alignment = "bottom"
+        else:
+            text_offset_y = manual_y + (clearance_points if not connector else 0.0)
+            horizontal_alignment = configured.horizontal_alignment
+            vertical_alignment = configured.vertical_alignment
         annotation = axis.annotate(
             text,
             xy=(anchor_x, apex_height),
             xytext=(
                 manual_x,
-                theme.peak_annotation_offset_points
-                + clearance_points
-                + stagger_level * theme.peak_annotation_stagger_points
-                + manual_y,
+                text_offset_y,
             ),
             textcoords="offset points",
-            ha="center",
-            va="bottom",
+            ha=horizontal_alignment,
+            va=vertical_alignment,
             color=colour,
             fontsize=theme.peak_annotation_size,
             fontweight="bold",
@@ -146,31 +222,15 @@ def annotate_peak_positions(
         annotation._xps_fitted_centre = centre
         annotation._xps_stagger_level = stagger_level
         annotation._xps_clearance_height = clearance_height
+        annotation._xps_explicit_placement = configured is not None
+        annotation._xps_configured_offset = (manual_x, manual_y) if configured is not None else None
         annotations.append(annotation)
+    automatic_annotations = [item for item in annotations if not item._xps_explicit_placement]
     for _ in range(3):
-        _lift_annotations_above_lines(axis, annotations)
-        _lift_annotations_above_clearance(axis, annotations)
-        _expand_upper_limit_for_annotations(axis, annotations)
+        _lift_annotations_above_lines(axis, automatic_annotations)
+        _lift_annotations_above_clearance(axis, automatic_annotations)
     _keep_annotations_inside_axes(axis, annotations, obstacles)
     return annotations
-
-
-def _expand_upper_limit_for_annotations(axis: Axes, annotations: list[Annotation]) -> None:
-    """Add data-scaled headroom when point-offset labels would cross the top spine."""
-    if not annotations:
-        return
-    canvas = axis.figure.canvas
-    padding = 3.0
-    for _ in range(4):
-        canvas.draw()
-        renderer = canvas.get_renderer()
-        axes_box = axis.get_window_extent(renderer)
-        overflow = max(Text.get_window_extent(item, renderer).y1 - axes_box.y1 + padding for item in annotations)
-        if overflow <= 0:
-            break
-        lower, upper = axis.get_ylim()
-        data_per_pixel = (upper - lower) / max(axes_box.height, 1.0)
-        axis.set_ylim(top=upper + overflow * data_per_pixel)
 
 
 def _lift_annotations_above_clearance(axis: Axes, annotations: list[Annotation]) -> None:

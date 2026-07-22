@@ -39,6 +39,14 @@ def test_recipe_round_trip_and_validation(tmp_path) -> None:
         x_limits=(2, 0),
         show_peak_positions=True,
         peak_annotation_offsets={"p": (2, 3)},
+        peak_annotations={
+            "p": {
+                "offset_points": (4, 5),
+                "connector": True,
+                "horizontal_alignment": "right",
+                "vertical_alignment": "bottom",
+            }
+        },
         peak_label_fontsize=9,
         peak_annotation_leader_width=0.5,
         x_minor_interval=0.5,
@@ -149,10 +157,18 @@ def test_c1s_publication_recipe_records_final_layout() -> None:
     assert not config.show_y_ticks and config.show_top_ticks is False
     assert not config.show_sample_title
     assert config.core_level_label_position == (0.97, 0.96)
-    assert set(config.peak_annotation_offsets) == {
+    assert not config.peak_annotation_offsets
+    assert set(config.peak_annotations) == {
         "aromatic_C-C_C=C",
         "C-N_C-Cl",
         "imide_N-C=O",
         "acid_O-C=O",
         "pi-pi_star",
     }
+    assert config.peak_annotations["aromatic_C-C_C=C"]["connector"] is False
+    assert config.peak_annotations["C-N_C-Cl"]["offset_points"] == (-18, 20)
+
+
+def test_recipe_rejects_an_overlong_configured_connector() -> None:
+    with pytest.raises(ValueError, match="exceeds the 30-point limit"):
+        PlotConfig(peak_annotations={"p": {"offset_points": (30, 30), "connector": True}})

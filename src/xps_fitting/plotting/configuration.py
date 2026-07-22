@@ -8,6 +8,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .annotations import validate_peak_annotation_options
 from .single import DISPLAY_MODES
 from .themes import figure_size_preset as resolve_figure_size_preset
 from .themes import load_theme, validate_theme
@@ -35,6 +36,7 @@ class PlotConfig:
     peak_label_fontsize: float | None = None
     peak_annotation_leader_width: float | None = None
     peak_annotation_offsets: dict[str, tuple[float, float]] = field(default_factory=dict)
+    peak_annotations: dict[str, dict[str, Any]] = field(default_factory=dict)
     annotate_negligible_components: bool = False
     annotate_hidden_components: bool = False
     labels: dict[str, str] = field(default_factory=dict)
@@ -91,6 +93,11 @@ class PlotConfig:
                 raise ValueError(f"peak annotation offset for {label!r} must contain two finite values") from exc
             if not all(math.isfinite(value) for value in (offset_x, offset_y)):
                 raise ValueError(f"peak annotation offset for {label!r} must contain two finite values")
+        validate_peak_annotation_options(
+            self.peak_annotations,
+            default_connector=self.peak_annotation_leaders,
+            max_connector_points=theme.peak_annotation_max_connector_points,
+        )
         if self.core_level_label_position is not None and (
             len(self.core_level_label_position) != 2
             or not all(math.isfinite(value) and 0 <= value <= 1 for value in self.core_level_label_position)
@@ -125,4 +132,8 @@ def load_plot_config(path: str | Path) -> PlotConfig:
         data["peak_annotation_offsets"] = {
             label: tuple(offset) for label, offset in data["peak_annotation_offsets"].items()
         }
+    if "peak_annotations" in data:
+        for options in data["peak_annotations"].values():
+            if "offset_points" in options:
+                options["offset_points"] = tuple(options["offset_points"])
     return PlotConfig(**data)

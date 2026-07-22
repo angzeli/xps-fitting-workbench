@@ -308,6 +308,9 @@ vertical placement. Labels are bold, assignment-coloured, one decimal place with
 `eV` by default, and deterministically staggered when neighbouring centres are
 close. `peak_annotation_leaders=False` removes leader lines;
 `peak_annotation_offsets={"component": (dx, dy)}` adds per-component point offsets.
+Recipes can instead use `peak_annotations` for exact point offsets plus per-component
+connector and horizontal/vertical alignment controls; configured connectors are
+limited to 30 points.
 Hidden and negligible components stay unlabelled unless explicitly requested. The
 committed detailed C 1s recipe enables these labels by default.
 
@@ -333,7 +336,8 @@ remains available for diagnostic/legacy rendering, but it is not the final
 experimental publication gate.
 
 `configs/plots/c1s_publication.json` is the complete visual provenance. Edit
-`peak_annotation_offsets` to change component-specific `(x, y)` point offsets;
+`peak_annotations` to change exact component-specific `(x, y)` point offsets,
+connectors, and alignments;
 `show_sample_title` and `core_level_label_position` control the two title elements.
 To reuse the style for N 1s, O 1s, or Cl 2p, copy the recipe, change `core_level`,
 `x_limits`, `output_filename`, and the assignment-specific offsets, then pass the

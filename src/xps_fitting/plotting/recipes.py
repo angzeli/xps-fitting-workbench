@@ -69,6 +69,7 @@ def plot_from_config(
         peak_position_unit=config.peak_position_unit,
         peak_annotation_leaders=config.peak_annotation_leaders,
         peak_annotation_offsets=config.peak_annotation_offsets,
+        peak_annotations=config.peak_annotations,
         annotate_negligible_components=config.annotate_negligible_components,
         annotate_hidden_components=config.annotate_hidden_components,
     )
@@ -123,6 +124,7 @@ def plot_series_from_config(
         peak_position_unit=config.peak_position_unit,
         peak_annotation_leaders=config.peak_annotation_leaders,
         peak_annotation_offsets=config.peak_annotation_offsets,
+        peak_annotations=config.peak_annotations,
         annotate_negligible_components=config.annotate_negligible_components,
         annotate_hidden_components=config.annotate_hidden_components,
     )

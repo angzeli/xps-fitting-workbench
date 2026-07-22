@@ -113,6 +113,64 @@ def test_peak_positions_hidden_negligible_units_and_leaders_can_be_controlled() 
     plt.close(figure)
 
 
+def test_exact_annotation_options_control_connectors_alignment_and_preserve_limits() -> None:
+    energy = np.linspace(280, 292, 241)
+    background = np.full_like(energy, 20.0)
+    aromatic = 10 * np.exp(-(((energy - 285.0) / 0.55) ** 2))
+    carbon_nitrogen = 4 * np.exp(-(((energy - 287.0) / 0.6) ** 2))
+    total = background + aromatic + carbon_nitrogen
+    result = FitResult(
+        energy,
+        total,
+        background,
+        {"aromatic_C-C_C=C": aromatic, "C-N_C-Cl": carbon_nitrogen},
+        total,
+        np.zeros_like(energy),
+        {"aromatic_C-C_C=C.centre": 285.0, "C-N_C-Cl.centre": 287.0},
+    )
+    unannotated, plain_axis = plot_xps_fit(result)
+    expected_limits = plain_axis.get_ylim()
+
+    figure, axis = plot_xps_fit(
+        result,
+        show_peak_positions=True,
+        peak_annotations={
+            "aromatic_C-C_C=C": {
+                "offset_points": (0, 16),
+                "connector": False,
+                "horizontal_alignment": "center",
+                "vertical_alignment": "bottom",
+            },
+            "C-N_C-Cl": {
+                "offset_points": (-18, 20),
+                "connector": True,
+                "horizontal_alignment": "right",
+                "vertical_alignment": "bottom",
+            },
+        },
+    )
+    annotations = {item._xps_component_label: item for item in peak_annotations(axis)}
+    aromatic_annotation = annotations["aromatic_C-C_C=C"]
+    carbon_nitrogen_annotation = annotations["C-N_C-Cl"]
+    figure.canvas.draw()
+
+    assert axis.get_ylim() == expected_limits
+    assert aromatic_annotation.arrow_patch is None
+    assert aromatic_annotation.get_ha() == "center" and aromatic_annotation.get_va() == "bottom"
+    assert aromatic_annotation._xps_configured_offset == (0.0, 16.0)
+    assert (
+        Text.get_window_extent(aromatic_annotation).y0
+        > axis.transData.transform((aromatic_annotation.xy[0], aromatic_annotation._xps_clearance_height))[1]
+    )
+    assert carbon_nitrogen_annotation.arrow_patch is not None
+    assert carbon_nitrogen_annotation.get_ha() == "right" and carbon_nitrogen_annotation.get_va() == "bottom"
+    assert carbon_nitrogen_annotation._xps_configured_offset == (-18.0, 20.0)
+    assert np.hypot(*carbon_nitrogen_annotation.get_position()) <= 30
+
+    plt.close(unannotated)
+    plt.close(figure)
+
+
 def test_peak_positions_work_in_multipanel_without_input_mutation() -> None:
     results = [annotation_result("PDI-H-COOH"), annotation_result("PDI-Me-COOH")]
     before = copy.deepcopy([result.to_dict() for result in results])

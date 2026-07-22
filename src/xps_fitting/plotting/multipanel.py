@@ -53,6 +53,7 @@ def plot_xps_series(
     peak_position_unit: bool = True,
     peak_annotation_leaders: bool = True,
     peak_annotation_offsets: Mapping[str, tuple[float, float]] | None = None,
+    peak_annotations: Mapping[str, Mapping[str, object]] | None = None,
     annotate_negligible_components: bool = False,
     annotate_hidden_components: bool = False,
 ) -> tuple[Figure, np.ndarray]:
@@ -242,6 +243,7 @@ def plot_xps_series(
                     include_unit=peak_position_unit,
                     leaders=peak_annotation_leaders,
                     offsets=peak_annotation_offsets,
+                    annotation_options=peak_annotations,
                     include_negligible=annotate_negligible_components,
                     clearance_curves=displayed_curves,
                     obstacles=legend_obstacles,
