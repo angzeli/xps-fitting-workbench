@@ -1,10 +1,12 @@
 import copy
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 
 from xps_fitting.plotting import (
     VISIBLE_SPINE_WIDTH,
+    component_colour,
     export_figure,
     figure_size_preset,
     plot_fit_comparison,
@@ -61,4 +63,35 @@ def test_model_comparison_has_statistics_and_stability() -> None:
     assert "AICc" in axes[0, 0].texts[-1].get_text()
     assert "aromatic_C-C_C=C" in figure._xps_component_stability
     assert "chemical correctness" in figure.legends[0].get_title().get_text()
+    plt.close(figure)
+
+
+def test_multipanel_uses_the_plain_satellite_label_and_semantic_colour() -> None:
+    energy = np.linspace(286, 294, 81)
+    background = np.full_like(energy, 4.0)
+    satellite = 3 * np.exp(-(((energy - 291) / 0.8) ** 2))
+    total = background + satellite
+    results = [
+        FitResult(
+            energy,
+            total,
+            background,
+            {"pi-pi_star": satellite},
+            total,
+            np.zeros_like(energy),
+            {"pi-pi_star.centre": 291.0},
+            metadata={"sample_name": sample},
+        )
+        for sample in ("PDI-H-COOH", "PDI-OMe-COOH")
+    ]
+    figure, axes = plot_xps_series(results)
+    labels = [text.get_text() for text in figure.legends[0].get_texts()]
+    assert "π–π* satellite" in labels
+    assert all(text.get_fontweight() == "bold" for text in figure.legends[0].get_texts())
+    expected = mcolors.to_rgb(component_colour("pi-pi_star"))
+    assert all(
+        collection.get_facecolor()[0][:3].tolist() == list(expected)
+        for axis in axes.ravel()
+        for collection in axis.collections
+    )
     plt.close(figure)

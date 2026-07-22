@@ -19,7 +19,7 @@ PDI_H_C1S_LABELS = {
     "C-N_C-Cl": "C–N/C–Cl",
     "imide_N-C=O": "Imide N–C=O",
     "acid_O-C=O": "Carboxylic O–C=O",
-    "pi-pi_star": r"$\pi$–$\pi^*$ satellite",
+    "pi-pi_star": "π–π* satellite",
     "carbonyl_O": "Carbonyl O",
     "imide_carbonyl_O": "Imide C=O",
     "acid_carbonyl_O": "Acid C=O",

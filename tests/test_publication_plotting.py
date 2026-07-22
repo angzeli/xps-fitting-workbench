@@ -139,6 +139,30 @@ def test_publication_exports(tmp_path) -> None:
     plt.close(figure)
 
 
+def test_plain_text_satellite_legend_is_fully_bold_and_exports(tmp_path) -> None:
+    energy = np.linspace(286, 294, 81)
+    background = np.full_like(energy, 4.0)
+    satellite = 3 * np.exp(-(((energy - 291) / 0.8) ** 2))
+    total = background + satellite
+    result = FitResult(
+        energy,
+        total,
+        background,
+        {"pi-pi_star": satellite},
+        total,
+        np.zeros_like(energy),
+        {"pi-pi_star.centre": 291.0},
+    )
+    figure, axis = plot_xps_fit(result, component_display_mode="filled_to_background")
+    satellite_label = next(text for text in axis.get_legend().get_texts() if "satellite" in text.get_text())
+    assert satellite_label.get_text() == "π–π* satellite"
+    assert satellite_label.get_fontweight() == "bold"
+    assert "$" not in satellite_label.get_text()
+    paths = export_figure(figure, tmp_path / "plain-satellite", formats=("png", "pdf"))
+    assert all(path.stat().st_size > 100 for path in paths.values())
+    plt.close(figure)
+
+
 def test_publication_tick_and_inside_title_controls() -> None:
     figure, axis = plot_xps_fit(
         result_fixture(),
