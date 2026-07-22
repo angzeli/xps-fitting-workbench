@@ -289,9 +289,7 @@ def _place_automatic_annotations_locally(
     axes_box = axis.get_window_extent(renderer)
     obstacle_boxes = [artist.get_window_extent(renderer) for artist in obstacles if artist.get_visible()]
     line_vertices = [
-        line.get_transform().transform_path(line.get_path()).vertices
-        for line in axis.lines
-        if line.get_visible()
+        line.get_transform().transform_path(line.get_path()).vertices for line in axis.lines if line.get_visible()
     ]
     placed_boxes: list[Bbox] = []
 
@@ -311,7 +309,14 @@ def _place_automatic_annotations_locally(
         obstacle_overlap = sum(overlap_area(box, obstacle) for obstacle in obstacle_boxes)
         annotation_overlap = sum(overlap_area(box, placed) for placed in placed_boxes)
         line_hits = sum(
-            int(np.count_nonzero((vertices[:, 0] >= box.x0) & (vertices[:, 0] <= box.x1) & (vertices[:, 1] >= box.y0) & (vertices[:, 1] <= box.y1)))
+            int(
+                np.count_nonzero(
+                    (vertices[:, 0] >= box.x0)
+                    & (vertices[:, 0] <= box.x1)
+                    & (vertices[:, 1] >= box.y0)
+                    & (vertices[:, 1] <= box.y1)
+                )
+            )
             for vertices in line_vertices
         )
         return outside, obstacle_overlap, annotation_overlap, line_hits, float(np.hypot(*annotation.get_position()))
@@ -342,9 +347,7 @@ def _place_automatic_annotations_locally(
             (0.0, -28.0),
         ]
         valid_offsets = [
-            offset
-            for offset in nearby_offsets
-            if offset is not None and float(np.hypot(*offset)) <= max_points
+            offset for offset in nearby_offsets if offset is not None and float(np.hypot(*offset)) <= max_points
         ]
         best_offset = valid_offsets[0]
         best_score: tuple[float, float, float, int, float] | None = None

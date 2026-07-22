@@ -100,10 +100,7 @@ def test_multipanel_uses_the_plain_satellite_label_and_semantic_colour() -> None
 
 
 def test_methoxy_colours_and_publication_labels_match_in_single_and_series_plots() -> None:
-    assert {
-        key: COMPONENT_DISPLAY_LABELS[key]
-        for key in ("methoxy_C", "methoxy_O", "C-N_C-Cl_methoxy_C")
-    } == {
+    assert {key: COMPONENT_DISPLAY_LABELS[key] for key in ("methoxy_C", "methoxy_O", "C-N_C-Cl_methoxy_C")} == {
         "methoxy_C": "Methoxy C",
         "methoxy_O": "Methoxy O",
         "C-N_C-Cl_methoxy_C": "C–N/C–Cl/methoxy C",

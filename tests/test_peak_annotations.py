@@ -235,9 +235,7 @@ def test_peak_position_text_avoids_the_framed_legend() -> None:
         ("methoxy_O", 532.9, 533.2),
     ],
 )
-def test_methoxy_annotations_use_semantic_offsets_and_anchor_to_component_apices(
-    component, centre, apex
-) -> None:
+def test_methoxy_annotations_use_semantic_offsets_and_anchor_to_component_apices(component, centre, apex) -> None:
     result = methoxy_annotation_result(component, centre=centre, apex=apex)
     before = copy.deepcopy(result.to_dict())
     plain_figure, plain_axis = plot_xps_fit(result)

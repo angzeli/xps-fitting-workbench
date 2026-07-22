@@ -228,7 +228,7 @@ def test_pdi_publication_recipes_have_exact_outputs_and_no_svg() -> None:
         assert config.core_level == core_level
         assert config.output_filename == output_name
         assert config.output_formats == ("png", "pdf")
-        assert config.dpi == 600
+        assert config.dpi == 1200
         assert config.show_y_ticks is False and config.show_top_ticks is False
 
     sample = json.loads((ROOT / "configs" / "plots" / "pdi_publication.json").read_text())
@@ -239,7 +239,8 @@ def test_pdi_publication_recipes_have_exact_outputs_and_no_svg() -> None:
     o1s = load_plot_config(ROOT / "configs" / "plots" / "o1s_publication.json")
     assert c1s.peak_annotations["C-N_C-Cl_methoxy_C"]["offset_points"] == (-20, 16)
     assert o1s.peak_annotations["methoxy_O"]["offset_points"] == (0, 16)
-    generic_workflow = [
-        ROOT / "configs" / "plots" / filename for filename in (*expected, "pdi_publication.json")
-    ] + [ROOT / "src" / "xps_fitting" / "publication.py", ROOT / "src" / "xps_fitting" / "plotting" / "sample_panel.py"]
+    generic_workflow = [ROOT / "configs" / "plots" / filename for filename in (*expected, "pdi_publication.json")] + [
+        ROOT / "src" / "xps_fitting" / "publication.py",
+        ROOT / "src" / "xps_fitting" / "plotting" / "sample_panel.py",
+    ]
     assert all("pdi_h_cooh" not in path.read_text(encoding="utf-8") for path in generic_workflow)

@@ -317,9 +317,7 @@ def test_complete_publication_sample_generates_individuals_panel_and_provenance(
         ("PDI-OMe-COOH", "pdi_ome_cooh"),
     ],
 )
-def test_generic_publication_recipe_derives_every_stem_from_active_sample(
-    tmp_path, monkeypatch, sample, slug
-) -> None:
+def test_generic_publication_recipe_derives_every_stem_from_active_sample(tmp_path, monkeypatch, sample, slug) -> None:
     manifest_path, _ = _sample(tmp_path, sample=sample)
     outcome = calibrate_reviewed_sample(
         manifest_path,

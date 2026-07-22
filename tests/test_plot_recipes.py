@@ -152,7 +152,7 @@ def test_c1s_publication_recipe_records_final_layout() -> None:
     config = load_plot_config(root / "configs" / "plots" / "c1s_publication.json")
     assert config.output_formats == ("png", "pdf")
     assert config.output_filename == "{sample_slug}_c1s"
-    assert config.figure_size_preset == "detailed-publication" and config.dpi == 600
+    assert config.figure_size_preset == "detailed-publication" and config.dpi == 1200
     assert config.tick_spacing == 5 and config.x_minor_interval == 2.5
     assert not config.show_y_ticks and config.show_top_ticks is False
     assert not config.show_sample_title
@@ -166,11 +166,11 @@ def test_c1s_publication_recipe_records_final_layout() -> None:
         "acid_O-C=O",
         "pi-pi_star",
     }
-    assert config.peak_annotations["aromatic_C-C_C=C"]["connector"] is False
-    assert config.peak_annotations["C-N_C-Cl"]["offset_points"] == (-18, 20)
+    assert config.peak_annotations["aromatic_C-C_C=C"]["connector"] is True
+    assert config.peak_annotations["C-N_C-Cl"]["offset_points"] == (-15, 15)
     assert config.peak_annotations["C-N_C-Cl_methoxy_C"]["offset_points"] == (-20, 16)
 
 
 def test_recipe_rejects_an_overlong_configured_connector() -> None:
-    with pytest.raises(ValueError, match="exceeds the 30-point limit"):
-        PlotConfig(peak_annotations={"p": {"offset_points": (30, 30), "connector": True}})
+    with pytest.raises(ValueError, match="exceeds the 60-point limit"):
+        PlotConfig(peak_annotations={"p": {"offset_points": (61, 0), "connector": True}})
