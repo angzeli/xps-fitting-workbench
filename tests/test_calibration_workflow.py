@@ -9,7 +9,7 @@ from xps_fitting.calibration_workflow import calibrate_reviewed_sample, prepare_
 from xps_fitting.export import load_fit_bundle
 from xps_fitting.integrity import result_arrays_equal, sha256_file
 from xps_fitting.plotting.configuration import PlotConfig
-from xps_fitting.publication import load_publication_region, plot_publication_region
+from xps_fitting.publication import load_publication_region, plot_publication_region, plot_publication_sample
 from xps_fitting.result import FitResult
 from xps_fitting.review import review_candidate
 from xps_fitting.sample_manifest import activate_reviewed_bundle, create_sample_manifest, load_sample_manifest
@@ -238,3 +238,72 @@ def test_incomplete_sample_requires_an_explicit_override_and_calibration_is_immu
             confirmed=True,
             repository_root=tmp_path,
         )
+
+
+def test_complete_publication_sample_generates_individuals_panel_and_provenance(tmp_path, monkeypatch) -> None:
+    manifest_path, _ = _sample(tmp_path)
+    calibrate_reviewed_sample(
+        manifest_path,
+        reference_region="C1s",
+        reference_component="aromatic_cc",
+        reference_component_label="Aromatic C=C/C-C",
+        reviewer="Reviewer",
+        scientific_rationale="One reviewed aromatic-carbon reference for the complete sample.",
+        confirmed=True,
+        repository_root=tmp_path,
+    )
+    monkeypatch.setattr(
+        "xps_fitting.optimiser.fit_spectrum",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("publication plotting must not refit")),
+    )
+    recipes = tmp_path / "recipes"
+    recipes.mkdir()
+    names = {
+        "Survey": "pdi_h_cooh_survey",
+        "C1s": "pdi_h_cooh_c1s",
+        "N1s": "pdi_h_cooh_n1s",
+        "O1s": "pdi_h_cooh_o1s",
+        "Cl2p": "pdi_h_cooh_cl2p",
+    }
+    labels = {"Survey": "Survey", "C1s": "C 1s", "N1s": "N 1s", "O1s": "O 1s", "Cl2p": "Cl 2p"}
+    individual_recipes = {}
+    for region, output_name in names.items():
+        recipe_path = recipes / f"{region}.json"
+        PlotConfig(
+            output_filename=output_name,
+            output_formats=("png", "pdf"),
+            core_level=labels[region],
+            component_display_mode="hidden" if region == "Survey" else "filled_to_background",
+            dpi=72,
+            show_y_ticks=False,
+            show_top_ticks=False,
+            x_minor_interval=1,
+            show_sample_title=False,
+            core_level_label_position=(0.97, 0.96),
+        ).save(recipe_path)
+        individual_recipes[region] = recipe_path.name
+    sample_recipe = recipes / "pdi_publication.json"
+    sample_recipe.write_text(
+        json.dumps(
+            {
+                "kind": "pdi_sample_publication",
+                "regions": ["Survey", "C1s", "N1s", "O1s", "Cl2p"],
+                "individual_recipes": individual_recipes,
+                "output_filename": "pdi_h_cooh_xps_panel",
+                "output_formats": ["png", "pdf"],
+                "dpi": 72,
+            }
+        )
+    )
+
+    outputs, provenance = plot_publication_sample(
+        manifest_path,
+        sample_recipe,
+        tmp_path / "figures" / "final" / "PDI-H-COOH",
+        repository_root=tmp_path,
+    )
+    assert set(outputs) == {"Survey", "C1s", "N1s", "O1s", "Cl2p", "panel"}
+    assert all(path.is_file() for region_paths in outputs.values() for path in region_paths.values())
+    assert not list((tmp_path / "figures").rglob("*.svg"))
+    assert set(provenance["source_reviewed_bundles"]) == {"Survey", "C1s", "N1s", "O1s", "Cl2p"}
+    assert provenance["energy_offset_eV"] == pytest.approx(0.4238)

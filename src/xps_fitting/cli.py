@@ -29,7 +29,7 @@ from .project_workflow import (
     sample_raw_directory,
     validate_sample,
 )
-from .publication import plot_publication_region
+from .publication import plot_publication_region, plot_publication_sample
 from .review import candidate_review_summary, reject_all_candidates, review_candidate
 from .sample_manifest import activate_reviewed_bundle, discover_raw_regions, load_sample_manifest
 from .spectrum_artifacts import review_spectrum, validate_spectrum_bundle
@@ -406,11 +406,25 @@ def _run_plot_region(args: argparse.Namespace) -> int:
 
 
 def _run_plot_sample(args: argparse.Namespace) -> int:
-    config = load_plot_config(args.recipe)
-    if not config.core_level:
-        raise ValueError("plot-sample recipe must identify a core_level")
-    args.region = config.core_level
-    return _run_plot_region(args)
+    root = _repository(args)
+    outputs, provenance = plot_publication_sample(
+        sample_manifest_path(root, args.sample),
+        args.recipe,
+        args.output_dir or root / "figures" / "final" / args.sample,
+        repository_root=root,
+        overwrite=args.overwrite,
+        dry_run=args.dry_run,
+    )
+    _json_output(
+        {
+            "sample": args.sample,
+            "calibration_offset_eV": provenance["energy_offset_eV"],
+            "input_artifacts": provenance["source_reviewed_bundles"],
+            "outputs": outputs,
+            "dry_run": args.dry_run,
+        }
+    )
+    return 0
 
 
 def _run_validate_bundle(args: argparse.Namespace) -> int:
@@ -637,7 +651,7 @@ def main(argv: list[str] | None = None) -> int:
     plot_region_parser.add_argument("--overwrite", action="store_true")
     plot_region_parser.add_argument("--dry-run", action="store_true")
 
-    plot_sample_parser = subparsers.add_parser("plot-sample", help="plot the recipe's calibrated sample region")
+    plot_sample_parser = subparsers.add_parser("plot-sample", help="plot every calibrated region and sample panel")
     plot_sample_parser.add_argument("--sample", required=True)
     plot_sample_parser.add_argument("--recipe", required=True)
     plot_sample_parser.add_argument("--output-dir")

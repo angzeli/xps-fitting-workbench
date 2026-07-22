@@ -1,4 +1,6 @@
 import copy
+import json
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,7 +9,10 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from xps_fitting.plotting import VISIBLE_SPINE_WIDTH, export_figure, figure_size_preset, load_theme, plot_xps_fit
+from xps_fitting.plotting.configuration import load_plot_config
 from xps_fitting.result import FitResult
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def result_fixture() -> FitResult:
@@ -147,3 +152,25 @@ def test_deprecated_component_style_alias_remains_available() -> None:
     with pytest.warns(DeprecationWarning, match="component_style is deprecated"):
         figure, _ = plot_xps_fit(result_fixture(), component_style="hidden")
     plt.close(figure)
+
+
+def test_pdi_publication_recipes_have_exact_outputs_and_no_svg() -> None:
+    expected = {
+        "c1s_publication.json": ("C 1s", "pdi_h_cooh_c1s"),
+        "n1s_publication.json": ("N 1s", "pdi_h_cooh_n1s"),
+        "o1s_publication.json": ("O 1s", "pdi_h_cooh_o1s"),
+        "cl2p_publication.json": ("Cl 2p", "pdi_h_cooh_cl2p"),
+        "survey_publication.json": ("Survey", "pdi_h_cooh_survey"),
+    }
+    for filename, (core_level, output_name) in expected.items():
+        config = load_plot_config(ROOT / "configs" / "plots" / filename)
+        assert config.core_level == core_level
+        assert config.output_filename == output_name
+        assert config.output_formats == ("png", "pdf")
+        assert config.dpi == 600
+        assert config.show_y_ticks is False and config.show_top_ticks is False
+
+    sample = json.loads((ROOT / "configs" / "plots" / "pdi_publication.json").read_text())
+    assert sample["regions"] == ["Survey", "C1s", "N1s", "O1s", "Cl2p"]
+    assert sample["output_filename"] == "pdi_h_cooh_xps_panel"
+    assert sample["output_formats"] == ["png", "pdf"]
