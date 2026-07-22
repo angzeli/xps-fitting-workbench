@@ -258,7 +258,7 @@ def plot_xps_fit(
                 ha="right",
                 va="top",
                 fontsize=selected.core_level_size,
-                fontweight="semibold",
+                fontweight="bold",
                 zorder=10,
             )
             core_label.set_gid("core-level-label")
@@ -281,6 +281,7 @@ def plot_xps_fit(
         legend = main.legend(
             handles=handles,
             loc="upper left",
+            bbox_to_anchor=(0.00, 0.90),
             frameon=selected.legend_frame,
             fancybox=selected.legend_fancybox,
             framealpha=selected.legend_frame_alpha,

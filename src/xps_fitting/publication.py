@@ -270,7 +270,7 @@ def plot_publication_sample(
         output_directory,
         output_filename=panel_filename,
         output_formats=output_formats,
-        dpi=int(data.get("dpi", 600)),
+        dpi=int(data.get("dpi", 1200)),
         metadata={
             "Title": panel_filename,
             "Subject": f"Reviewed calibrated {manifest.sample}; energy offset {next(iter(offsets))!r} eV",

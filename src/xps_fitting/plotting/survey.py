@@ -59,7 +59,7 @@ def draw_survey_axis(axis: Axes, spectrum: Spectrum, theme: PlotTheme, config: P
             ha="right",
             va="top",
             fontsize=theme.core_level_size,
-            fontweight="semibold",
+            fontweight="bold",
         )
         label.set_gid("core-level-label")
 
