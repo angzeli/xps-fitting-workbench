@@ -1,0 +1,65 @@
+{
+  "name": "O1s_3_shirley",
+  "region": "O 1s",
+  "background": "shirley",
+  "robust_loss": "linear",
+  "multistart": 12,
+  "random_seed": 42,
+  "release_fraction": false,
+  "max_background_iterations": 6,
+  "peaks": [
+    {
+      "label": "imide_carbonyl_O",
+      "centre": 530.9,
+      "centre_bounds": [529.8, 531.5],
+      "area": 100000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.4,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    },
+    {
+      "label": "acid_carbonyl_O",
+      "centre": 531.6,
+      "centre_bounds": [531.0, 532.4],
+      "area": 50000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.4,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    },
+    {
+      "label": "acid_hydroxyl_OH",
+      "centre": 532.8,
+      "centre_bounds": [531.8, 534.2],
+      "area": 50000.0,
+      "area_bounds": [0.0, 400000.0],
+      "fwhm": 1.4,
+      "fwhm_bounds": [0.8, 2.5],
+      "line_shape": "pseudo_voigt",
+      "fraction": 0.5,
+      "width_group": "structural_O",
+      "fraction_group": "structural_O"
+    }
+  ],
+  "metadata": {
+    "candidate_family": "O1s_3",
+    "background_identity": "shirley",
+    "sensitivity_only": false,
+    "publication_eligible_without_review": false,
+    "chemistry_rationale": "Chemical-resolution hypothesis separating imide carbonyl, carboxylic-acid carbonyl, and carboxylic-acid hydroxyl oxygen; acceptance requires the line shape to support both carbonyl environments.",
+    "position_basis": "Absolute uncalibrated guesses spanning the asymmetric 531.100054 eV envelope; sample-wide C 1s calibration is applied only after review.",
+    "nominal_structural_ratio": {
+      "imide_carbonyl_O": 2.0,
+      "acid_carbonyl_O": 1.0,
+      "acid_hydroxyl_OH": 1.0
+    },
+    "stoichiometry_treatment": "benchmark_only_not_constrained"
+  }
+}
