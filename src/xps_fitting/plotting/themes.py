@@ -41,6 +41,7 @@ class PlotTheme:
     peak_annotation_collision_fraction: float = 0.06
     peak_annotation_leader_width: float = 0.7
     peak_annotation_max_connector_points: float = 30
+    peak_annotation_max_automatic_displacement_points: float = 35
     negligible_component_fraction: float = 0.01
     multipanel_axis_label_size: float = 10
     multipanel_tick_label_size: float = 9
@@ -116,6 +117,7 @@ class PlotTheme:
                 self.peak_annotation_size,
                 self.peak_annotation_leader_width,
                 self.peak_annotation_max_connector_points,
+                self.peak_annotation_max_automatic_displacement_points,
                 self.peak_annotation_stagger_points,
             )
             <= 0
