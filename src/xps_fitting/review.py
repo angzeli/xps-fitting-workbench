@@ -17,6 +17,7 @@ from .integrity import result_arrays_equal, sha256_file, sha256_json
 from .naming import safe_slug
 
 REVIEW_RECORD_SCHEMA_VERSION = 1
+REJECTION_RECORD_SCHEMA_VERSION = 1
 ReviewDecision = Literal["accepted", "cancelled"]
 
 
@@ -71,6 +72,39 @@ class ReviewPromotion:
     record: ReviewRecord
 
 
+@dataclass(frozen=True)
+class RejectionRecord:
+    sample: str
+    region: str
+    candidate_sources: tuple[str, ...]
+    candidate_models: tuple[str, ...]
+    candidate_bundle_sha256: dict[str, str]
+    reviewer: str
+    review_date: str
+    notes: tuple[str, ...]
+    rejection_version: int
+    decision: str = "rejected_all"
+    review_status: str = "rejected"
+    software_version: str = __version__
+    schema_version: int = REJECTION_RECORD_SCHEMA_VERSION
+
+    def __post_init__(self) -> None:
+        if not self.reviewer.strip():
+            raise ValueError("reviewer is required")
+        if not self.candidate_sources:
+            raise ValueError("at least one rejected candidate is required")
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class ReviewRejection:
+    rejection_record: Path
+    version: int
+    record: RejectionRecord
+
+
 def load_review_record(path: str | Path) -> ReviewRecord:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     data["notes"] = tuple(data.get("notes", ()))
@@ -106,6 +140,8 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
                 high_correlations.append({"parameter_1": pair[0], "parameter_2": pair[1], "correlation": float(value)})
     high_correlations.sort(key=lambda item: abs(item["correlation"]), reverse=True)
     components = []
+    bound_hits = []
+    peaks = {str(peak.get("label")): peak for peak in result.configuration.get("peaks", ())}
     for label in result.components:
         components.append(
             {
@@ -116,6 +152,18 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
                 "area_fraction": areas[label] / total_area if total_area > 0 else None,
             }
         )
+        peak = peaks.get(label, {})
+        for parameter in ("centre", "fwhm", "area", "lorentzian_fraction"):
+            value = result.fitted_parameters.get(f"{label}.{parameter}")
+            bounds = peak.get(f"{parameter}_bounds")
+            if value is None or not isinstance(bounds, list | tuple) or len(bounds) != 2:
+                continue
+            lower, upper = (float(item) for item in bounds)
+            tolerance = max(1e-8, abs(upper - lower) * 1e-5)
+            if abs(float(value) - lower) <= tolerance:
+                bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "lower", "value": float(value)})
+            elif abs(float(value) - upper) <= tolerance:
+                bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "upper", "value": float(value)})
     return {
         "bundle": str(Path(candidate_bundle).resolve()),
         "model": result.configuration.get("name", "unknown"),
@@ -128,9 +176,64 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
         },
         "fit_statistics": copy.deepcopy(result.fit_statistics),
         "warnings": list(result.warnings),
+        "bound_hits": bound_hits,
         "convergence": copy.deepcopy(result.convergence),
         "high_parameter_correlations": high_correlations,
     }
+
+
+def reject_all_candidates(
+    candidate_bundles: tuple[str | Path, ...],
+    reviewed_root: str | Path,
+    *,
+    reviewer: str,
+    notes: tuple[str, ...] = (),
+    repository_root: str | Path | None = None,
+    review_date: str | None = None,
+) -> ReviewRejection:
+    """Persist an explicit rejection without promoting or modifying any candidate."""
+    if not candidate_bundles:
+        raise ValueError("at least one candidate is required")
+    paths = tuple(Path(path).resolve() for path in candidate_bundles)
+    descriptors = []
+    fingerprints = {}
+    for path in paths:
+        report = validate_fit_bundle(path, repository_root=repository_root)
+        if report.errors:
+            raise ValueError(f"candidate bundle failed validation: {path}\n" + "\n".join(report.errors))
+        manifest = read_fit_bundle_manifest(path)
+        descriptor = ArtifactDescriptor.from_dict(dict(manifest.get("artifact") or {}))
+        if descriptor.state != "candidate" or descriptor.review_status != "candidate":
+            raise ValueError("rejection requires candidate artifacts")
+        descriptors.append(descriptor)
+        fingerprints[descriptor.artifact_id] = _bundle_fingerprint(manifest)
+    sample_regions = {(item.sample, item.region) for item in descriptors}
+    if len(sample_regions) != 1:
+        raise ValueError("all rejected candidates must belong to one sample and region")
+    sample, region = sample_regions.pop()
+    record_dir = Path(reviewed_root) / sample / "review_records"
+    versions = []
+    prefix = f"{region}.rejection-v"
+    for existing in record_dir.glob(f"{prefix}*.json"):
+        suffix = existing.stem.removeprefix(prefix)
+        if suffix.isdigit():
+            versions.append(int(suffix))
+    version = max(versions, default=0) + 1
+    record = RejectionRecord(
+        sample=sample,
+        region=region,
+        candidate_sources=tuple(portable_path(path, repository_root) for path in paths),
+        candidate_models=tuple(item.model for item in descriptors),
+        candidate_bundle_sha256=fingerprints,
+        reviewer=reviewer,
+        review_date=review_date or utc_now(),
+        notes=notes,
+        rejection_version=version,
+    )
+    record_path = record_dir / f"{region}.rejection-v{version}.json"
+    record_dir.mkdir(parents=True, exist_ok=True)
+    record_path.write_text(json.dumps(record.to_dict(), indent=2) + "\n", encoding="utf-8")
+    return ReviewRejection(record_path, version, record)
 
 
 def review_candidate(

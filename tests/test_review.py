@@ -7,7 +7,7 @@ from xps_fitting.artifacts import load_publication_bundle, save_candidate_bundle
 from xps_fitting.export import load_fit_bundle
 from xps_fitting.integrity import result_arrays_equal, sha256_file
 from xps_fitting.result import FitResult
-from xps_fitting.review import load_review_record, review_candidate
+from xps_fitting.review import candidate_review_summary, load_review_record, reject_all_candidates, review_candidate
 
 
 def candidate_result() -> FitResult:
@@ -28,7 +28,18 @@ def candidate_result() -> FitResult:
             "aromatic_C-C_C=C.area": 100.0,
             "aromatic_C-C_C=C.fwhm": 1.2,
         },
-        configuration={"name": "C1s_5", "region": "C 1s", "peaks": []},
+        configuration={
+            "name": "C1s_5",
+            "region": "C 1s",
+            "peaks": [
+                {
+                    "label": "aromatic_C-C_C=C",
+                    "centre_bounds": [284.3762, 285.0],
+                    "fwhm_bounds": [0.5, 2.0],
+                    "area_bounds": [0.0, 200.0],
+                }
+            ],
+        },
         metadata={"data_origin": "experimental"},
     )
 
@@ -136,3 +147,31 @@ def test_review_rejects_a_raw_equals_total_candidate(tmp_path) -> None:
     )
     with pytest.raises(ValueError, match="raw_intensity is identical to total_fit"):
         approve(candidate, tmp_path)
+
+
+def test_candidate_summary_reports_bound_hits_and_rejection_is_versioned(tmp_path) -> None:
+    candidate = make_candidate(tmp_path)
+    summary = candidate_review_summary(candidate)
+    assert summary["bound_hits"] == [
+        {"parameter": "aromatic_C-C_C=C.centre", "bound": "lower", "value": 284.3762}
+    ]
+
+    first = reject_all_candidates(
+        (candidate,),
+        tmp_path / "artifacts" / "reviewed",
+        reviewer="Angze Li",
+        notes=("Residual structure requires a revised model.",),
+        repository_root=tmp_path,
+        review_date="2026-07-21T02:00:00+00:00",
+    )
+    second = reject_all_candidates(
+        (candidate,),
+        tmp_path / "artifacts" / "reviewed",
+        reviewer="Angze Li",
+        repository_root=tmp_path,
+        review_date="2026-07-21T03:00:00+00:00",
+    )
+    assert first.version == 1 and second.version == 2
+    assert first.record.decision == "rejected_all"
+    assert first.rejection_record.is_file()
+    assert not (tmp_path / "artifacts" / "reviewed" / "PDI-H-COOH" / "uncalibrated").exists()

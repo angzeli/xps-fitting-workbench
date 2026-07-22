@@ -30,7 +30,7 @@ from .project_workflow import (
     validate_sample,
 )
 from .publication import plot_publication_region
-from .review import candidate_review_summary, review_candidate
+from .review import candidate_review_summary, reject_all_candidates, review_candidate
 from .sample_manifest import activate_reviewed_bundle, discover_raw_regions, load_sample_manifest
 from .spectrum_artifacts import review_spectrum, validate_spectrum_bundle
 
@@ -178,20 +178,47 @@ def _yes(prompt: str) -> bool:
 
 def _run_review(args: argparse.Namespace) -> int:
     root = _repository(args)
+    from .artifacts import canonical_region
+
+    region = canonical_region(args.region)
     candidates = _candidate_paths(root, args.sample, args.region)
     if not candidates:
         raise FileNotFoundError(f"no persisted candidates found for {args.sample} {args.region}")
     summaries = [candidate_review_summary(path) for path in candidates]
+    reminders = {
+        "N1s": (
+            "PDI-H-COOH has one expected imide-N environment.",
+            "Additional N 1s components require explicit spectral and chemical evidence.",
+        ),
+        "O1s": (
+            "Two- and three-component models make different assumptions about carbonyl resolution.",
+            "Adsorbate components require independent justification.",
+            "Structural oxygen ratios are sensitivity checks, not automatic chemical truth.",
+        ),
+        "Cl2p": (
+            "Verify the 2p3/2–2p1/2 separation, approximately 2:1 area ratio, shared FWHM, and shared line shape.",
+        ),
+    }
+    if region in reminders:
+        print(f"{args.sample} {region} scientific review reminders:")
+        for reminder in reminders[region]:
+            print(f"- {reminder}")
     for summary in summaries:
         stem = str(summary["model"]).casefold()
-        figure_root = root / "figures" / "diagnostic" / args.sample / args.region.replace(" ", "")
+        figure_root = root / "figures" / "diagnostic" / args.sample / region
         summary["diagnostic_figures"] = [
             str(path) for path in (figure_root / f"{stem}.png", figure_root / f"{stem}.pdf") if path.is_file()
         ]
     for index, summary in enumerate(summaries, 1):
         print(f"\n[{index}] {summary['model']}")
         print(json.dumps(summary, indent=2, default=str))
-    print(f"\n[{len(candidates) + 1}] Cancel")
+    reject_choice = len(candidates) + 1
+    cancel_choice = len(candidates) + 2
+    print(f"\n[{reject_choice}] Reject all candidates")
+    print(f"[{cancel_choice}] Cancel without changes")
+    if args.reject_all and args.candidate:
+        raise ValueError("--reject-all cannot be combined with --candidate")
+    reject_all = args.reject_all
     if args.candidate:
         selected = next(
             (
@@ -203,14 +230,38 @@ def _run_review(args: argparse.Namespace) -> int:
         )
         if selected is None:
             raise ValueError(f"candidate not found: {args.candidate}")
-    else:
+    elif not reject_all:
         choice = input("Choose a candidate number: ").strip()
-        if not choice.isdigit() or int(choice) == len(candidates) + 1:
+        if not choice.isdigit() or int(choice) == cancel_choice:
             print("Review cancelled; no reviewed artifact was created.")
             return 0
-        if int(choice) < 1 or int(choice) > len(candidates):
+        if int(choice) == reject_choice:
+            reject_all = True
+        elif int(choice) < 1 or int(choice) > len(candidates):
             raise ValueError("invalid candidate selection")
-        selected = candidates[int(choice) - 1]
+        else:
+            selected = candidates[int(choice) - 1]
+    if reject_all:
+        if not args.reject_all and not _yes(f"Reject all {len(candidates)} persisted {region} candidates?"):
+            print("Review cancelled; no files were changed.")
+            return 0
+        reviewer = args.reviewer or input("Reviewer name: ").strip()
+        rejection = reject_all_candidates(
+            tuple(candidates),
+            root / "artifacts" / "reviewed",
+            reviewer=reviewer,
+            notes=tuple(args.note or ()),
+            repository_root=root,
+        )
+        _json_output(
+            {
+                "decision": "rejected_all",
+                "rejection_record": str(rejection.rejection_record),
+                "rejection_version": rejection.version,
+                "candidate_count": len(candidates),
+            }
+        )
+        return 0
     if not args.approve and not _yes(f"Approve {selected.name} as the reviewed scientific fit?"):
         print("Review cancelled; no reviewed artifact was created.")
         return 0
@@ -546,6 +597,7 @@ def main(argv: list[str] | None = None) -> int:
     review_parser.add_argument("--sample", required=True)
     review_parser.add_argument("--region", required=True)
     review_parser.add_argument("--candidate", help="candidate model name or bundle directory name")
+    review_parser.add_argument("--reject-all", action="store_true", help="explicitly reject every persisted candidate")
     review_parser.add_argument("--reviewer")
     review_parser.add_argument("--note", action="append")
     review_parser.add_argument("--approve", action="store_true", help="explicitly approve the selected candidate")
@@ -570,7 +622,7 @@ def main(argv: list[str] | None = None) -> int:
     calibrate_parser.add_argument("--sample", required=True)
     calibrate_parser.add_argument("--reference-region", default="C1s")
     calibrate_parser.add_argument("--reference-component", required=True)
-    calibrate_parser.add_argument("--reference-component-label", required=True)
+    calibrate_parser.add_argument("--reference-component-label", default="Aromatic C=C/C-C")
     calibrate_parser.add_argument("--target-energy", type=float, default=284.8)
     calibrate_parser.add_argument("--reviewer")
     calibrate_parser.add_argument("--rationale")

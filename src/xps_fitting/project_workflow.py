@@ -279,15 +279,33 @@ def validate_sample(root: str | Path, sample: str, *, require_calibrated: bool =
         errors.extend(f"{region}: {message}" for message in report.publication_reasons)
     if require_calibrated and manifest.calibration_status != "calibrated":
         errors.append("sample manifest is not calibrated")
+    review_state = {
+        region: "reviewed" if region in manifest.reviewed_uncalibrated else "missing"
+        for region in manifest.expected_regions
+    }
+    calibration_ready = not missing_reviewed and not manifest.missing_raw_regions and not errors
+    next_commands = []
+    for region in missing_reviewed:
+        command = "review-spectrum" if region == "Survey" else "review-region"
+        next_commands.append(f"uv run xps-fit {command} --sample {sample} --region {region}")
+    if calibration_ready and manifest.calibration_status != "calibrated":
+        next_commands.append(
+            "uv run xps-fit calibrate-sample "
+            f"--sample {sample} --reference-region C1s "
+            "--reference-component aromatic_C-C_C=C --target-energy 284.8"
+        )
     return {
         "sample": sample,
         "manifest": str(path),
+        "review_state": review_state,
         "calibration_status": manifest.calibration_status,
+        "calibration_readiness": "ready" if calibration_ready else "not ready",
         "energy_offset_eV": manifest.energy_offset_eV,
         "review_complete": not missing_reviewed,
         "publication_ready": manifest.calibration_status == "calibrated" and not errors,
         "checked_artifacts": checked,
         "errors": errors,
         "warnings": warnings,
+        "next_commands": next_commands,
         "valid": not errors,
     }
