@@ -1881,6 +1881,7 @@ wheels = [
 
 [[package]]
 name = "xps-fitting-workbench"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "lmfit" },

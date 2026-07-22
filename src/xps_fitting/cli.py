@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import importlib.metadata
+import importlib.util
 import json
 import sys
 from dataclasses import replace
@@ -97,6 +99,37 @@ def _run_stored_plot(args: argparse.Namespace) -> int:
 def _run_inspect(args: argparse.Namespace) -> int:
     _json_output(inspect_sample(_repository(args), args.sample))
     return 0
+
+
+def _run_doctor(args: argparse.Namespace) -> int:
+    root = _repository(args)
+    distribution = importlib.metadata.distribution("xps-fitting-workbench")
+    direct_url_text = distribution.read_text("direct_url.json")
+    direct_url = json.loads(direct_url_text) if direct_url_text else {}
+    dependencies = {
+        name: importlib.util.find_spec(name) is not None
+        for name in ("lmfit", "matplotlib", "numpy", "openpyxl", "pandas", "scipy", "vgd_reader")
+    }
+    package_path = Path(__file__).resolve().parent
+    expected_source = (root / "src" / "xps_fitting").resolve()
+    versions_match = distribution.version == __version__
+    source_matches = package_path == expected_source
+    editable = bool(direct_url.get("dir_info", {}).get("editable"))
+    report = {
+        "healthy": editable and versions_match and source_matches and all(dependencies.values()),
+        "python_path": sys.executable,
+        "package_import_path": str(package_path),
+        "package_version": __version__,
+        "installed_distribution_version": distribution.version,
+        "repository_path": str(root),
+        "editable": editable,
+        "source_path_matches_repository": source_matches,
+        "source_and_installed_versions_match": versions_match,
+        "dependencies": dependencies,
+        "repair_command": "uv sync --python 3.13 --reinstall-package xps-fitting-workbench",
+    }
+    _json_output(report)
+    return 0 if report["healthy"] else 1
 
 
 def _run_fit_region(args: argparse.Namespace) -> int:
@@ -491,6 +524,8 @@ def main(argv: list[str] | None = None) -> int:
     inspect_parser = subparsers.add_parser("inspect-sample", help="inspect raw files and artifact states")
     inspect_parser.add_argument("--sample", required=True)
 
+    subparsers.add_parser("doctor", help="report environment and editable-install health")
+
     fit_region_parser = subparsers.add_parser("fit-region", help="persist configured candidates before diagnostics")
     fit_region_parser.add_argument("--sample", required=True)
     fit_region_parser.add_argument("--region", required=True)
@@ -576,6 +611,7 @@ def main(argv: list[str] | None = None) -> int:
         handlers = {
             "plot": _run_stored_plot,
             "inspect-sample": _run_inspect,
+            "doctor": _run_doctor,
             "fit-region": _run_fit_region,
             "fit-sample": _run_fit_sample,
             "review-region": _run_review,

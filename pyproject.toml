@@ -1,6 +1,6 @@
 [project]
 name = "xps-fitting-workbench"
-dynamic = ["version"]
+version = "0.3.0"
 description = "Reproducible, chemistry-constrained XPS peak fitting"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -27,14 +27,14 @@ dev = [
 xps-fit = "xps_fitting.cli:main"
 
 [build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.11.3,<0.12.0"]
+build-backend = "uv_build"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.uv.build-backend]
+module-name = "xps_fitting"
 
-[tool.setuptools.dynamic]
-version = {attr = "xps_fitting._version.__version__"}
+[tool.uv]
+link-mode = "copy"
 
 [tool.pytest.ini_options]
 addopts = "-ra"
