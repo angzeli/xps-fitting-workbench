@@ -1,0 +1,23 @@
+{
+  "sample": "PDI-Me-COOH",
+  "region": "C1s",
+  "candidate_source": "artifacts/candidates/PDI-Me-COOH/C1s/c1s-5.bundle",
+  "selected_model": "C1s_5",
+  "decision": "accepted",
+  "reviewer": "Angze",
+  "review_date": "2026-07-22T08:34:06.746793+00:00",
+  "notes": [],
+  "residual_inspection_status": "approved",
+  "background_approval_status": "approved",
+  "component_assignment_approval_status": "approved",
+  "constraints_reviewed": true,
+  "warnings_acknowledged": true,
+  "source_sha256": "f96afe0a462497f038eef5f945281b49e96b331d92fb6209df526cb8087f8f2b",
+  "configuration_sha256": "8b7932c1591e5a777f68ccbb138620022728102e63c4eae7ed1d3dd0c30fcac5",
+  "candidate_artifact_id": "pdi-me-cooh-c1s-5e02f66bca7729c8",
+  "candidate_bundle_sha256": "cc9fd6c1d51e578697d2c9edcd8574631049c9524e0cd547fcc34e905bc51b6f",
+  "review_version": 1,
+  "software_version": "0.3.0",
+  "review_status": "reviewed",
+  "schema_version": 1
+}

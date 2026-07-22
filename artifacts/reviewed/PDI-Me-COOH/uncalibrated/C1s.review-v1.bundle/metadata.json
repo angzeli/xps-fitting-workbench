@@ -1,0 +1,514 @@
+{
+  "fitted_parameters": {
+    "aromatic_C-C_C=C.area": 244178.32326796342,
+    "aromatic_C-C_C=C.centre": 284.44394599047683,
+    "aromatic_C-C_C=C.fwhm": 1.2486257324484908,
+    "aromatic_C-C_C=C.fraction": 0.5,
+    "C-N_C-Cl.area": 66452.6417141007,
+    "C-N_C-Cl.centre": 285.30000000000007,
+    "C-N_C-Cl.fwhm": 1.146715820936914,
+    "C-N_C-Cl.fraction": 0.5,
+    "imide_N-C=O.area": 35336.93153194286,
+    "imide_N-C=O.centre": 287.77915894894375,
+    "imide_N-C=O.fwhm": 1.1044587796818233,
+    "imide_N-C=O.fraction": 0.5,
+    "acid_O-C=O.area": 14621.707641404999,
+    "acid_O-C=O.centre": 288.70000000000005,
+    "acid_O-C=O.fwhm": 1.1000000000018073,
+    "acid_O-C=O.fraction": 0.5,
+    "pi-pi_star.area": 28960.19504200897,
+    "pi-pi_star.centre": 290.49394599047685,
+    "pi-pi_star.fwhm": 3.0957402303223303,
+    "pi-pi_star.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "aromatic_C-C_C=C.area": 15729.477375009612,
+    "aromatic_C-C_C=C.centre": 0.027127284308278245,
+    "aromatic_C-C_C=C.fwhm": 0.03337439852065683,
+    "aromatic_C-C_C=C.fraction": null,
+    "C-N_C-Cl.area": 15617.927593489836,
+    "C-N_C-Cl.centre": 0.07696978224678129,
+    "C-N_C-Cl.fwhm": 0.10500506040381903,
+    "C-N_C-Cl.fraction": null,
+    "imide_N-C=O.area": 10309.649147061773,
+    "imide_N-C=O.centre": 0.1088595119447372,
+    "imide_N-C=O.fwhm": 0.17128137066362498,
+    "imide_N-C=O.fraction": null,
+    "acid_O-C=O.area": 10422.738439425839,
+    "acid_O-C=O.centre": 0.259080780601621,
+    "acid_O-C=O.fwhm": 0.42649783445595857,
+    "acid_O-C=O.fraction": null,
+    "pi-pi_star.area": 4316.880097190466,
+    "pi-pi_star.centre": null,
+    "pi-pi_star.fwhm": 0.5172841017915917,
+    "pi-pi_star.fraction": null
+  },
+  "correlation_matrix": {
+    "aromatic_C-C_C=C.area": {
+      "aromatic_C-C_C=C.area": 1.0000000000000002,
+      "aromatic_C-C_C=C.centre": 0.9747126241189836,
+      "aromatic_C-C_C=C.fwhm": 0.8876597837632251,
+      "C-N_C-Cl.area": -0.9897859119615403,
+      "C-N_C-Cl.centre": 0.9633510678251685,
+      "C-N_C-Cl.fwhm": -0.8402653788829069,
+      "imide_N-C=O.area": 0.07661747760442722,
+      "imide_N-C=O.centre": 0.04001437748281625,
+      "imide_N-C=O.fwhm": 0.11211357273298844,
+      "acid_O-C=O.area": -0.0183188779720462,
+      "acid_O-C=O.centre": 0.056704252794778205,
+      "acid_O-C=O.fwhm": 0.01231990074039964,
+      "pi-pi_star.area": -0.1169629013051221,
+      "pi-pi_star.fwhm": -0.08282324841123222
+    },
+    "aromatic_C-C_C=C.centre": {
+      "aromatic_C-C_C=C.area": 0.9747126241189923,
+      "aromatic_C-C_C=C.centre": 1.0,
+      "aromatic_C-C_C=C.fwhm": 0.8731100037381027,
+      "C-N_C-Cl.area": -0.972704370890252,
+      "C-N_C-Cl.centre": 0.9469571800796978,
+      "C-N_C-Cl.fwhm": -0.7882038238611784,
+      "imide_N-C=O.area": 0.06622078431851228,
+      "imide_N-C=O.centre": 0.033309971727099416,
+      "imide_N-C=O.fwhm": 0.09992522723970738,
+      "acid_O-C=O.area": -0.00973025873319056,
+      "acid_O-C=O.centre": 0.049234384166351904,
+      "acid_O-C=O.fwhm": 0.018646655203343507,
+      "pi-pi_star.area": -0.11685886670693536,
+      "pi-pi_star.fwhm": -0.08083207019113704
+    },
+    "aromatic_C-C_C=C.fwhm": {
+      "aromatic_C-C_C=C.area": 0.8876597837632383,
+      "aromatic_C-C_C=C.centre": 0.8731100037381077,
+      "aromatic_C-C_C=C.fwhm": 1.0,
+      "C-N_C-Cl.area": -0.8479268971835823,
+      "C-N_C-Cl.centre": 0.7754340289309165,
+      "C-N_C-Cl.fwhm": -0.5762854769628362,
+      "imide_N-C=O.area": 0.02646107807954171,
+      "imide_N-C=O.centre": 0.010407457751396381,
+      "imide_N-C=O.fwhm": 0.04554030359722568,
+      "acid_O-C=O.area": 0.014256340698547374,
+      "acid_O-C=O.centre": 0.022036727235085974,
+      "acid_O-C=O.fwhm": 0.026311669047330885,
+      "pi-pi_star.area": -0.1243596840558741,
+      "pi-pi_star.fwhm": -0.08881634494127914
+    },
+    "C-N_C-Cl.area": {
+      "aromatic_C-C_C=C.area": -0.9897859119615399,
+      "aromatic_C-C_C=C.centre": -0.9727043708902425,
+      "aromatic_C-C_C=C.fwhm": -0.8479268971835693,
+      "C-N_C-Cl.area": 0.9999999999999999,
+      "C-N_C-Cl.centre": -0.9661991487295023,
+      "C-N_C-Cl.fwhm": 0.8818481792072834,
+      "imide_N-C=O.area": -0.09844855237038808,
+      "imide_N-C=O.centre": -0.05504656766690551,
+      "imide_N-C=O.fwhm": -0.14218348402132877,
+      "acid_O-C=O.area": 0.03571545661391386,
+      "acid_O-C=O.centre": -0.07231184402838016,
+      "acid_O-C=O.fwhm": -0.0049725980128544475,
+      "pi-pi_star.area": 0.10305694184287842,
+      "pi-pi_star.fwhm": 0.06912894588825555
+    },
+    "C-N_C-Cl.centre": {
+      "aromatic_C-C_C=C.area": 0.9633510678251702,
+      "aromatic_C-C_C=C.centre": 0.9469571800796915,
+      "aromatic_C-C_C=C.fwhm": 0.7754340289309057,
+      "C-N_C-Cl.area": -0.9661991487295052,
+      "C-N_C-Cl.centre": 1.0000000000000002,
+      "C-N_C-Cl.fwhm": -0.8654856879786593,
+      "imide_N-C=O.area": 0.07378427237853721,
+      "imide_N-C=O.centre": 0.03696078090374141,
+      "imide_N-C=O.fwhm": 0.10799212103591362,
+      "acid_O-C=O.area": -0.016243333025635857,
+      "acid_O-C=O.centre": 0.05364286002680123,
+      "acid_O-C=O.fwhm": 0.013344691282086412,
+      "pi-pi_star.area": -0.10797443940669914,
+      "pi-pi_star.fwhm": -0.07676487933954795
+    },
+    "C-N_C-Cl.fwhm": {
+      "aromatic_C-C_C=C.area": -0.840265378882888,
+      "aromatic_C-C_C=C.centre": -0.7882038238611533,
+      "aromatic_C-C_C=C.fwhm": -0.5762854769628086,
+      "C-N_C-Cl.area": 0.8818481792072661,
+      "C-N_C-Cl.centre": -0.8654856879786401,
+      "C-N_C-Cl.fwhm": 0.9999999999999999,
+      "imide_N-C=O.area": -0.15235594173589964,
+      "imide_N-C=O.centre": -0.09090791991689887,
+      "imide_N-C=O.fwhm": -0.20992707142664319,
+      "acid_O-C=O.area": 0.0836683208052868,
+      "acid_O-C=O.centre": -0.10978428639043697,
+      "acid_O-C=O.fwhm": 0.024396163716601617,
+      "pi-pi_star.area": 0.05977370089063822,
+      "pi-pi_star.fwhm": 0.03746405757178168
+    },
+    "imide_N-C=O.area": {
+      "aromatic_C-C_C=C.area": 0.07661747760418237,
+      "aromatic_C-C_C=C.centre": 0.06622078431827212,
+      "aromatic_C-C_C=C.fwhm": 0.026461078079327505,
+      "C-N_C-Cl.area": -0.09844855237014347,
+      "C-N_C-Cl.centre": 0.07378427237829957,
+      "C-N_C-Cl.fwhm": -0.15235594173568953,
+      "imide_N-C=O.area": 1.0000000000000002,
+      "imide_N-C=O.centre": 0.9469609524350348,
+      "imide_N-C=O.fwhm": 0.8964641524351171,
+      "acid_O-C=O.area": -0.9605744032131457,
+      "acid_O-C=O.centre": 0.9509016784604811,
+      "acid_O-C=O.fwhm": -0.8296968738685309,
+      "pi-pi_star.area": 0.029043349525979145,
+      "pi-pi_star.fwhm": -0.1467725389802415
+    },
+    "imide_N-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.04001437748256421,
+      "aromatic_C-C_C=C.centre": 0.03330997172685174,
+      "aromatic_C-C_C=C.fwhm": 0.010407457751177903,
+      "C-N_C-Cl.area": -0.05504656766665236,
+      "C-N_C-Cl.centre": 0.03696078090349589,
+      "C-N_C-Cl.fwhm": -0.09090791991667917,
+      "imide_N-C=O.area": 0.9469609524350266,
+      "imide_N-C=O.centre": 1.0,
+      "imide_N-C=O.fwhm": 0.8378956175640633,
+      "acid_O-C=O.area": -0.9466046113302206,
+      "acid_O-C=O.centre": 0.9396957704094236,
+      "acid_O-C=O.fwhm": -0.7945898482630633,
+      "pi-pi_star.area": 0.08531172825472055,
+      "pi-pi_star.fwhm": -0.06830953944126505
+    },
+    "imide_N-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": 0.11211357273278874,
+      "aromatic_C-C_C=C.centre": 0.09992522723951164,
+      "aromatic_C-C_C=C.fwhm": 0.045540303597050295,
+      "C-N_C-Cl.area": -0.1421834840211297,
+      "C-N_C-Cl.centre": 0.10799212103572016,
+      "C-N_C-Cl.fwhm": -0.20992707142647296,
+      "imide_N-C=O.area": 0.8964641524351237,
+      "imide_N-C=O.centre": 0.8378956175640778,
+      "imide_N-C=O.fwhm": 0.9999999999999999,
+      "acid_O-C=O.area": -0.8191774977103324,
+      "acid_O-C=O.centre": 0.7993810396980012,
+      "acid_O-C=O.fwhm": -0.5883841718717294,
+      "pi-pi_star.area": -0.017145227521342184,
+      "pi-pi_star.fwhm": -0.1074858710698474
+    },
+    "acid_O-C=O.area": {
+      "aromatic_C-C_C=C.area": -0.018318877971790694,
+      "aromatic_C-C_C=C.centre": -0.009730258732940226,
+      "aromatic_C-C_C=C.fwhm": 0.014256340698771096,
+      "C-N_C-Cl.area": 0.03571545661365879,
+      "C-N_C-Cl.centre": -0.016243333025388013,
+      "C-N_C-Cl.fwhm": 0.08366832080506763,
+      "imide_N-C=O.area": -0.9605744032131338,
+      "imide_N-C=O.centre": -0.9466046113302169,
+      "imide_N-C=O.fwhm": -0.8191774977103152,
+      "acid_O-C=O.area": 0.9999999999999999,
+      "acid_O-C=O.centre": -0.9351684695845133,
+      "acid_O-C=O.fwhm": 0.9020949987075305,
+      "pi-pi_star.area": -0.2192186304514833,
+      "pi-pi_star.fwhm": 0.002762251090856053
+    },
+    "acid_O-C=O.centre": {
+      "aromatic_C-C_C=C.area": 0.056704252794554585,
+      "aromatic_C-C_C=C.centre": 0.04923438416613249,
+      "aromatic_C-C_C=C.fwhm": 0.022036727234891106,
+      "C-N_C-Cl.area": -0.07231184402815634,
+      "C-N_C-Cl.centre": 0.05364286002658392,
+      "C-N_C-Cl.fwhm": -0.10978428639024375,
+      "imide_N-C=O.area": 0.9509016784604778,
+      "imide_N-C=O.centre": 0.9396957704094285,
+      "imide_N-C=O.fwhm": 0.7993810396979913,
+      "acid_O-C=O.area": -0.9351684695845217,
+      "acid_O-C=O.centre": 0.9999999999999998,
+      "acid_O-C=O.fwhm": -0.8243099332358604,
+      "pi-pi_star.area": 0.048770558445794567,
+      "pi-pi_star.fwhm": -0.08061738209492042
+    },
+    "acid_O-C=O.fwhm": {
+      "aromatic_C-C_C=C.area": 0.012319900740605329,
+      "aromatic_C-C_C=C.centre": 0.01864665520354508,
+      "aromatic_C-C_C=C.fwhm": 0.02631166904751043,
+      "C-N_C-Cl.area": -0.004972598013060126,
+      "C-N_C-Cl.centre": 0.013344691282286152,
+      "C-N_C-Cl.fwhm": 0.0243961637164242,
+      "imide_N-C=O.area": -0.8296968738685166,
+      "imide_N-C=O.centre": -0.7945898482630559,
+      "imide_N-C=O.fwhm": -0.5883841718717112,
+      "acid_O-C=O.area": 0.9020949987075266,
+      "acid_O-C=O.centre": -0.824309933235849,
+      "acid_O-C=O.fwhm": 1.0,
+      "pi-pi_star.area": -0.22921820550095842,
+      "pi-pi_star.fwhm": 0.05810132598472223
+    },
+    "pi-pi_star.area": {
+      "aromatic_C-C_C=C.area": -0.11696290130514629,
+      "aromatic_C-C_C=C.centre": -0.11685886670695896,
+      "aromatic_C-C_C=C.fwhm": -0.12435968405589415,
+      "C-N_C-Cl.area": 0.10305694184290315,
+      "C-N_C-Cl.centre": -0.10797443940672283,
+      "C-N_C-Cl.fwhm": 0.059773700890661044,
+      "imide_N-C=O.area": 0.02904334952595505,
+      "imide_N-C=O.centre": 0.08531172825469688,
+      "imide_N-C=O.fwhm": -0.017145227521363732,
+      "acid_O-C=O.area": -0.2192186304514605,
+      "acid_O-C=O.centre": 0.048770558445771064,
+      "acid_O-C=O.fwhm": -0.22921820550093883,
+      "pi-pi_star.area": 1.0,
+      "pi-pi_star.fwhm": 0.7395072817777355
+    },
+    "pi-pi_star.fwhm": {
+      "aromatic_C-C_C=C.area": -0.0828232484112118,
+      "aromatic_C-C_C=C.centre": -0.080832070191117,
+      "aromatic_C-C_C=C.fwhm": -0.08881634494126038,
+      "C-N_C-Cl.area": 0.06912894588823565,
+      "C-N_C-Cl.centre": -0.07676487933952836,
+      "C-N_C-Cl.fwhm": 0.03746405757176574,
+      "imide_N-C=O.area": -0.146772538980255,
+      "imide_N-C=O.centre": -0.06830953944127927,
+      "imide_N-C=O.fwhm": -0.1074858710698588,
+      "acid_O-C=O.area": 0.0027622510908701155,
+      "acid_O-C=O.centre": -0.08061738209493387,
+      "acid_O-C=O.fwhm": 0.05810132598473459,
+      "pi-pi_star.area": 0.7395072817777325,
+      "pi-pi_star.fwhm": 1.0
+    }
+  },
+  "fit_statistics": {
+    "rss": 1680785903.1950145,
+    "rms_residual": 2697.4301568457095,
+    "residual_mean": -1104.5661434283822,
+    "max_abs_residual": 6911.73285777807,
+    "reduced_chi_square": 7745557.157580712,
+    "aic": 3677.8253199045816,
+    "aicc": 3679.769764349026,
+    "bic": 3726.019167851887,
+    "durbin_watson": 0.1410407378135261,
+    "residual_runs": 51.0,
+    "n_parameters": 14.0,
+    "n_points": 231.0
+  },
+  "warnings": [
+    "Parameter correlation exceeds 0.95.",
+    "C-N_C-Cl.centre is at or near a bound.",
+    "acid_O-C=O.centre is at or near a bound.",
+    "acid_O-C=O.fwhm is at or near a bound.",
+    "Structural component FWHMs diverge by more than 50%."
+  ],
+  "configuration": {
+    "name": "C1s_5",
+    "region": "C 1s",
+    "peaks": [
+      {
+        "label": "aromatic_C-C_C=C",
+        "centre": 284.65,
+        "centre_bounds": [
+          284.35,
+          284.95
+        ],
+        "area": 1000,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "C-N_C-Cl",
+        "centre": 285.85,
+        "centre_bounds": [
+          285.3,
+          286.4
+        ],
+        "area": 500,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.4,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "imide_N-C=O",
+        "centre": 287.9,
+        "centre_bounds": [
+          287.4,
+          288.4
+        ],
+        "area": 400,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "acid_O-C=O",
+        "centre": 289.15,
+        "centre_bounds": [
+          288.7,
+          289.7
+        ],
+        "area": 250,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          1.1,
+          2.0
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "pi-pi_star",
+        "centre": 290.7,
+        "centre_bounds": [
+          290.1,
+          291.8
+        ],
+        "area": 100,
+        "area_bounds": [
+          0.0,
+          null
+        ],
+        "fwhm": 2.2,
+        "fwhm_bounds": [
+          1.5,
+          3.5
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": [
+          "aromatic_C-C_C=C",
+          6.05
+        ],
+        "area_ratio_to": null
+      }
+    ],
+    "background": "linear",
+    "robust_loss": "linear",
+    "multistart": 2,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 3,
+    "width_penalty": 0.0,
+    "metadata": {
+      "candidate_family": "C1s_common_5_satellite",
+      "sensitivity_only": false,
+      "publication_eligible_without_review": false,
+      "chemistry_rationale": "Five-envelope PDI-Me-COOH hypothesis including a pi-pi* satellite. The two aryl-methyl carbons are treated as unresolved within aromatic_C-C_C=C rather than forced into a mathematically redundant peak.",
+      "position_basis": "Absolute uncalibrated guesses transferred from the homologous PDI-H-COOH model; the PDI-Me-COOH raw maximum is 284.500054 eV and sample-wide calibration is applied only after review."
+    }
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "C1s Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 2,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 231,
+    "clean_rows": 231,
+    "source_file": "data/raw/PDI-Me-COOH/C1s Scan.VGD",
+    "sample_name": "PDI-Me-COOH",
+    "region": "C1s",
+    "configuration_file": "configs/fits/pdi_me_cooh_c1s_5.json",
+    "configuration_file_sha256": "abbc0123d9493147352b4740a80e66afd5b58247bc9dc10c00c8950525ea248b",
+    "artifact_id": "pdi-me-cooh-c1s-review-v1",
+    "artifact_state": "reviewed",
+    "review_status": "reviewed",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "f96afe0a462497f038eef5f945281b49e96b331d92fb6209df526cb8087f8f2b",
+    "configuration_sha256": "8b7932c1591e5a777f68ccbb138620022728102e63c4eae7ed1d3dd0c30fcac5",
+    "artifact_created_at": "2026-07-22T08:19:55.095951+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true,
+    "review_version": 1,
+    "review_record": "artifacts/reviewed/PDI-Me-COOH/review_records/C1s.review-v1.json",
+    "reviewer": "Angze",
+    "review_date": "2026-07-22T08:34:06.746793+00:00"
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 195,
+    "backend": "lmfit",
+    "multistart_rss": [
+      1680785903.1950145,
+      1680785903.2009947
+    ],
+    "background_iterations": 0,
+    "stoichiometric_area_ratio": {}
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}
