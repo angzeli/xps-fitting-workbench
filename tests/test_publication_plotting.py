@@ -235,6 +235,10 @@ def test_pdi_publication_recipes_have_exact_outputs_and_no_svg() -> None:
     assert sample["regions"] == ["Survey", "C1s", "N1s", "O1s", "Cl2p"]
     assert sample["output_filename"] == "{sample_slug}_xps_panel"
     assert sample["output_formats"] == ["png", "pdf"]
+    c1s = load_plot_config(ROOT / "configs" / "plots" / "c1s_publication.json")
+    o1s = load_plot_config(ROOT / "configs" / "plots" / "o1s_publication.json")
+    assert c1s.peak_annotations["C-N_C-Cl_methoxy_C"]["offset_points"] == (-20, 16)
+    assert o1s.peak_annotations["methoxy_O"]["offset_points"] == (0, 16)
     generic_workflow = [
         ROOT / "configs" / "plots" / filename for filename in (*expected, "pdi_publication.json")
     ] + [ROOT / "src" / "xps_fitting" / "publication.py", ROOT / "src" / "xps_fitting" / "plotting" / "sample_panel.py"]

@@ -10,8 +10,10 @@ from xps_fitting.plotting import (
     export_figure,
     figure_size_preset,
     plot_fit_comparison,
+    plot_xps_fit,
     plot_xps_series,
 )
+from xps_fitting.plotting.annotations import COMPONENT_DISPLAY_LABELS
 from xps_fitting.result import FitResult
 
 
@@ -95,3 +97,51 @@ def test_multipanel_uses_the_plain_satellite_label_and_semantic_colour() -> None
         for collection in axis.collections
     )
     plt.close(figure)
+
+
+def test_methoxy_colours_and_publication_labels_match_in_single_and_series_plots() -> None:
+    assert {
+        key: COMPONENT_DISPLAY_LABELS[key]
+        for key in ("methoxy_C", "methoxy_O", "C-N_C-Cl_methoxy_C")
+    } == {
+        "methoxy_C": "Methoxy C",
+        "methoxy_O": "Methoxy O",
+        "C-N_C-Cl_methoxy_C": "C–N/C–Cl/methoxy C",
+    }
+    energy = np.linspace(282, 536, 255)
+    background = np.full_like(energy, 2.0)
+    combined = 5 * np.exp(-(((energy - 286) / 0.8) ** 2))
+    methoxy_oxygen = 4 * np.exp(-(((energy - 533) / 0.9) ** 2))
+    components = {
+        "C-N_C-Cl_methoxy_C": combined,
+        "methoxy_O": methoxy_oxygen,
+    }
+    total = background + sum(components.values())
+    result = FitResult(
+        energy,
+        total,
+        background,
+        components,
+        total,
+        np.zeros_like(energy),
+        {"C-N_C-Cl_methoxy_C.centre": 286.0, "methoxy_O.centre": 533.0},
+        metadata={"sample_name": "PDI-OMe-COOH"},
+    )
+
+    single_figure, single_axis = plot_xps_fit(result)
+    series_figure, series_axes = plot_xps_series([result, result])
+    expected_colours = [mcolors.to_rgb(component_colour(label)) for label in components]
+    single_colours = [collection.get_facecolor()[0][:3] for collection in single_axis.collections]
+    series_colours = [collection.get_facecolor()[0][:3] for collection in series_axes[0, 0].collections]
+    assert all(np.allclose(actual, expected) for actual, expected in zip(single_colours, expected_colours))
+    assert all(np.allclose(actual, expected) for actual, expected in zip(series_colours, expected_colours))
+
+    for legend in (single_axis.get_legend(), series_figure.legends[0]):
+        labels = [text.get_text() for text in legend.get_texts()]
+        assert "C–N/C–Cl/methoxy C" in labels
+        assert "Methoxy O" in labels
+        assert all("_" not in label for label in labels)
+        assert all(text.get_fontweight() == "bold" for text in legend.get_texts())
+
+    plt.close(single_figure)
+    plt.close(series_figure)

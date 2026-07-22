@@ -161,12 +161,14 @@ def test_c1s_publication_recipe_records_final_layout() -> None:
     assert set(config.peak_annotations) == {
         "aromatic_C-C_C=C",
         "C-N_C-Cl",
+        "C-N_C-Cl_methoxy_C",
         "imide_N-C=O",
         "acid_O-C=O",
         "pi-pi_star",
     }
     assert config.peak_annotations["aromatic_C-C_C=C"]["connector"] is False
     assert config.peak_annotations["C-N_C-Cl"]["offset_points"] == (-18, 20)
+    assert config.peak_annotations["C-N_C-Cl_methoxy_C"]["offset_points"] == (-20, 16)
 
 
 def test_recipe_rejects_an_overlong_configured_connector() -> None:

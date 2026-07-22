@@ -1,3 +1,5 @@
+import warnings
+
 import matplotlib as mpl
 import pytest
 
@@ -57,11 +59,16 @@ def test_semantic_component_colours_are_sample_order_and_extension_independent()
         "acid_hydroxyl_OH": "#C2185B",
         "Cl_2p3/2": "#166534",
         "Cl_2p1/2": "#4C956C",
+        "methoxy_C": "#8C564B",
+        "methoxy_O": "#17A2B8",
+        "C-N_C-Cl_methoxy_C": "#4C78A8",
     }
-    for _sample in ("PDI-H-COOH", "PDI-Me-COOH", "PDI-OMe-COOH"):
-        assert {key: component_colour(key) for key in expected} == expected
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        for _sample in ("PDI-H-COOH", "PDI-Me-COOH", "PDI-OMe-COOH", "another-methoxy-PDI"):
+            assert {key: component_colour(key) for key in expected} == expected
     assert {key: component_colour(key) for key in reversed(expected)} == dict(reversed(tuple(expected.items())))
-    extended = {**expected, "methoxy_C": component_colour("methoxy_C")}
+    extended = {**expected, "future_assignment": "#000000"}
     assert {key: extended[key] for key in expected} == expected
 
 
