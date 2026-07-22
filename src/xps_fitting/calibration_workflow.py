@@ -50,10 +50,13 @@ class CalibrationPlan:
     missing_regions: tuple[str, ...]
 
     def format_text(self) -> str:
+        exact_offset = repr(self.energy_offset_eV)
+        if not exact_offset.startswith("-"):
+            exact_offset = "+" + exact_offset
         lines = [
-            f"Exact fitted reference centre: {self.reference_center_before_eV:.6f} eV",
-            f"Requested target:              {self.target_energy_eV:.6f} eV",
-            f"Calculated common shift:       {self.energy_offset_eV:+.6f} eV",
+            f"Exact fitted reference centre: {self.reference_center_before_eV!r} eV",
+            f"Requested target:              {self.target_energy_eV!r} eV",
+            f"Calculated common shift:       {exact_offset} eV",
             "",
             "This shift will be applied to:",
             *(f"- {region}" for region in self.applied_regions),

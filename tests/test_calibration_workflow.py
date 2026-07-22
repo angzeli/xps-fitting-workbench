@@ -69,9 +69,13 @@ def _review_region(tmp_path, region: str, component: str, centre: float):
     return promotion.reviewed_bundle
 
 
-def _sample(tmp_path):
+def _sample(tmp_path, *, complete: bool = True):
     c1s = _review_region(tmp_path, "C1s", "aromatic_cc", 284.3762)
     n1s = _review_region(tmp_path, "N1s", "nitrogen", 400.125)
+    fitted = {"C1s": c1s, "N1s": n1s}
+    if complete:
+        fitted["O1s"] = _review_region(tmp_path, "O1s", "oxygen", 531.275)
+        fitted["Cl2p"] = _review_region(tmp_path, "Cl2p", "chlorine", 200.15)
     survey_source = tmp_path / "raw" / "PDI-H-COOH" / "XPS Survey.VGD"
     survey_source.write_bytes(b"raw Survey")
     survey = Spectrum(
@@ -91,10 +95,10 @@ def _sample(tmp_path):
     )
     manifest_path = tmp_path / "artifacts" / "reviewed" / "PDI-H-COOH" / "sample_manifest.json"
     create_sample_manifest("PDI-H-COOH", tmp_path / "raw" / "PDI-H-COOH", manifest_path, repository_root=tmp_path)
-    activate_reviewed_bundle(manifest_path, c1s, repository_root=tmp_path)
-    activate_reviewed_bundle(manifest_path, n1s, repository_root=tmp_path)
+    for bundle in fitted.values():
+        activate_reviewed_bundle(manifest_path, bundle, repository_root=tmp_path)
     activate_reviewed_bundle(manifest_path, survey_promotion.reviewed_spectrum, repository_root=tmp_path)
-    return manifest_path, {"C1s": c1s, "N1s": n1s, "Survey": survey_promotion.reviewed_spectrum}
+    return manifest_path, {**fitted, "Survey": survey_promotion.reviewed_spectrum}
 
 
 def test_persisted_calibration_uses_exact_centre_and_preserves_every_intensity_array(tmp_path) -> None:
@@ -112,12 +116,11 @@ def test_persisted_calibration_uses_exact_centre_and_preserves_every_intensity_a
         reference_region="C1s",
         reference_component="aromatic_cc",
         reference_component_label="Aromatic C=C/C-C",
-        required_regions=("C1s", "N1s", "Survey"),
         repository_root=tmp_path,
     )
     assert plan.reference_center_before_eV == 284.3762
     assert plan.energy_offset_eV == pytest.approx(0.4238)
-    assert "Exact fitted reference centre: 284.376200 eV" in plan.format_text()
+    assert "Exact fitted reference centre: 284.3762 eV" in plan.format_text()
     with pytest.raises(ValueError, match="no active calibration record"):
         load_publication_region(manifest_path, "C1s", repository_root=tmp_path)
 
@@ -129,7 +132,6 @@ def test_persisted_calibration_uses_exact_centre_and_preserves_every_intensity_a
             reference_component_label="Aromatic C=C/C-C",
             reviewer="Reviewer",
             scientific_rationale="Intrinsic aromatic carbon reference reviewed for this sample.",
-            required_regions=("C1s", "N1s", "Survey"),
             repository_root=tmp_path,
         )
     assert not (manifest_path.parent / "calibration.json").exists()
@@ -141,14 +143,13 @@ def test_persisted_calibration_uses_exact_centre_and_preserves_every_intensity_a
         reference_component_label="Aromatic C=C/C-C",
         reviewer="Reviewer",
         scientific_rationale="Intrinsic aromatic carbon reference reviewed for this sample.",
-        required_regions=("C1s", "N1s", "Survey"),
         confirmed=True,
         repository_root=tmp_path,
         calibration_date="2026-07-21T05:00:00+00:00",
     )
 
     assert outcome.record.energy_offset_eV == pytest.approx(0.4238)
-    assert outcome.record.applied_regions == ("C1s", "N1s", "Survey")
+    assert outcome.record.applied_regions == ("C1s", "N1s", "O1s", "Cl2p", "Survey")
     for region, bundle in outcome.calibrated_bundles.items():
         if region == "Survey":
             calibrated_survey = load_spectrum_bundle(bundle)
@@ -176,7 +177,7 @@ def test_persisted_calibration_uses_exact_centre_and_preserves_every_intensity_a
     stored_manifest = load_sample_manifest(manifest_path)
     assert stored_manifest.calibration_status == "calibrated"
     assert stored_manifest.energy_offset_eV == pytest.approx(0.4238)
-    assert set(stored_manifest.calibrated) == {"C1s", "N1s", "Survey"}
+    assert set(stored_manifest.calibrated) == {"C1s", "N1s", "O1s", "Cl2p", "Survey"}
     record = json.loads(outcome.calibration_record.read_text())
     assert record["reference_center_before_eV"] == 284.3762
 
@@ -204,7 +205,7 @@ def test_persisted_calibration_uses_exact_centre_and_preserves_every_intensity_a
 
 
 def test_incomplete_sample_requires_an_explicit_override_and_calibration_is_immutable(tmp_path) -> None:
-    manifest_path, _ = _sample(tmp_path)
+    manifest_path, _ = _sample(tmp_path, complete=False)
     with pytest.raises(ValueError, match="missing reviewed regions"):
         prepare_sample_calibration(
             manifest_path,
