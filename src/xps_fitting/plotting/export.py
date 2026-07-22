@@ -7,7 +7,7 @@ from typing import Iterable
 
 from matplotlib.figure import Figure
 
-from .themes import SUPPORTED_OUTPUT_FORMATS, PlotTheme, load_theme, validate_theme
+from .themes import SUPPORTED_OUTPUT_FORMATS, PlotTheme, load_theme, theme_context, validate_theme
 
 SUPPORTED_FORMATS = SUPPORTED_OUTPUT_FORMATS
 
@@ -42,20 +42,21 @@ def export_figure(
         raise FileExistsError(f"output already exists: {names}; pass overwrite=True to replace it")
     if dry_run:
         return paths
-    for format_name, path in paths.items():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        is_vector = format_name == "pdf"
-        alpha = (
-            transparent
-            if transparent is not None
-            else (selected.vector_transparent if is_vector else selected.raster_transparent)
-        )
-        figure.savefig(
-            path,
-            format=format_name,
-            dpi=selected.dpi,
-            transparent=alpha,
-            bbox_inches="tight" if tight else None,
-            metadata=metadata,
-        )
+    with theme_context(selected):
+        for format_name, path in paths.items():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            is_vector = format_name == "pdf"
+            alpha = (
+                transparent
+                if transparent is not None
+                else (selected.vector_transparent if is_vector else selected.raster_transparent)
+            )
+            figure.savefig(
+                path,
+                format=format_name,
+                dpi=selected.dpi,
+                transparent=alpha,
+                bbox_inches="tight" if tight else None,
+                metadata=metadata,
+            )
     return paths

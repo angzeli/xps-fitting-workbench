@@ -160,6 +160,7 @@ def test_plain_text_satellite_legend_is_fully_bold_and_exports(tmp_path) -> None
     assert "$" not in satellite_label.get_text()
     paths = export_figure(figure, tmp_path / "plain-satellite", formats=("png", "pdf"))
     assert all(path.stat().st_size > 100 for path in paths.values())
+    assert b"/FontFile2" in paths["pdf"].read_bytes()
     plt.close(figure)
 
 
