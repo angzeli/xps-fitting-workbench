@@ -125,6 +125,13 @@ def _next_review_version(directory: Path, region: str) -> int:
     return max(versions, default=0) + 1
 
 
+def _parse_optional_bounds(bounds: Any) -> tuple[float | None, float | None] | None:
+    if not isinstance(bounds, list | tuple) or len(bounds) != 2:
+        return None
+    lower, upper = bounds
+    return (None if lower is None else float(lower), None if upper is None else float(upper))
+
+
 def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
     """Return the numerical evidence a reviewer needs without selecting a model."""
     result = load_fit_bundle(candidate_bundle)
@@ -143,6 +150,7 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
     bound_hits = []
     peaks = {str(peak.get("label")): peak for peak in result.configuration.get("peaks", ())}
     for label in result.components:
+        parameter_bounds: dict[str, list[float | str]] = {}
         components.append(
             {
                 "label": label,
@@ -150,19 +158,28 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
                 "fwhm_eV": result.fitted_parameters.get(f"{label}.fwhm"),
                 "area": areas[label],
                 "area_fraction": areas[label] / total_area if total_area > 0 else None,
+                "bounds": parameter_bounds,
             }
         )
         peak = peaks.get(label, {})
         for parameter in ("centre", "fwhm", "area", "lorentzian_fraction"):
             fitted_value = result.fitted_parameters.get(f"{label}.{parameter}")
-            bounds = peak.get(f"{parameter}_bounds")
-            if fitted_value is None or not isinstance(bounds, list | tuple) or len(bounds) != 2:
+            bounds = _parse_optional_bounds(peak.get(f"{parameter}_bounds"))
+            if fitted_value is None or bounds is None:
                 continue
-            lower, upper = (float(item) for item in bounds)
-            tolerance = max(1e-8, abs(upper - lower) * 1e-5)
-            if abs(float(fitted_value) - lower) <= tolerance:
+            lower, upper = bounds
+            parameter_bounds[parameter] = ["unbounded" if value is None else value for value in bounds]
+            if lower is None and upper is None:
+                continue
+            numeric_value = float(fitted_value)
+            tolerance = (
+                max(1e-8, abs(upper - lower) * 1e-5)
+                if lower is not None and upper is not None
+                else max(1e-8, max(abs(numeric_value), abs(lower if lower is not None else upper)) * 1e-5)
+            )
+            if lower is not None and abs(numeric_value - lower) <= tolerance:
                 bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "lower", "value": float(fitted_value)})
-            elif abs(float(fitted_value) - upper) <= tolerance:
+            elif upper is not None and abs(numeric_value - upper) <= tolerance:
                 bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "upper", "value": float(fitted_value)})
     return {
         "bundle": str(Path(candidate_bundle).resolve()),

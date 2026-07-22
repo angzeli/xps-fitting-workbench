@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -173,3 +174,45 @@ def test_candidate_summary_reports_bound_hits_and_rejection_is_versioned(tmp_pat
     assert first.record.decision == "rejected_all"
     assert first.rejection_record.is_file()
     assert not (tmp_path / "artifacts" / "reviewed" / "PDI-H-COOH" / "uncalibrated").exists()
+
+
+@pytest.mark.parametrize(
+    ("bounds", "expected_bounds", "expected_hit"),
+    [
+        ([0.0, None], [0.0, "unbounded"], None),
+        ([None, 10.0], ["unbounded", 10.0], "upper"),
+        ([None, None], ["unbounded", "unbounded"], None),
+        ([0.0, 10.0], [0.0, 10.0], "upper"),
+    ],
+)
+def test_candidate_summary_handles_optional_bounds(monkeypatch, bounds, expected_bounds, expected_hit) -> None:
+    result = candidate_result()
+    result.fitted_parameters["aromatic_C-C_C=C.area"] = 10.0
+    result.configuration["peaks"][0]["area_bounds"] = bounds
+    monkeypatch.setattr("xps_fitting.review.load_fit_bundle", lambda _: result)
+
+    summary = candidate_review_summary("candidate.bundle")
+
+    assert summary["components"][0]["bounds"]["area"] == expected_bounds
+    area_hits = [item for item in summary["bound_hits"] if item["parameter"].endswith(".area")]
+    assert [item["bound"] for item in area_hits] == ([] if expected_hit is None else [expected_hit])
+
+
+def test_persisted_cl2p_candidate_summary_handles_unbounded_area_without_fitting(monkeypatch) -> None:
+    def fail_if_fitted(*args, **kwargs):
+        raise AssertionError("review must not invoke fitting")
+
+    monkeypatch.setattr("xps_fitting.optimiser.fit_spectrum", fail_if_fitted)
+    bundle = (
+        Path(__file__).resolve().parents[1]
+        / "artifacts"
+        / "candidates"
+        / "PDI-H-COOH"
+        / "Cl2p"
+        / "cl2p-constrained.bundle"
+    )
+
+    summary = candidate_review_summary(bundle)
+
+    assert summary["model"] == "Cl2p_constrained"
+    assert summary["components"][0]["bounds"]["area"] == [0.0, "unbounded"]
