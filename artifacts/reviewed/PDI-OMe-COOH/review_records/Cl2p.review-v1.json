@@ -1,0 +1,23 @@
+{
+  "sample": "PDI-OMe-COOH",
+  "region": "Cl2p",
+  "candidate_source": "artifacts/candidates/PDI-OMe-COOH/Cl2p/cl2p-constrained.bundle",
+  "selected_model": "Cl2p_constrained",
+  "decision": "accepted",
+  "reviewer": "Angze",
+  "review_date": "2026-07-22T08:58:15.532630+00:00",
+  "notes": [],
+  "residual_inspection_status": "approved",
+  "background_approval_status": "approved",
+  "component_assignment_approval_status": "approved",
+  "constraints_reviewed": true,
+  "warnings_acknowledged": true,
+  "source_sha256": "36287ea04f175b62f61a44fff907ad9cbb43df5eee49d395c3f254aab5ff4863",
+  "configuration_sha256": "39466c4c065cf1f46a3fbba283a844d17055b01b1164e0a5635581f94eeb434d",
+  "candidate_artifact_id": "pdi-ome-cooh-cl2p-f83dad38ee40b475",
+  "candidate_bundle_sha256": "253bd9fafc703d0e019e30fbda2f8e993925e69cc37c2b17f5c1df1fd04751e5",
+  "review_version": 1,
+  "software_version": "0.3.0",
+  "review_status": "reviewed",
+  "schema_version": 1
+}

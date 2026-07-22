@@ -1,0 +1,13 @@
+{
+  "sample": "PDI-OMe-COOH",
+  "region": "Survey",
+  "decision": "accepted",
+  "reviewer": "Angze",
+  "review_date": "2026-07-22T08:58:19.925766+00:00",
+  "notes": [],
+  "source_sha256": "754c985d24dbffa6901b0f5a3a0934ccc0aefd0dc0e3f5a7059d890d3798498b",
+  "review_version": 1,
+  "review_status": "reviewed",
+  "software_version": "0.3.0",
+  "schema_version": 1
+}

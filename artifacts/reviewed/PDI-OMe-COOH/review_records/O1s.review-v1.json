@@ -1,0 +1,23 @@
+{
+  "sample": "PDI-OMe-COOH",
+  "region": "O1s",
+  "candidate_source": "artifacts/candidates/PDI-OMe-COOH/O1s/o1s-4-methoxy-linear.bundle",
+  "selected_model": "O1s_4_methoxy_linear",
+  "decision": "accepted",
+  "reviewer": "y",
+  "review_date": "2026-07-22T08:40:26.027568+00:00",
+  "notes": [],
+  "residual_inspection_status": "approved",
+  "background_approval_status": "approved",
+  "component_assignment_approval_status": "approved",
+  "constraints_reviewed": true,
+  "warnings_acknowledged": true,
+  "source_sha256": "cf92069e882b9dc7bf2135869dd7ad6f1c50dab686b18daa08a9dcf6fde31dad",
+  "configuration_sha256": "741316d864e6dbb018a0d3193252737f68d9410307fab5fbfaab649398127d99",
+  "candidate_artifact_id": "pdi-ome-cooh-o1s-3c577b0d2bbea1fd",
+  "candidate_bundle_sha256": "b96cd0a78f0aaa5a066a29f86fefaa390be76d39a7594d1021cf862e013b1681",
+  "review_version": 1,
+  "software_version": "0.3.0",
+  "review_status": "reviewed",
+  "schema_version": 1
+}

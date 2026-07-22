@@ -21,15 +21,33 @@
     "Cl2p",
     "Survey"
   ],
-  "reviewed_uncalibrated": {},
-  "active_review_versions": {},
-  "calibrated": {},
-  "calibration": null,
-  "calibration_status": "uncalibrated",
-  "energy_offset_eV": null,
-  "calibrated_at": null,
+  "reviewed_uncalibrated": {
+    "C1s": "artifacts/reviewed/PDI-OMe-COOH/uncalibrated/C1s.review-v1.bundle",
+    "O1s": "artifacts/reviewed/PDI-OMe-COOH/uncalibrated/O1s.review-v1.bundle",
+    "N1s": "artifacts/reviewed/PDI-OMe-COOH/uncalibrated/N1s.review-v1.bundle",
+    "Cl2p": "artifacts/reviewed/PDI-OMe-COOH/uncalibrated/Cl2p.review-v1.bundle",
+    "Survey": "artifacts/reviewed/PDI-OMe-COOH/uncalibrated/Survey.review-v1.spectrum"
+  },
+  "active_review_versions": {
+    "C1s": 1,
+    "O1s": 1,
+    "N1s": 1,
+    "Cl2p": 1,
+    "Survey": 1
+  },
+  "calibrated": {
+    "C1s": "artifacts/reviewed/PDI-OMe-COOH/calibrated/C1s.review-v1.bundle",
+    "O1s": "artifacts/reviewed/PDI-OMe-COOH/calibrated/O1s.review-v1.bundle",
+    "N1s": "artifacts/reviewed/PDI-OMe-COOH/calibrated/N1s.review-v1.bundle",
+    "Cl2p": "artifacts/reviewed/PDI-OMe-COOH/calibrated/Cl2p.review-v1.bundle",
+    "Survey": "artifacts/reviewed/PDI-OMe-COOH/calibrated/Survey.review-v1.spectrum"
+  },
+  "calibration": "artifacts/reviewed/PDI-OMe-COOH/calibration.json",
+  "calibration_status": "calibrated",
+  "energy_offset_eV": 0.3796641335865161,
+  "calibrated_at": "2026-07-22T09:11:40.777199+00:00",
   "created_at": "2026-07-21T14:45:55.291570+00:00",
-  "updated_at": "2026-07-21T14:45:55.291570+00:00",
+  "updated_at": "2026-07-22T09:11:40.777199+00:00",
   "schema_version": 1,
   "missing_raw_regions": []
 }
