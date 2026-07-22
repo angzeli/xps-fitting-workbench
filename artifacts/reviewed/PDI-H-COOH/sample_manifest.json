@@ -21,15 +21,19 @@
     "Cl2p",
     "Survey"
   ],
-  "reviewed_uncalibrated": {},
-  "active_review_versions": {},
+  "reviewed_uncalibrated": {
+    "C1s": "artifacts/reviewed/PDI-H-COOH/uncalibrated/C1s.review-v1.bundle"
+  },
+  "active_review_versions": {
+    "C1s": 1
+  },
   "calibrated": {},
   "calibration": null,
   "calibration_status": "uncalibrated",
   "energy_offset_eV": null,
   "calibrated_at": null,
   "created_at": "2026-07-21T14:45:55.287701+00:00",
-  "updated_at": "2026-07-21T14:45:55.287701+00:00",
+  "updated_at": "2026-07-22T02:06:14.273354+00:00",
   "schema_version": 1,
   "missing_raw_regions": []
 }
