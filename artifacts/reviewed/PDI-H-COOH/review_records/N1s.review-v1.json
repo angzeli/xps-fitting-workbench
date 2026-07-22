@@ -1,0 +1,23 @@
+{
+  "sample": "PDI-H-COOH",
+  "region": "N1s",
+  "candidate_source": "artifacts/candidates/PDI-H-COOH/N1s/n1s-1-shirley.bundle",
+  "selected_model": "N1s_1_shirley",
+  "decision": "accepted",
+  "reviewer": "Angze",
+  "review_date": "2026-07-22T04:05:17.120780+00:00",
+  "notes": [],
+  "residual_inspection_status": "approved",
+  "background_approval_status": "approved",
+  "component_assignment_approval_status": "approved",
+  "constraints_reviewed": true,
+  "warnings_acknowledged": true,
+  "source_sha256": "ea43fcefc5f6296e741071b7b7d47442c499971f0034cfbb01c61a7600295f57",
+  "configuration_sha256": "f81e4882bd95c63600afc633fdf8faa88d0efad2edec9f1991e5bf5d84a6b407",
+  "candidate_artifact_id": "pdi-h-cooh-n1s-de6b77b1ca3306e5",
+  "candidate_bundle_sha256": "bfecf921ce380cbfec79ef6a6eaee85d71b188f302c5cd604ecdb5d442c7eed4",
+  "review_version": 1,
+  "software_version": "0.3.0",
+  "review_status": "reviewed",
+  "schema_version": 1
+}

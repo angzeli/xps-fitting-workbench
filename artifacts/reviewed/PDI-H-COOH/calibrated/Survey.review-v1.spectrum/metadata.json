@@ -1,0 +1,36 @@
+{
+  "region": "XPS Survey",
+  "sample_name": "PDI-H-COOH",
+  "source_file": "data/raw/PDI-H-COOH/XPS Survey.VGD",
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "XPS Survey",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": null,
+    "dwell_time_s": null,
+    "periods": null,
+    "txf_applied": false,
+    "original_order": "descending",
+    "input_rows": 1361,
+    "clean_rows": 1361,
+    "source_sample_name": "3.10-3",
+    "artifact_id": "pdi-h-cooh-survey-spectrum-review-v1-calibrated",
+    "artifact_state": "reviewed",
+    "review_status": "reviewed",
+    "review_version": 1,
+    "calibration_status": "calibrated",
+    "publication_eligible": true,
+    "binding_energy_calibration": {
+      "reference_core_level": "C1s",
+      "reference_component": "aromatic_C-C_C=C",
+      "observed_eV": 284.4442455122907,
+      "target_eV": 284.8,
+      "offset_eV": 0.35575448770930507,
+      "method": "rigid sample-wide binding-energy shift"
+    },
+    "calibration_record": "artifacts/reviewed/PDI-H-COOH/calibration.json"
+  },
+  "acquisition_metadata": {}
+}
