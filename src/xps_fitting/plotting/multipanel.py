@@ -6,6 +6,7 @@ from collections.abc import Mapping, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.artist import Artist
 from matplotlib.figure import Figure
 from matplotlib.ticker import MultipleLocator
 
@@ -202,7 +203,7 @@ def plot_xps_series(
                 axis.set_ylabel("Normalised intensity" if normalised else "Intensity (a.u.)")
             if index // ncols == nrows - 1:
                 axis.set_xlabel("Binding energy (eV)")
-            legend_obstacles = ()
+            legend_obstacles: tuple[Artist, ...] = ()
             if not shared_legend:
                 legend = axis.legend(
                     frameon=selected.legend_frame,

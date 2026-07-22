@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
-from typing import Iterator
+from typing import Any, Iterator
 
 import matplotlib as mpl
 from matplotlib.axes import Axes
@@ -219,7 +219,7 @@ def validate_theme(
     return theme
 
 
-def load_theme(theme: str | PlotTheme = "angze_publication", **overrides) -> PlotTheme:
+def load_theme(theme: str | PlotTheme = "angze_publication", **overrides: Any) -> PlotTheme:
     selected = theme if isinstance(theme, PlotTheme) else _THEMES.get(theme)
     if selected is None:
         raise ValueError(f"unknown theme {theme!r}; choose from {sorted(_THEMES)}")
@@ -316,7 +316,7 @@ def apply_vertical_headroom(
 
 
 @contextmanager
-def theme_context(theme: str | PlotTheme = "angze_publication", **overrides) -> Iterator[PlotTheme]:
+def theme_context(theme: str | PlotTheme = "angze_publication", **overrides: Any) -> Iterator[PlotTheme]:
     selected = load_theme(theme, **overrides)
     with mpl.rc_context(selected.rc_params()):
         yield selected

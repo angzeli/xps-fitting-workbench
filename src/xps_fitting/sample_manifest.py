@@ -140,6 +140,7 @@ def activate_reviewed_bundle(
     manifest = load_sample_manifest(path)
     bundle_path = Path(bundle).resolve()
     raw_manifest = json.loads((bundle_path / "manifest.json").read_text(encoding="utf-8"))
+    report: Any
     if raw_manifest.get("format") == "xps-fitting-workbench-fit-bundle":
         report = validate_fit_bundle(bundle_path, repository_root=repository_root)
         artifact_data = read_fit_bundle_manifest(bundle_path).get("artifact")

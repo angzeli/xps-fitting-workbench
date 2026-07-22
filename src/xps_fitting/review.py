@@ -130,15 +130,15 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
     result = load_fit_bundle(candidate_bundle)
     areas = {label: float(result.fitted_parameters.get(f"{label}.area", 0.0)) for label in result.components}
     total_area = sum(areas.values())
-    high_correlations = []
+    high_correlations: list[dict[str, str | float]] = []
     seen_pairs: set[tuple[str, str]] = set()
     for first, row in result.correlation_matrix.items():
         for second, value in row.items():
-            pair = tuple(sorted((first, second)))
+            pair = (min(first, second), max(first, second))
             if first != second and pair not in seen_pairs and abs(float(value)) >= 0.9:
                 seen_pairs.add(pair)
                 high_correlations.append({"parameter_1": pair[0], "parameter_2": pair[1], "correlation": float(value)})
-    high_correlations.sort(key=lambda item: abs(item["correlation"]), reverse=True)
+    high_correlations.sort(key=lambda item: abs(float(item["correlation"])), reverse=True)
     components = []
     bound_hits = []
     peaks = {str(peak.get("label")): peak for peak in result.configuration.get("peaks", ())}
@@ -154,16 +154,16 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
         )
         peak = peaks.get(label, {})
         for parameter in ("centre", "fwhm", "area", "lorentzian_fraction"):
-            value = result.fitted_parameters.get(f"{label}.{parameter}")
+            fitted_value = result.fitted_parameters.get(f"{label}.{parameter}")
             bounds = peak.get(f"{parameter}_bounds")
-            if value is None or not isinstance(bounds, list | tuple) or len(bounds) != 2:
+            if fitted_value is None or not isinstance(bounds, list | tuple) or len(bounds) != 2:
                 continue
             lower, upper = (float(item) for item in bounds)
             tolerance = max(1e-8, abs(upper - lower) * 1e-5)
-            if abs(float(value) - lower) <= tolerance:
-                bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "lower", "value": float(value)})
-            elif abs(float(value) - upper) <= tolerance:
-                bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "upper", "value": float(value)})
+            if abs(float(fitted_value) - lower) <= tolerance:
+                bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "lower", "value": float(fitted_value)})
+            elif abs(float(fitted_value) - upper) <= tolerance:
+                bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "upper", "value": float(fitted_value)})
     return {
         "bundle": str(Path(candidate_bundle).resolve()),
         "model": result.configuration.get("name", "unknown"),

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import platform
 from types import SimpleNamespace
+from typing import Any, Callable
 
 import numpy as np
 import scipy
@@ -57,7 +58,14 @@ def _independent_names(peaks: list[PeakConfig], stage: str, release_fraction: bo
     return names
 
 
-def _solve_stage(residual, names, trial, bounds, robust_loss, backend):
+def _solve_stage(
+    residual: Callable[[np.ndarray], np.ndarray],
+    names: list[str],
+    trial: dict[str, float],
+    bounds: dict[str, tuple[float, float]],
+    robust_loss: str,
+    backend: str,
+) -> Any:
     lower = np.array([bounds[name][0] for name in names])
     upper = np.array([bounds[name][1] for name in names])
     if backend == "scipy":
@@ -72,7 +80,7 @@ def _solve_stage(residual, names, trial, bounds, robust_loss, backend):
     for index, name in enumerate(names):
         parameters.add(f"v{index}", value=trial[name], min=bounds[name][0], max=bounds[name][1])
 
-    def lmfit_residual(params):
+    def lmfit_residual(params: Any) -> np.ndarray:
         return residual(np.array([params[f"v{index}"].value for index in range(len(names))]))
 
     fitted_result = lmfit.minimize(lmfit_residual, parameters, method="least_squares", loss=robust_loss)
@@ -232,7 +240,9 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
                 }
                 materially_different |= ratio_to_nominal < 0.5 or ratio_to_nominal > 2.0
             if materially_different:
-                warnings.append("Fitted structural area ratios differ by more than a factor of two from nominal counts.")
+                warnings.append(
+                    "Fitted structural area ratios differ by more than a factor of two from nominal counts."
+                )
     if not raw_result.success:
         warnings.append(f"Convergence warning: {raw_result.message}")
     if np.any(background < 0):

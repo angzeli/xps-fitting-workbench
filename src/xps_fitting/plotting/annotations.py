@@ -8,6 +8,7 @@ import numpy as np
 from matplotlib.artist import Artist
 from matplotlib.axes import Axes
 from matplotlib.text import Annotation, Text
+from matplotlib.transforms import Bbox
 
 from ..result import FitResult
 from .themes import PlotTheme
@@ -228,7 +229,7 @@ def _keep_annotations_inside_axes(
         axes_box = axis.get_window_extent(renderer)
         obstacle_boxes = [artist.get_window_extent(renderer) for artist in obstacles if artist.get_visible()]
         adjusted = False
-        placed_boxes = []
+        placed_boxes: list[Bbox] = []
         for annotation in annotations:
             box = Text.get_window_extent(annotation, renderer)
             shift_x = 0.0

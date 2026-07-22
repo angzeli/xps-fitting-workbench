@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 from ._version import __version__
 from .artifacts import canonical_region, load_publication_bundle, utc_now
@@ -48,7 +50,7 @@ def load_publication_region(
     region: str,
     *,
     repository_root: str | Path | None = None,
-) -> tuple[Any, Any, dict[str, Any]]:
+) -> tuple[FitResult | Spectrum, Any, dict[str, Any]]:
     """Load one calibrated reviewed fitted region or Survey and its provenance."""
     path = Path(manifest_path).resolve()
     manifest = load_sample_manifest(path)
@@ -62,6 +64,8 @@ def load_publication_region(
     calibration = json.loads(calibration_path.read_text(encoding="utf-8"))
     bundle = _resolve_link(manifest.calibrated[canonical], path.parent, root)
     bundle_manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+    result: FitResult | Spectrum
+    report: Any
     if bundle_manifest.get("format") == "xps-fitting-workbench-fit-bundle":
         result, report = load_publication_bundle(bundle, require_calibrated=True, repository_root=root)
     elif bundle_manifest.get("format") == "xps-fitting-workbench-spectrum-bundle":
@@ -104,7 +108,7 @@ def plot_publication_region(
     repository_root: str | Path | None = None,
     overwrite: bool = False,
     dry_run: bool = False,
-):
+) -> tuple[Figure, Axes | np.ndarray, dict[str, Path], dict[str, Any]]:
     """Render PNG/PDF from a stored calibrated result without fitting or mutation."""
     result, report, provenance = load_publication_region(
         manifest_path,
@@ -216,7 +220,9 @@ def plot_publication_sample(
         offsets.add(provenance["energy_offset_eV"])
         calibration_records.add(provenance["calibration_record"])
         recorded_recipe = Path(individual_recipe_values[region])
-        recipe_paths[region] = recorded_recipe if recorded_recipe.is_absolute() else recipe_path.parent / recorded_recipe
+        recipe_paths[region] = (
+            recorded_recipe if recorded_recipe.is_absolute() else recipe_path.parent / recorded_recipe
+        )
         configs[region] = load_plot_config(recipe_paths[region])
     if len(offsets) != 1 or len(calibration_records) != 1:
         raise ValueError("publication inputs contain mixed calibration states")

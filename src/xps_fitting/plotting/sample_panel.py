@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import replace
 from pathlib import Path
+from typing import cast
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,12 +20,12 @@ from .configuration import PlotConfig
 from .export import export_figure
 from .palettes import component_colour
 from .survey import draw_survey_axis
-from .themes import apply_vertical_headroom, load_theme, style_axes, style_legend, theme_context
+from .themes import PlotTheme, apply_vertical_headroom, load_theme, style_axes, style_legend, theme_context
 
 PANEL_REGIONS = ("Survey", "C1s", "N1s", "O1s", "Cl2p")
 
 
-def _draw_fitted_axis(axis: Axes, result: FitResult, config: PlotConfig, theme) -> None:
+def _draw_fitted_axis(axis: Axes, result: FitResult, config: PlotConfig, theme: PlotTheme) -> None:
     energy = np.asarray(result.energy)
     raw = np.asarray(result.raw_intensity)
     background = np.asarray(result.background)
@@ -124,9 +125,10 @@ def plot_sample_panel(
             "O1s": figure.add_subplot(grid[2, 0]),
             "Cl2p": figure.add_subplot(grid[2, 1]),
         }
-        draw_survey_axis(axes["Survey"], datasets["Survey"], theme, replace(configs["Survey"], core_level=None))
+        survey = cast(Spectrum, datasets["Survey"])
+        draw_survey_axis(axes["Survey"], survey, theme, replace(configs["Survey"], core_level=None))
         for region in PANEL_REGIONS[1:]:
-            _draw_fitted_axis(axes[region], datasets[region], configs[region], theme)
+            _draw_fitted_axis(axes[region], cast(FitResult, datasets[region]), configs[region], theme)
         for index, region in enumerate(PANEL_REGIONS):
             axis = axes[region]
             axis.set_title(f"({chr(97 + index)})", loc="left", fontsize=theme.title_size, fontweight="bold")

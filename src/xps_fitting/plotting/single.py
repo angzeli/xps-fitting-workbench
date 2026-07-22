@@ -250,6 +250,7 @@ def plot_xps_fit(
                 fontsize=selected.core_level_size,
             )
         elif core_level:
+            assert core_level_label_position is not None
             core_label = main.text(
                 *core_level_label_position,
                 core_level,

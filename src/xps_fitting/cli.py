@@ -9,6 +9,7 @@ import json
 import sys
 from dataclasses import replace
 from pathlib import Path
+from typing import Any
 
 from ._version import __version__
 from .artifacts import validate_fit_bundle
@@ -49,7 +50,7 @@ def _print_paths(paths: dict[str, Path], *, dry_run: bool) -> None:
         print(f"{prefix}: {path}")
 
 
-def _json_output(value) -> None:
+def _json_output(value: Any) -> None:
     print(json.dumps(value, indent=2, default=str))
 
 
@@ -219,6 +220,7 @@ def _run_review(args: argparse.Namespace) -> int:
     if args.reject_all and args.candidate:
         raise ValueError("--reject-all cannot be combined with --candidate")
     reject_all = args.reject_all
+    selected: Path | None = None
     if args.candidate:
         selected = next(
             (
@@ -262,6 +264,8 @@ def _run_review(args: argparse.Namespace) -> int:
             }
         )
         return 0
+    if selected is None:
+        raise RuntimeError("no review candidate was selected")
     if not args.approve and not _yes(f"Approve {selected.name} as the reviewed scientific fit?"):
         print("Review cancelled; no reviewed artifact was created.")
         return 0
@@ -430,6 +434,7 @@ def _run_plot_sample(args: argparse.Namespace) -> int:
 def _run_validate_bundle(args: argparse.Namespace) -> int:
     path = Path(args.path)
     manifest = json.loads((path / "manifest.json").read_text(encoding="utf-8"))
+    report: Any
     if manifest.get("format") == "xps-fitting-workbench-fit-bundle":
         report = validate_fit_bundle(
             path,

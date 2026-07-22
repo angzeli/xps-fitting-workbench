@@ -15,6 +15,7 @@ from .io_vgd import read_vgd
 from .model_comparison import compare_models
 from .plotting import export_figure, plot_fit_comparison, plot_xps_fit
 from .sample_manifest import (
+    SampleManifest,
     create_sample_manifest,
     discover_raw_regions,
     load_sample_manifest,
@@ -40,7 +41,7 @@ def sample_manifest_path(root: str | Path, sample: str) -> Path:
     return Path(root).resolve() / "artifacts" / "reviewed" / sample / "sample_manifest.json"
 
 
-def ensure_sample_manifest(root: str | Path, sample: str):
+def ensure_sample_manifest(root: str | Path, sample: str) -> SampleManifest:
     repository = Path(root).resolve()
     path = sample_manifest_path(repository, sample)
     if path.is_file():
@@ -257,6 +258,7 @@ def validate_sample(root: str | Path, sample: str, *, require_calibrated: bool =
     for region, value in links.items():
         bundle = _resolve_manifest_link(value, path, repository)
         bundle_manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+        report: Any
         if bundle_manifest.get("format") == "xps-fitting-workbench-fit-bundle":
             report = validate_fit_bundle(
                 bundle,

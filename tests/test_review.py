@@ -152,9 +152,7 @@ def test_review_rejects_a_raw_equals_total_candidate(tmp_path) -> None:
 def test_candidate_summary_reports_bound_hits_and_rejection_is_versioned(tmp_path) -> None:
     candidate = make_candidate(tmp_path)
     summary = candidate_review_summary(candidate)
-    assert summary["bound_hits"] == [
-        {"parameter": "aromatic_C-C_C=C.centre", "bound": "lower", "value": 284.3762}
-    ]
+    assert summary["bound_hits"] == [{"parameter": "aromatic_C-C_C=C.centre", "bound": "lower", "value": 284.3762}]
 
     first = reject_all_candidates(
         (candidate,),

@@ -144,6 +144,7 @@ def _reviewed_inputs(
         canonical = canonical_region(region)
         bundle = _resolve_path(value, manifest_path.parent, repository_root)
         raw_manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+        report: Any
         if raw_manifest.get("format") == "xps-fitting-workbench-fit-bundle":
             report = validate_fit_bundle(bundle, repository_root=repository_root)
             results[canonical] = load_fit_bundle(bundle)
@@ -327,6 +328,7 @@ def calibrate_reviewed_sample(
             )
             source_descriptor = ArtifactDescriptor.from_dict(dict(source_manifest["artifact"]))
             calibrated_id = f"{source_descriptor.artifact_id}-calibrated"
+            calibrated: Any
             if is_fit_result:
                 calibrated = copy.deepcopy(calibrated_results[region])
                 calibrated_configuration_sha256 = fit_configuration_sha256(calibrated)

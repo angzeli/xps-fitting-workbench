@@ -5,13 +5,14 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 from ..result import FitResult
 from .annotations import PDI_H_C1S_LABELS
 from .export import export_figure
 
 
-def plot_fit(result: FitResult, path: str | Path | None = None, *, residual_panel: bool = True):
+def plot_fit(result: FitResult, path: str | Path | None = None, *, residual_panel: bool = True) -> Figure:
     figure, axes = plt.subplots(
         2 if residual_panel else 1, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]} if residual_panel else None
     )

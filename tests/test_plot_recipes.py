@@ -143,7 +143,7 @@ def test_c1s_publication_recipe_records_final_layout() -> None:
     root = Path(__file__).parents[1]
     config = load_plot_config(root / "configs" / "plots" / "c1s_publication.json")
     assert config.output_formats == ("png", "pdf")
-    assert config.output_filename == "pdi_h_cooh_c1s_publication"
+    assert config.output_filename == "pdi_h_cooh_c1s"
     assert config.figure_size_preset == "detailed-publication" and config.dpi == 600
     assert config.tick_spacing == 5 and config.x_minor_interval == 2.5
     assert not config.show_y_ticks and config.show_top_ticks is False

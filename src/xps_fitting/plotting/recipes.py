@@ -6,6 +6,10 @@ import math
 from collections.abc import Sequence
 from pathlib import Path
 
+import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+
 from ..naming import validate_output_stem
 from ..result import FitResult
 from .configuration import PlotConfig
@@ -16,7 +20,7 @@ from .themes import PlotTheme, figure_size_preset, load_theme
 
 
 def _theme_from_config(config: PlotConfig) -> PlotTheme:
-    overrides = {}
+    overrides: dict[str, object] = {}
     if config.figure_size_preset is not None:
         overrides["figure_size"] = figure_size_preset(config.figure_size_preset)
     for field_name in ("figure_size", "fit_line_width", "component_line_width", "marker_size", "dpi"):
@@ -37,7 +41,7 @@ def plot_from_config(
     *,
     overwrite: bool = False,
     dry_run: bool = False,
-):
+) -> tuple[Figure, Axes | np.ndarray, dict[str, Path]]:
     theme = _theme_from_config(config)
     disclosure = "; ".join(
         value for value in (config.normalisation_disclosure, config.intensity_offset_disclosure) if value
@@ -90,7 +94,7 @@ def plot_series_from_config(
     sample_labels: Sequence[str] | None = None,
     overwrite: bool = False,
     dry_run: bool = False,
-):
+) -> tuple[Figure, np.ndarray, dict[str, Path]]:
     if len(results) < 2:
         raise ValueError("multipanel plotting requires at least two fit results")
     if config.panel_layout == "single":
