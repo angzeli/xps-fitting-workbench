@@ -13,6 +13,7 @@ from matplotlib.figure import Figure
 
 from ._version import __version__
 from .artifacts import canonical_region, load_publication_bundle, utc_now
+from .naming import resolve_sample_output_stem
 from .plotting.configuration import load_plot_config
 from .plotting.recipes import plot_from_config
 from .plotting.sample_panel import PANEL_REGIONS, plot_sample_panel
@@ -117,6 +118,10 @@ def plot_publication_region(
     )
     recipe_path = Path(recipe).resolve()
     config = load_plot_config(recipe_path)
+    config = replace(
+        config,
+        output_filename=resolve_sample_output_stem(config.output_filename, sample=str(provenance["sample"])),
+    )
     if config.core_level and canonical_region(config.core_level) != canonical_region(region):
         raise ValueError("publication recipe core level does not match the requested region")
     if set(config.output_formats) != {"png", "pdf"}:
@@ -242,7 +247,10 @@ def plot_publication_sample(
         )
         plt.close(figure)
         outputs[region] = paths
-    panel_filename = str(data.get("output_filename", "pdi_h_cooh_xps_panel"))
+    panel_filename = resolve_sample_output_stem(
+        str(data.get("output_filename", "{sample_slug}_xps_panel")),
+        sample=manifest.sample,
+    )
     panel_provenance_path = Path(output_directory) / f"{panel_filename}.provenance.json"
     if panel_provenance_path.exists() and not overwrite:
         raise FileExistsError(f"figure provenance already exists: {panel_provenance_path}")

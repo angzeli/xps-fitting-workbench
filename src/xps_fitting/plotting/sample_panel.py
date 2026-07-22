@@ -93,7 +93,7 @@ def plot_sample_panel(
     configs: Mapping[str, PlotConfig],
     output_directory: str | Path,
     *,
-    output_filename: str = "pdi_h_cooh_xps_panel",
+    output_filename: str = "xps_panel",
     output_formats: tuple[str, ...] = ("png", "pdf"),
     dpi: int = 600,
     metadata: Mapping[str, str] | None = None,

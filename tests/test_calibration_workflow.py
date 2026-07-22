@@ -40,15 +40,15 @@ def _result(region: str, component: str, centre: float) -> FitResult:
     )
 
 
-def _review_region(tmp_path, region: str, component: str, centre: float):
-    source = tmp_path / "raw" / "PDI-H-COOH" / f"{region} Scan.VGD"
+def _review_region(tmp_path, region: str, component: str, centre: float, *, sample: str = "PDI-H-COOH"):
+    source = tmp_path / "raw" / sample / f"{region} Scan.VGD"
     source.parent.mkdir(parents=True, exist_ok=True)
     source.write_bytes(f"raw {region}".encode())
-    candidate = tmp_path / "artifacts" / "candidates" / region / "model.bundle"
+    candidate = tmp_path / "artifacts" / "candidates" / sample / region / "model.bundle"
     save_candidate_bundle(
         _result(region, component, centre),
         candidate,
-        sample="PDI-H-COOH",
+        sample=sample,
         region=region,
         source_path=source,
         repository_root=tmp_path,
@@ -69,20 +69,20 @@ def _review_region(tmp_path, region: str, component: str, centre: float):
     return promotion.reviewed_bundle
 
 
-def _sample(tmp_path, *, complete: bool = True):
-    c1s = _review_region(tmp_path, "C1s", "aromatic_cc", 284.3762)
-    n1s = _review_region(tmp_path, "N1s", "nitrogen", 400.125)
+def _sample(tmp_path, *, complete: bool = True, sample: str = "PDI-H-COOH"):
+    c1s = _review_region(tmp_path, "C1s", "aromatic_cc", 284.3762, sample=sample)
+    n1s = _review_region(tmp_path, "N1s", "nitrogen", 400.125, sample=sample)
     fitted = {"C1s": c1s, "N1s": n1s}
     if complete:
-        fitted["O1s"] = _review_region(tmp_path, "O1s", "oxygen", 531.275)
-        fitted["Cl2p"] = _review_region(tmp_path, "Cl2p", "chlorine", 200.15)
-    survey_source = tmp_path / "raw" / "PDI-H-COOH" / "XPS Survey.VGD"
+        fitted["O1s"] = _review_region(tmp_path, "O1s", "oxygen", 531.275, sample=sample)
+        fitted["Cl2p"] = _review_region(tmp_path, "Cl2p", "chlorine", 200.15, sample=sample)
+    survey_source = tmp_path / "raw" / sample / "XPS Survey.VGD"
     survey_source.write_bytes(b"raw Survey")
     survey = Spectrum(
         np.linspace(0.0, 1200.0, 121),
         np.linspace(50.0, 100.0, 121),
         region="XPS Survey",
-        sample_name="PDI-H-COOH",
+        sample_name=sample,
         source_file=str(survey_source),
         metadata={"data_origin": "experimental"},
     )
@@ -93,8 +93,8 @@ def _sample(tmp_path, *, complete: bool = True):
         reviewer="Reviewer",
         repository_root=tmp_path,
     )
-    manifest_path = tmp_path / "artifacts" / "reviewed" / "PDI-H-COOH" / "sample_manifest.json"
-    create_sample_manifest("PDI-H-COOH", tmp_path / "raw" / "PDI-H-COOH", manifest_path, repository_root=tmp_path)
+    manifest_path = tmp_path / "artifacts" / "reviewed" / sample / "sample_manifest.json"
+    create_sample_manifest(sample, tmp_path / "raw" / sample, manifest_path, repository_root=tmp_path)
     for bundle in fitted.values():
         activate_reviewed_bundle(manifest_path, bundle, repository_root=tmp_path)
     activate_reviewed_bundle(manifest_path, survey_promotion.reviewed_spectrum, repository_root=tmp_path)
@@ -307,3 +307,82 @@ def test_complete_publication_sample_generates_individuals_panel_and_provenance(
     assert not list((tmp_path / "figures").rglob("*.svg"))
     assert set(provenance["source_reviewed_bundles"]) == {"Survey", "C1s", "N1s", "O1s", "Cl2p"}
     assert provenance["energy_offset_eV"] == pytest.approx(0.4238)
+
+
+@pytest.mark.parametrize(
+    ("sample", "slug"),
+    [
+        ("PDI-H-COOH", "pdi_h_cooh"),
+        ("PDI-Me-COOH", "pdi_me_cooh"),
+        ("PDI-OMe-COOH", "pdi_ome_cooh"),
+    ],
+)
+def test_generic_publication_recipe_derives_every_stem_from_active_sample(
+    tmp_path, monkeypatch, sample, slug
+) -> None:
+    manifest_path, _ = _sample(tmp_path, sample=sample)
+    outcome = calibrate_reviewed_sample(
+        manifest_path,
+        reference_region="C1s",
+        reference_component="aromatic_cc",
+        reference_component_label="Aromatic C=C/C-C",
+        reviewer="Reviewer",
+        scientific_rationale="One reviewed aromatic-carbon reference for the complete sample.",
+        confirmed=True,
+        repository_root=tmp_path,
+    )
+    monkeypatch.setattr(
+        "xps_fitting.optimiser.fit_spectrum",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("publication plotting must not refit")),
+    )
+    before = {
+        region: {member.name: sha256_file(member) for member in bundle.iterdir() if member.is_file()}
+        for region, bundle in outcome.calibrated_bundles.items()
+    }
+    recipes = tmp_path / "recipes"
+    recipes.mkdir()
+    region_slugs = {"Survey": "survey", "C1s": "c1s", "N1s": "n1s", "O1s": "o1s", "Cl2p": "cl2p"}
+    labels = {"Survey": "Survey", "C1s": "C 1s", "N1s": "N 1s", "O1s": "O 1s", "Cl2p": "Cl 2p"}
+    individual_recipes = {}
+    for region, region_slug in region_slugs.items():
+        recipe_path = recipes / f"{region}.json"
+        PlotConfig(
+            output_filename=f"{{sample_slug}}_{region_slug}",
+            output_formats=("png", "pdf"),
+            core_level=labels[region],
+            component_display_mode="hidden" if region == "Survey" else "filled_to_background",
+            dpi=72,
+        ).save(recipe_path)
+        individual_recipes[region] = recipe_path.name
+    sample_recipe = recipes / "pdi_publication.json"
+    sample_recipe.write_text(
+        json.dumps(
+            {
+                "kind": "pdi_sample_publication",
+                "regions": ["Survey", "C1s", "N1s", "O1s", "Cl2p"],
+                "individual_recipes": individual_recipes,
+                "output_filename": "{sample_slug}_xps_panel",
+                "output_formats": ["png", "pdf"],
+                "dpi": 72,
+            }
+        )
+    )
+    output_directory = tmp_path / "figures" / "final" / sample
+    outputs, _ = plot_publication_sample(
+        manifest_path,
+        sample_recipe,
+        output_directory,
+        repository_root=tmp_path,
+    )
+    expected = {**region_slugs, "panel": "xps_panel"}
+    for region, suffix in expected.items():
+        stem = f"{slug}_{suffix}"
+        paths = outputs[region]
+        assert paths["png"] == output_directory / f"{stem}.png"
+        assert paths["pdf"] == output_directory / f"{stem}.pdf"
+        assert paths["provenance"] == output_directory / f"{stem}.provenance.json"
+        assert all(path.is_file() for path in paths.values())
+    assert before == {
+        region: {member.name: sha256_file(member) for member in bundle.iterdir() if member.is_file()}
+        for region, bundle in outcome.calibrated_bundles.items()
+    }

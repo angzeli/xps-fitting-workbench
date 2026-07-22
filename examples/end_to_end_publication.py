@@ -43,6 +43,8 @@ def main(argv: list[str] | None = None) -> int:
         str(ROOT / "configs/plots/c1s_publication.json"),
         "--output-dir",
         str(cli_output),
+        "--output-name",
+        "pdi_h_cooh_c1s",
     ]
     if args.overwrite:
         cli_arguments.append("--overwrite")

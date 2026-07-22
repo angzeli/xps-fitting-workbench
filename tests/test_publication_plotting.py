@@ -217,11 +217,11 @@ def test_deprecated_component_style_alias_remains_available() -> None:
 
 def test_pdi_publication_recipes_have_exact_outputs_and_no_svg() -> None:
     expected = {
-        "c1s_publication.json": ("C 1s", "pdi_h_cooh_c1s"),
-        "n1s_publication.json": ("N 1s", "pdi_h_cooh_n1s"),
-        "o1s_publication.json": ("O 1s", "pdi_h_cooh_o1s"),
-        "cl2p_publication.json": ("Cl 2p", "pdi_h_cooh_cl2p"),
-        "survey_publication.json": ("Survey", "pdi_h_cooh_survey"),
+        "c1s_publication.json": ("C 1s", "{sample_slug}_c1s"),
+        "n1s_publication.json": ("N 1s", "{sample_slug}_n1s"),
+        "o1s_publication.json": ("O 1s", "{sample_slug}_o1s"),
+        "cl2p_publication.json": ("Cl 2p", "{sample_slug}_cl2p"),
+        "survey_publication.json": ("Survey", "{sample_slug}_survey"),
     }
     for filename, (core_level, output_name) in expected.items():
         config = load_plot_config(ROOT / "configs" / "plots" / filename)
@@ -233,5 +233,9 @@ def test_pdi_publication_recipes_have_exact_outputs_and_no_svg() -> None:
 
     sample = json.loads((ROOT / "configs" / "plots" / "pdi_publication.json").read_text())
     assert sample["regions"] == ["Survey", "C1s", "N1s", "O1s", "Cl2p"]
-    assert sample["output_filename"] == "pdi_h_cooh_xps_panel"
+    assert sample["output_filename"] == "{sample_slug}_xps_panel"
     assert sample["output_formats"] == ["png", "pdf"]
+    generic_workflow = [
+        ROOT / "configs" / "plots" / filename for filename in (*expected, "pdi_publication.json")
+    ] + [ROOT / "src" / "xps_fitting" / "publication.py", ROOT / "src" / "xps_fitting" / "plotting" / "sample_panel.py"]
+    assert all("pdi_h_cooh" not in path.read_text(encoding="utf-8") for path in generic_workflow)

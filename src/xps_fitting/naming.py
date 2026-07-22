@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from string import Formatter
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -14,6 +15,32 @@ def safe_slug(value: object, *, fallback: str = "untitled", max_length: int = 48
     text = unicodedata.normalize("NFKD", str(value)).encode("ascii", "ignore").decode("ascii").lower()
     slug = re.sub(r"[^a-z0-9]+", "-", text).strip("-") or fallback
     return slug[:max_length].rstrip("-")
+
+
+def sample_slug(sample: str) -> str:
+    """Return the underscore-separated sample token used by publication exports."""
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", sample.strip()).strip("_").lower()
+    return slug or "sample"
+
+
+def resolve_sample_output_stem(template: str, *, sample: str) -> str:
+    """Resolve the supported publication filename template and validate its result."""
+    try:
+        fields = tuple(Formatter().parse(template))
+    except ValueError as exc:
+        raise ValueError(f"invalid output filename template: {template!r}") from exc
+    for _, field, format_spec, conversion in fields:
+        if field is None:
+            continue
+        if field != "sample_slug":
+            raise ValueError(f"unsupported output filename template field: {field!r}")
+        if format_spec or conversion:
+            raise ValueError("output filename template fields do not support formatting or conversion")
+    try:
+        resolved = template.format(sample_slug=sample_slug(sample))
+    except (IndexError, KeyError, ValueError) as exc:
+        raise ValueError(f"invalid output filename template: {template!r}") from exc
+    return validate_output_stem(resolved)
 
 
 def make_output_name(
