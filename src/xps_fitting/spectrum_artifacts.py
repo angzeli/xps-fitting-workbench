@@ -167,6 +167,21 @@ def _resolve_recorded_file(value: str, bundle: Path, repository_root: str | Path
     return next((candidate.resolve() for candidate in candidates if candidate.is_file()), None)
 
 
+def _canonical_region_name(value: str) -> str:
+    compact = "".join(character for character in value if character.isalnum()).casefold()
+    aliases = {
+        "survey": "Survey",
+        "surveyscan": "Survey",
+        "xpssurvey": "Survey",
+        "widescan": "Survey",
+        "c1s": "C1s",
+        "n1s": "N1s",
+        "o1s": "O1s",
+        "cl2p": "Cl2p",
+    }
+    return aliases.get(compact, value.strip())
+
+
 def validate_spectrum_bundle(
     directory: str | Path,
     *,
@@ -188,7 +203,9 @@ def validate_spectrum_bundle(
     if descriptor is not None:
         if descriptor.state != "reviewed" or descriptor.review_status != "reviewed":
             reasons.append("spectrum artifact has not been scientifically reviewed")
-        if descriptor.sample != spectrum.sample_name or descriptor.region != spectrum.region:
+        if descriptor.sample != spectrum.sample_name or _canonical_region_name(
+            descriptor.region
+        ) != _canonical_region_name(spectrum.region):
             errors.append("spectrum sample or region differs from the artifact descriptor")
         if descriptor.source_point_count != spectrum.binding_energy.size:
             errors.append("spectrum point count differs from the artifact descriptor")
@@ -274,7 +291,7 @@ def review_spectrum(
     if classify_origin(spectrum.metadata.get("data_origin")) != "experimental":
         raise ValueError("reviewed spectrum artifacts require data_origin='experimental'")
     sample = spectrum.sample_name.strip()
-    region = spectrum.region.strip().replace(" ", "")
+    region = _canonical_region_name(spectrum.region)
     if not sample or not region:
         raise ValueError("reviewed spectrum requires sample and region identities")
     root = Path(reviewed_root)

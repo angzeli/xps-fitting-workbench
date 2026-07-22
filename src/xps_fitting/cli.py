@@ -316,6 +316,11 @@ def _run_review_spectrum(args: argparse.Namespace) -> int:
     if region not in sources:
         raise FileNotFoundError(f"raw {region} VGD file is unavailable for {args.sample}")
     spectrum = read_vgd(sources[region])
+    reviewed_spectrum = replace(
+        spectrum,
+        sample_name=args.sample.strip(),
+        metadata={**spectrum.metadata, "source_sample_name": spectrum.sample_name},
+    )
     print(
         f"{args.sample} {region}: {spectrum.binding_energy.size} points, "
         f"{spectrum.binding_energy.min():.6g} to {spectrum.binding_energy.max():.6g} eV"
@@ -325,7 +330,7 @@ def _run_review_spectrum(args: argparse.Namespace) -> int:
         return 0
     reviewer = args.reviewer or input("Reviewer name: ").strip()
     promotion = review_spectrum(
-        spectrum,
+        reviewed_spectrum,
         root / "artifacts" / "reviewed",
         source_path=sources[region],
         reviewer=reviewer,
