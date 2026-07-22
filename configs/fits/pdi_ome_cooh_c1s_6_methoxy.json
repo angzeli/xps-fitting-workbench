@@ -1,0 +1,23 @@
+{
+  "name": "C1s_6_methoxy_sensitivity",
+  "region": "C 1s",
+  "background": "linear",
+  "multistart": 12,
+  "random_seed": 42,
+  "peaks": [
+    {"label": "aromatic_C-C_C=C", "centre": 284.65, "centre_bounds": [284.35, 284.95], "area": 1000, "fwhm": 1.4, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "C-N_C-Cl", "centre": 285.85, "centre_bounds": [285.3, 286.4], "area": 500, "fwhm": 1.4, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "methoxy_C", "centre": 286.35, "centre_bounds": [285.9, 286.9], "area": 150, "area_bounds": [0.0, 60000.0], "fwhm": 1.4, "fwhm_bounds": [1.0, 2.2]},
+    {"label": "imide_N-C=O", "centre": 287.90, "centre_bounds": [287.4, 288.4], "area": 400, "fwhm": 1.5, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "acid_O-C=O", "centre": 289.15, "centre_bounds": [288.7, 289.7], "area": 250, "fwhm": 1.5, "fwhm_bounds": [1.1, 2.0]},
+    {"label": "pi-pi_star", "centre": 290.70, "centre_bounds": [290.1, 291.8], "area": 100, "fwhm": 2.2, "fwhm_bounds": [1.5, 3.5], "centre_offset_from": ["aromatic_C-C_C=C", 6.05]}
+  ],
+  "metadata": {
+    "candidate_family": "C1s_separated_methoxy_6_satellite",
+    "sensitivity_only": true,
+    "publication_eligible_without_review": false,
+    "chemistry_rationale": "Sensitivity hypothesis for an analogous dimethoxy substituent structure: a separate methoxy-carbon envelope is tested in addition to the common PDI C 1s assignments and pi-pi* satellite.",
+    "position_basis": "Broad uncalibrated methoxy-carbon bounds are literature-informed but intentionally overlap the C-N/C-Cl envelope. Acceptance requires a stable, resolved component with defensible area and low parameter correlation after the sample-wide C 1s calibration.",
+    "structure_assumption": "Two methoxy-carbon atoms are assumed only for this sensitivity test; confirm the exact PDI-OMe-COOH structure before scientific acceptance."
+  }
+}

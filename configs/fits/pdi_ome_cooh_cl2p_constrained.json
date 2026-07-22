@@ -1,0 +1,31 @@
+{
+  "name": "Cl2p_constrained",
+  "region": "Cl 2p",
+  "background": "linear",
+  "multistart": 2,
+  "random_seed": 42,
+  "peaks": [
+    {
+      "label": "Cl_2p3/2",
+      "centre": 200.0,
+      "centre_bounds": [199.5, 200.5],
+      "area": 65000.0,
+      "fwhm": 1.2,
+      "fwhm_bounds": [0.2, 3.0],
+      "width_group": "Cl_doublet",
+      "fraction_group": "Cl_doublet"
+    },
+    {
+      "label": "Cl_2p1/2",
+      "centre": 201.6,
+      "centre_bounds": [201.1, 202.1],
+      "area": 32500.0,
+      "fwhm": 1.2,
+      "fwhm_bounds": [0.2, 3.0],
+      "width_group": "Cl_doublet",
+      "fraction_group": "Cl_doublet",
+      "centre_offset_from": ["Cl_2p3/2", 1.6],
+      "area_ratio_to": ["Cl_2p3/2", 0.5]
+    }
+  ]
+}
