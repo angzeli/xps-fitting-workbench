@@ -27,6 +27,10 @@ COMPONENT_COLOURS = {
     "O_1s_hydroxyl": "#9F1239",
     "N_1s_imide": "#1D4ED8",
     "N_1s_amine": "#6D28D9",
+    "carbonyl_O": "#C2410C",
+    "imide_carbonyl_O": "#DC2626",
+    "acid_carbonyl_O": "#EA580C",
+    "acid_hydroxyl_OH": "#BE185D",
 }
 FALLBACK_COMPONENT_COLOURS = ("#0F766E", "#B45309", "#4338CA", "#BE123C", "#4D7C0F", "#A21CAF", "#0369A1")
 MONOCHROME_STYLES = ("-", "--", "-.", ":")

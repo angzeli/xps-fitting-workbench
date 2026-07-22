@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from .artifacts import canonical_region, portable_path, validate_fit_bundle
+from .artifacts import canonical_region, display_region, portable_path, validate_fit_bundle
 from .configuration import load_config
 from .integrity import sha256_file
 from .io_vgd import read_vgd
@@ -169,17 +169,26 @@ def fit_region_candidates(
     diagnostic_directory = repository / "figures" / "diagnostic" / sample / canonical
     figures: dict[str, list[str]] = {}
     for model, result in results.items():
+        annotation_offsets = (
+            {
+                "imide_carbonyl_O": (42.0, 8.0),
+                "acid_carbonyl_O": (0.0, 46.0),
+                "acid_hydroxyl_OH": (-42.0, 8.0),
+            }
+            if canonical == "O1s"
+            else None
+        )
+        component_colours = {"imide_N-C=O": "#1D4ED8"} if canonical == "N1s" else None
         figure, _ = plot_xps_fit(
             result,
             theme="angze_diagnostic",
-            core_level=canonical,
-            sample_label=(
-                f"{sample} — {model} / {result.configuration['background']} — "
-                f"{len(result.warnings)} warning(s); candidate (not reviewed)"
-            ),
+            core_level=display_region(canonical),
+            sample_label=model,
             show_residual=True,
             show_peak_positions=True,
-            fit_statistics=True,
+            peak_annotation_offsets=annotation_offsets,
+            component_colours=component_colours,
+            fit_statistics=False,
         )
         paths = export_figure(
             figure,
@@ -192,7 +201,7 @@ def fit_region_candidates(
         plt.close(figure)
         figures[model] = [str(path) for path in paths.values()]
     if len(results) > 1:
-        comparison, _ = plot_fit_comparison(results, show_residual=False, show_peak_positions=True)
+        comparison, _ = plot_fit_comparison(results, show_residual=False, show_peak_positions=False)
         paths = export_figure(
             comparison,
             diagnostic_directory / "model_comparison",

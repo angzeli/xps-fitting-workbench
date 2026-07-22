@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
 
 import numpy as np
@@ -28,10 +29,13 @@ def plot_fit_comparison(
         model_names = list(
             names or [result.configuration.get("name", f"Model {index + 1}") for index, result in enumerate(values)]
         )
+    grid = len(values) >= 3
     figure, axes = plot_xps_series(
         values,
         theme=theme,
-        layout="horizontal",
+        layout="grid" if grid else "horizontal",
+        nrows=math.ceil(len(values) / 2) if grid else None,
+        ncols=2 if grid else None,
         sample_labels=model_names,
         panel_labels=[chr(97 + index) for index in range(len(values))],
         shared_legend=True,

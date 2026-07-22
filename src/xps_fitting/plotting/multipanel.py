@@ -95,7 +95,7 @@ def plot_xps_series(
             nrows, ncols, squeeze=False, sharex=sharex, sharey=sharey, figsize=figure_size, layout="constrained"
         )
         flat = axes.ravel()
-        legend_handles = None
+        legend_handles: dict[str, object] = {}
         for index, (result, axis) in enumerate(zip(results, flat)):
             offset = offsets[index]
             energy = np.asarray(result.energy)
@@ -215,8 +215,10 @@ def plot_xps_series(
                 )
                 style_legend(legend, selected)
                 legend_obstacles = (legend,)
-            elif legend_handles is None:
-                legend_handles = axis.get_legend_handles_labels()
+            else:
+                handles, handle_labels = axis.get_legend_handles_labels()
+                for handle, handle_label in zip(handles, handle_labels):
+                    legend_handles.setdefault(handle_label, handle)
             if show_peak_positions:
                 annotate_peak_positions(
                     axis,
@@ -236,9 +238,10 @@ def plot_xps_series(
             axis.set_visible(False)
         if shared_legend and legend_handles:
             legend = figure.legend(
-                *legend_handles,
+                list(legend_handles.values()),
+                list(legend_handles),
                 loc="outside lower center",
-                ncol=min(4, len(legend_handles[0])),
+                ncol=min(4, len(legend_handles)),
                 frameon=selected.legend_frame,
                 fancybox=selected.legend_fancybox,
                 framealpha=selected.legend_frame_alpha,
