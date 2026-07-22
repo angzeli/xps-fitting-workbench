@@ -337,6 +337,9 @@ def _place_automatic_annotations_locally(
             (-28.0, -8.0),
             (28.0, -8.0),
             (0.0, -20.0),
+            (-16.0, -24.0),
+            (16.0, -24.0),
+            (0.0, -28.0),
         ]
         valid_offsets = [
             offset
