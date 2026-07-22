@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from .artifacts import canonical_region, validate_fit_bundle
+from .artifacts import canonical_region, portable_path, validate_fit_bundle
 from .configuration import load_config
 from .integrity import sha256_file
 from .io_vgd import read_vgd
@@ -104,6 +104,7 @@ def fit_region_candidates(
     configuration_paths: tuple[str | Path, ...] = (),
     overwrite_candidates: bool = False,
     overwrite_figures: bool = False,
+    dry_run: bool = False,
 ) -> dict[str, Any]:
     """Fit, persist every candidate, and only then render diagnostic figures."""
     repository = Path(root).resolve()
@@ -115,8 +116,37 @@ def fit_region_candidates(
     if not selected:
         raise FileNotFoundError(f"no candidate fit configurations found for {sample} {canonical}")
     configurations = [load_config(path) for path in selected]
+    mismatched = [config.name for config in configurations if canonical_region(config.region) != canonical]
+    if mismatched:
+        raise ValueError(f"candidate configuration region differs from {canonical}: {', '.join(mismatched)}")
+    plan = {
+        "sample": sample,
+        "region": canonical,
+        "raw_source": str(sources[canonical]),
+        "raw_source_sha256": sha256_file(sources[canonical]),
+        "configurations": [
+            {
+                "path": str(path.resolve()),
+                "sha256": sha256_file(path),
+                "model": config.name,
+                "background": config.background,
+                "components": [peak.label for peak in config.peaks],
+                "sensitivity_only": bool(config.metadata.get("sensitivity_only", False)),
+            }
+            for path, config in zip(selected, configurations)
+        ],
+    }
+    if dry_run:
+        return {**plan, "dry_run": True, "optimizer_ran": False, "files_written": False}
     spectrum = read_vgd(sources[canonical])
     results = compare_models(spectrum, configurations)
+    for path, config in zip(selected, configurations):
+        results[config.name].metadata.update(
+            {
+                "configuration_file": portable_path(path, repository),
+                "configuration_file_sha256": sha256_file(path),
+            }
+        )
     bundles = persist_candidate_results(
         results,
         sample=sample,
@@ -126,6 +156,16 @@ def fit_region_candidates(
         repository_root=repository,
         overwrite=overwrite_candidates,
     )
+    validations = {}
+    summaries = {}
+    from .review import candidate_review_summary
+
+    for model, bundle in bundles.items():
+        report = validate_fit_bundle(bundle, repository_root=repository)
+        if report.errors:
+            raise RuntimeError(f"persisted candidate {model} failed validation:\n" + "\n".join(report.errors))
+        validations[model] = report.to_dict()
+        summaries[model] = candidate_review_summary(bundle)
     diagnostic_directory = repository / "figures" / "diagnostic" / sample / canonical
     figures: dict[str, list[str]] = {}
     for model, result in results.items():
@@ -133,7 +173,10 @@ def fit_region_candidates(
             result,
             theme="angze_diagnostic",
             core_level=canonical,
-            sample_label=f"{sample} — {model} candidate (not reviewed)",
+            sample_label=(
+                f"{sample} — {model} / {result.configuration['background']} — "
+                f"{len(result.warnings)} warning(s); candidate (not reviewed)"
+            ),
             show_residual=True,
             show_peak_positions=True,
             fit_statistics=True,
@@ -164,9 +207,12 @@ def fit_region_candidates(
         "sample": sample,
         "region": canonical,
         "candidate_bundles": {model: str(bundle) for model, bundle in bundles.items()},
+        "candidate_summaries": summaries,
+        "bundle_validation": validations,
         "diagnostic_figures": figures,
         "review_required": True,
         "publication_eligible": False,
+        "fit_plan": plan,
     }
 
 

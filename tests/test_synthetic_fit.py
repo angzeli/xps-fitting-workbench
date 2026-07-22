@@ -28,6 +28,9 @@ def test_synthetic_recovery_is_deterministic(tmp_path) -> None:
     assert first.fitted_parameters["C-C.centre"] == pytest.approx(285, abs=0.01)
     assert first.fitted_parameters["C-C.area"] == pytest.approx(1000, rel=0.02)
     assert first.fit_statistics["rss"] == second.fit_statistics["rss"]
+    assert first.fit_statistics["rms_residual"] == pytest.approx(np.sqrt(np.mean(first.residual**2)))
+    assert first.fit_statistics["residual_mean"] == pytest.approx(np.mean(first.residual))
+    assert first.fit_statistics["max_abs_residual"] == pytest.approx(np.max(np.abs(first.residual)))
     assert first.convergence["backend"] == "lmfit"
     output = tmp_path / "diagnostic.png"
     plot_fit(first, output)

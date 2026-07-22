@@ -140,6 +140,7 @@ def _run_fit_region(args: argparse.Namespace) -> int:
         configuration_paths=tuple(args.config or ()),
         overwrite_candidates=args.overwrite_candidates,
         overwrite_figures=args.overwrite_figures,
+        dry_run=args.dry_run,
     )
     _json_output(result)
     return 0
@@ -532,6 +533,9 @@ def main(argv: list[str] | None = None) -> int:
     fit_region_parser.add_argument("--config", action="append", help="candidate configuration; repeat as needed")
     fit_region_parser.add_argument("--overwrite-candidates", action="store_true")
     fit_region_parser.add_argument("--overwrite-figures", action="store_true")
+    fit_region_parser.add_argument(
+        "--dry-run", action="store_true", help="show raw input and validated candidate configurations without fitting"
+    )
 
     fit_sample_parser = subparsers.add_parser("fit-sample", help="fit every region with discovered configurations")
     fit_sample_parser.add_argument("--sample", required=True)

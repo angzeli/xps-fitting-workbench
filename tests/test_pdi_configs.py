@@ -1,7 +1,10 @@
 from pathlib import Path
 
-from xps_fitting.configuration import load_config
+import pytest
+
+from xps_fitting.configuration import FitConfig, PeakConfig, load_config
 from xps_fitting.constraints import validate_links
+from xps_fitting.project_workflow import fit_region_candidates
 
 ROOT = Path(__file__).resolve().parents[1]
 FIT_CONFIGS = ROOT / "configs" / "fits"
@@ -66,3 +69,21 @@ def test_o1s_stoichiometry_is_a_benchmark_not_an_area_link() -> None:
 
         assert config.metadata["nominal_structural_ratio"]
         assert all(peak.area_ratio_to is None for peak in config.peaks)
+
+
+def test_fit_configuration_rejects_unsupported_background() -> None:
+    with pytest.raises(ValueError, match="background"):
+        FitConfig("invalid", "N 1s", [PeakConfig("N", 400.0, (399.0, 401.0), 100.0)], background="none")
+
+
+def test_fit_region_dry_run_does_not_run_optimizer(monkeypatch) -> None:
+    def unexpected_optimizer(*args, **kwargs):
+        raise AssertionError("dry-run called the optimizer")
+
+    monkeypatch.setattr("xps_fitting.project_workflow.compare_models", unexpected_optimizer)
+
+    plan = fit_region_candidates(ROOT, "PDI-H-COOH", "N1s", dry_run=True)
+
+    assert plan["optimizer_ran"] is False
+    assert plan["files_written"] is False
+    assert [item["model"] for item in plan["configurations"]] == ["N1s_1_linear", "N1s_1_shirley"]

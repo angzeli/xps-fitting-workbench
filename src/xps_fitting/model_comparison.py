@@ -22,7 +22,17 @@ def comparison_table(results: dict[str, FitResult]) -> list[dict[str, object]]:
                 "model": name,
                 **{
                     key: result.fit_statistics[key]
-                    for key in ("aic", "aicc", "bic", "rss", "durbin_watson", "residual_runs")
+                    for key in (
+                        "aic",
+                        "aicc",
+                        "bic",
+                        "rss",
+                        "rms_residual",
+                        "residual_mean",
+                        "max_abs_residual",
+                        "durbin_watson",
+                        "residual_runs",
+                    )
                 },
                 "warning_count": len(result.warnings),
                 "warnings": list(result.warnings),

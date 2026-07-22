@@ -57,6 +57,38 @@ def _independent_names(peaks: list[PeakConfig], stage: str, release_fraction: bo
     return names
 
 
+def _solve_stage(residual, names, trial, bounds, robust_loss, backend):
+    lower = np.array([bounds[name][0] for name in names])
+    upper = np.array([bounds[name][1] for name in names])
+    if backend == "scipy":
+        result = least_squares(residual, [trial[name] for name in names], bounds=(lower, upper), loss=robust_loss)
+        result.parameter_names = names
+        result.covar = None
+        return result
+
+    import lmfit
+
+    parameters = lmfit.Parameters()
+    for index, name in enumerate(names):
+        parameters.add(f"v{index}", value=trial[name], min=bounds[name][0], max=bounds[name][1])
+
+    def lmfit_residual(params):
+        return residual(np.array([params[f"v{index}"].value for index in range(len(names))]))
+
+    fitted_result = lmfit.minimize(lmfit_residual, parameters, method="least_squares", loss=robust_loss)
+    vector = np.array([fitted_result.params[f"v{index}"].value for index in range(len(names))])
+    return SimpleNamespace(
+        x=vector,
+        fun=np.asarray(fitted_result.residual),
+        jac=None,
+        success=bool(fitted_result.success),
+        message=str(fitted_result.message),
+        nfev=int(fitted_result.nfev),
+        covar=fitted_result.covar,
+        parameter_names=names,
+    )
+
+
 def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit") -> FitResult:
     """Fit a configured chemical hypothesis using deterministic staged optimisation."""
     if backend not in {"lmfit", "scipy"}:
@@ -81,10 +113,9 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
                     trial[key] = float(np.clip(trial[key] + rng.normal(0, 0.08 * span), lo, hi))
         result = None
         background = base_background.copy()
+        background_iterations = 0
         for stage in stages:
             names = _independent_names(config.peaks, stage, config.release_fraction)
-            lower = np.array([bounds[name][0] for name in names])
-            upper = np.array([bounds[name][1] for name in names])
 
             def residual(vector: np.ndarray) -> np.ndarray:
                 current = dict(trial)
@@ -98,41 +129,24 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
                     return np.concatenate((data_residual, penalty))
                 return data_residual
 
-            if backend == "scipy":
-                result = least_squares(
-                    residual, [trial[name] for name in names], bounds=(lower, upper), loss=config.robust_loss
-                )
-                result.parameter_names = names
-                result.covar = None
-            else:
-                import lmfit
-
-                parameters = lmfit.Parameters()
-                for index, name in enumerate(names):
-                    parameters.add(f"v{index}", value=trial[name], min=bounds[name][0], max=bounds[name][1])
-
-                def lmfit_residual(params):
-                    return residual(np.array([params[f"v{index}"].value for index in range(len(names))]))
-
-                fitted_result = lmfit.minimize(
-                    lmfit_residual, parameters, method="least_squares", loss=config.robust_loss
-                )
-                vector = np.array([fitted_result.params[f"v{index}"].value for index in range(len(names))])
-                result = SimpleNamespace(
-                    x=vector,
-                    fun=np.asarray(fitted_result.residual),
-                    jac=None,
-                    success=bool(fitted_result.success),
-                    message=str(fitted_result.message),
-                    nfev=int(fitted_result.nfev),
-                    covar=fitted_result.covar,
-                    parameter_names=names,
-                )
-            trial.update(zip(names, result.x))
-            trial = resolve_links(config.peaks, trial)
-            if config.background == "shirley":
+            iterations = config.max_background_iterations if config.background == "shirley" else 1
+            for _ in range(iterations):
+                result = _solve_stage(residual, names, trial, bounds, config.robust_loss, backend)
+                trial.update(zip(names, result.x))
+                trial = resolve_links(config.peaks, trial)
+                if config.background != "shirley":
+                    break
                 components = sum((evaluate_peak(x, peak, trial) for peak in config.peaks), start=np.zeros_like(x))
-                background = shirley(y - components) + components * 0
+                updated_background = shirley(y - components)
+                background_iterations += 1
+                converged = np.max(np.abs(updated_background - background)) <= 1e-7 * max(1.0, np.ptp(y))
+                background = updated_background
+                if converged:
+                    break
+            if config.background == "shirley":
+                result = _solve_stage(residual, names, trial, bounds, config.robust_loss, backend)
+                trial.update(zip(names, result.x))
+                trial = resolve_links(config.peaks, trial)
         assert result is not None
         current = resolve_links(config.peaks, trial)
         physical_residual = (
@@ -141,9 +155,9 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
         score = float(physical_residual @ physical_residual)
         solutions.append(score)
         if best is None or score < best[0]:
-            best = (score, result, trial, background, names)
+            best = (score, result, trial, background, names, background_iterations)
     assert best is not None
-    _, raw_result, fitted, background, final_names = best
+    _, raw_result, fitted, background, final_names, background_iterations = best
     components = {peak.label: evaluate_peak(x, peak, fitted) for peak in config.peaks}
     total = background + sum(components.values(), start=np.zeros_like(x))
     residual = y - total
@@ -177,6 +191,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
                 warnings.append("Parameter correlation exceeds 0.95.")
         except np.linalg.LinAlgError:
             warnings.append("Covariance matrix is singular; uncertainties are unavailable.")
+    fitted_area_total = sum(fitted[f"{peak.label}.area"] for peak in config.peaks)
     for peak in config.peaks:
         for name in ("area", "centre", "fwhm", "fraction"):
             key = f"{peak.label}.{name}"
@@ -185,7 +200,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
             scale = max(1.0, abs(value), abs(hi - lo) if np.isfinite(hi) else 1.0)
             if abs(value - lo) <= 1e-5 * scale or (np.isfinite(hi) and abs(hi - value) <= 1e-5 * scale):
                 warnings.append(f"{key} is at or near a bound.")
-        if fitted[f"{peak.label}.area"] < 0.005 * sum(p.area for p in config.peaks):
+        if fitted_area_total > 0 and fitted[f"{peak.label}.area"] < 0.005 * fitted_area_total:
             warnings.append(f"{peak.label} is a negligible component.")
     for index, first in enumerate(config.peaks):
         for second in config.peaks[index + 1 :]:
@@ -193,6 +208,31 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
             mean_width = (fitted[f"{first.label}.fwhm"] + fitted[f"{second.label}.fwhm"]) / 2
             if separation < 0.5 * mean_width:
                 warnings.append(f"{first.label} and {second.label} are unresolved by the 0.5 FWHM criterion.")
+    fitted_widths = [fitted[f"{peak.label}.fwhm"] for peak in config.peaks]
+    if len(fitted_widths) > 1 and max(fitted_widths) > 1.5 * min(fitted_widths):
+        warnings.append("Structural component FWHMs diverge by more than 50%.")
+    stoichiometric_area_ratio: dict[str, dict[str, float]] = {}
+    nominal_ratio = config.metadata.get("nominal_structural_ratio")
+    if isinstance(nominal_ratio, dict) and nominal_ratio:
+        reference = next((peak.label for peak in config.peaks if peak.label in nominal_ratio), None)
+        if reference and fitted[f"{reference}.area"] > 0 and float(nominal_ratio[reference]) > 0:
+            fitted_reference = fitted[f"{reference}.area"]
+            nominal_reference = float(nominal_ratio[reference])
+            materially_different = False
+            for peak in config.peaks:
+                if peak.label not in nominal_ratio:
+                    continue
+                fitted_relative = fitted[f"{peak.label}.area"] / fitted_reference
+                nominal_relative = float(nominal_ratio[peak.label]) / nominal_reference
+                ratio_to_nominal = fitted_relative / nominal_relative
+                stoichiometric_area_ratio[peak.label] = {
+                    "fitted_relative": float(fitted_relative),
+                    "nominal_relative": float(nominal_relative),
+                    "ratio_to_nominal": float(ratio_to_nominal),
+                }
+                materially_different |= ratio_to_nominal < 0.5 or ratio_to_nominal > 2.0
+            if materially_different:
+                warnings.append("Fitted structural area ratios differ by more than a factor of two from nominal counts.")
     if not raw_result.success:
         warnings.append(f"Convergence warning: {raw_result.message}")
     if np.any(background < 0):
@@ -237,6 +277,8 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
             "evaluations": raw_result.nfev,
             "backend": backend,
             "multistart_rss": solutions,
+            "background_iterations": background_iterations,
+            "stoichiometric_area_ratio": stoichiometric_area_ratio,
         },
         versions,
     )
