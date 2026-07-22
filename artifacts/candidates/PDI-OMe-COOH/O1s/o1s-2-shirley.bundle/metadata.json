@@ -1,0 +1,230 @@
+{
+  "fitted_parameters": {
+    "carbonyl_O.area": 101634.45335452622,
+    "carbonyl_O.centre": 530.9611850240377,
+    "carbonyl_O.fwhm": 1.4543676540693178,
+    "carbonyl_O.fraction": 0.5,
+    "acid_hydroxyl_methoxy_O.area": 100248.79654967533,
+    "acid_hydroxyl_methoxy_O.centre": 532.5738706982572,
+    "acid_hydroxyl_methoxy_O.fwhm": 1.4543676540693178,
+    "acid_hydroxyl_methoxy_O.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "carbonyl_O.area": 643.4496572807408,
+    "carbonyl_O.centre": 0.005804006114359852,
+    "carbonyl_O.fwhm": 0.00962142901520026,
+    "carbonyl_O.fraction": null,
+    "acid_hydroxyl_methoxy_O.area": 640.0908863994304,
+    "acid_hydroxyl_methoxy_O.centre": 0.005887734838174868,
+    "acid_hydroxyl_methoxy_O.fwhm": null,
+    "acid_hydroxyl_methoxy_O.fraction": null
+  },
+  "correlation_matrix": {
+    "carbonyl_O.area": {
+      "carbonyl_O.area": 1.0000000000000002,
+      "carbonyl_O.centre": 0.24506833312441878,
+      "carbonyl_O.fwhm": 0.31607074062296076,
+      "acid_hydroxyl_methoxy_O.area": -0.2558684099154809,
+      "acid_hydroxyl_methoxy_O.centre": 0.42293433091595717
+    },
+    "carbonyl_O.centre": {
+      "carbonyl_O.area": 0.2450683331244185,
+      "carbonyl_O.centre": 1.0,
+      "carbonyl_O.fwhm": -0.0645732897076583,
+      "acid_hydroxyl_methoxy_O.area": -0.42154912485649887,
+      "acid_hydroxyl_methoxy_O.centre": 0.4537883823725308
+    },
+    "carbonyl_O.fwhm": {
+      "carbonyl_O.area": 0.3160707406229608,
+      "carbonyl_O.centre": -0.0645732897076582,
+      "carbonyl_O.fwhm": 0.9999999999999999,
+      "acid_hydroxyl_methoxy_O.area": 0.30073452158447533,
+      "acid_hydroxyl_methoxy_O.centre": 0.07326241907342473
+    },
+    "acid_hydroxyl_methoxy_O.area": {
+      "carbonyl_O.area": -0.2558684099154806,
+      "carbonyl_O.centre": -0.42154912485649887,
+      "carbonyl_O.fwhm": 0.30073452158447533,
+      "acid_hydroxyl_methoxy_O.area": 1.0,
+      "acid_hydroxyl_methoxy_O.centre": -0.24468669954616357
+    },
+    "acid_hydroxyl_methoxy_O.centre": {
+      "carbonyl_O.area": 0.42293433091595667,
+      "carbonyl_O.centre": 0.4537883823725308,
+      "carbonyl_O.fwhm": 0.07326241907342466,
+      "acid_hydroxyl_methoxy_O.area": -0.24468669954616362,
+      "acid_hydroxyl_methoxy_O.centre": 1.0
+    }
+  },
+  "fit_statistics": {
+    "rss": 175385024.97082782,
+    "rms_residual": 934.1104395561055,
+    "residual_mean": -102.21452527271602,
+    "max_abs_residual": 3123.9273083741573,
+    "reduced_chi_square": 894821.5559736113,
+    "aic": 2759.51705929963,
+    "aicc": 2759.8247516073225,
+    "bic": 2776.0335838399255,
+    "durbin_watson": 0.33381158001429234,
+    "residual_runs": 23.0,
+    "n_parameters": 5.0,
+    "n_points": 201.0
+  },
+  "warnings": [
+    "Multiple initialisations produced materially different solutions."
+  ],
+  "configuration": {
+    "name": "O1s_2_shirley",
+    "region": "O 1s",
+    "peaks": [
+      {
+        "label": "carbonyl_O",
+        "centre": 531.05,
+        "centre_bounds": [
+          529.8,
+          532.2
+        ],
+        "area": 140000.0,
+        "area_bounds": [
+          0.0,
+          400000.0
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          0.8,
+          2.5
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "structural_O",
+        "fraction_group": "structural_O",
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      },
+      {
+        "label": "acid_hydroxyl_methoxy_O",
+        "centre": 532.6,
+        "centre_bounds": [
+          531.6,
+          533.8
+        ],
+        "area": 90000.0,
+        "area_bounds": [
+          0.0,
+          400000.0
+        ],
+        "fwhm": 1.5,
+        "fwhm_bounds": [
+          0.8,
+          2.5
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": "structural_O",
+        "fraction_group": "structural_O",
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      }
+    ],
+    "background": "shirley",
+    "robust_loss": "linear",
+    "multistart": 12,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 6,
+    "width_penalty": 0.0,
+    "metadata": {
+      "candidate_family": "O1s_2",
+      "background_identity": "shirley",
+      "sensitivity_only": false,
+      "publication_eligible_without_review": false,
+      "chemistry_rationale": "Parsimonious PDI-OMe-COOH hypothesis combining imide and carboxylic-acid carbonyl oxygen while treating carboxylic-acid hydroxyl and methoxy ether oxygen as one unresolved high-binding-energy envelope.",
+      "position_basis": "Absolute uncalibrated guesses based on the 532.500054 eV raw maximum and its low-binding-energy shoulder; sample-wide C 1s calibration is applied only after review.",
+      "nominal_structural_ratio": {
+        "carbonyl_O": 3.0,
+        "acid_hydroxyl_methoxy_O": 2.0
+      },
+      "stoichiometry_treatment": "benchmark_only_not_constrained"
+    }
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "O1s Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 3,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 201,
+    "clean_rows": 201,
+    "source_file": "data/raw/PDI-OMe-COOH/O1s Scan.VGD",
+    "sample_name": "PDI-OMe-COOH",
+    "region": "O1s",
+    "configuration_file": "configs/fits/pdi_ome_cooh_o1s_2_shirley.json",
+    "configuration_file_sha256": "2d19e20b0c5d2015aa69bc5a06e7fe9de86974935e240732265bac004260307c",
+    "artifact_id": "pdi-ome-cooh-o1s-3ad012a22185f572",
+    "artifact_state": "candidate",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "cf92069e882b9dc7bf2135869dd7ad6f1c50dab686b18daa08a9dcf6fde31dad",
+    "configuration_sha256": "d71067a6374c3cc8910ef841b306dc0894c0b40f265c9e912aecd3e3eab4a094",
+    "artifact_created_at": "2026-07-22T08:20:45.360886+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 36,
+    "backend": "lmfit",
+    "multistart_rss": [
+      382222804.4256637,
+      381389953.1141391,
+      358469801.5702497,
+      381767247.0627103,
+      319126773.9045186,
+      175385024.97082785,
+      288746015.12728256,
+      219601602.96900487,
+      356575907.45875776,
+      408239872.64908075,
+      919224105.4859419,
+      384162333.6079868
+    ],
+    "background_iterations": 18,
+    "stoichiometric_area_ratio": {
+      "carbonyl_O": {
+        "fitted_relative": 1.0,
+        "nominal_relative": 1.0,
+        "ratio_to_nominal": 1.0
+      },
+      "acid_hydroxyl_methoxy_O": {
+        "fitted_relative": 0.9863662689263711,
+        "nominal_relative": 0.6666666666666666,
+        "ratio_to_nominal": 1.4795494033895569
+      }
+    }
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

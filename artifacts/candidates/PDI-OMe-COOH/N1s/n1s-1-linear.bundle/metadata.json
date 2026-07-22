@@ -1,0 +1,155 @@
+{
+  "fitted_parameters": {
+    "imide_N-C=O.area": 27261.377575604733,
+    "imide_N-C=O.centre": 399.7996647609888,
+    "imide_N-C=O.fwhm": 1.1913277688818618,
+    "imide_N-C=O.fraction": 0.5
+  },
+  "parameter_uncertainties": {
+    "imide_N-C=O.area": 173.73593310622147,
+    "imide_N-C=O.centre": 0.0037668871611617836,
+    "imide_N-C=O.fwhm": 0.00961534177600952,
+    "imide_N-C=O.fraction": null
+  },
+  "correlation_matrix": {
+    "imide_N-C=O.area": {
+      "imide_N-C=O.area": 1.0,
+      "imide_N-C=O.centre": -4.454496750285668e-06,
+      "imide_N-C=O.fwhm": 0.6332729451157548
+    },
+    "imide_N-C=O.centre": {
+      "imide_N-C=O.area": -4.454496750285664e-06,
+      "imide_N-C=O.centre": 1.0000000000000002,
+      "imide_N-C=O.fwhm": -9.993562429678636e-06
+    },
+    "imide_N-C=O.fwhm": {
+      "imide_N-C=O.area": 0.6332729451157546,
+      "imide_N-C=O.centre": -9.993562429678636e-06,
+      "imide_N-C=O.fwhm": 1.0
+    }
+  },
+  "fit_statistics": {
+    "rss": 12701232.086286098,
+    "rms_residual": 264.9010248430659,
+    "residual_mean": 8.552369734290853,
+    "max_abs_residual": 728.0449970183254,
+    "reduced_chi_square": 71355.23643980954,
+    "aic": 2025.7269679527285,
+    "aicc": 2025.8625611730674,
+    "bic": 2035.322459046526,
+    "durbin_watson": 0.8434164263578641,
+    "residual_runs": 55.0,
+    "n_parameters": 3.0,
+    "n_points": 181.0
+  },
+  "warnings": [],
+  "configuration": {
+    "name": "N1s_1_linear",
+    "region": "N 1s",
+    "peaks": [
+      {
+        "label": "imide_N-C=O",
+        "centre": 399.9,
+        "centre_bounds": [
+          398.8,
+          401.2
+        ],
+        "area": 25000.0,
+        "area_bounds": [
+          0.0,
+          100000.0
+        ],
+        "fwhm": 1.3,
+        "fwhm_bounds": [
+          0.8,
+          2.4
+        ],
+        "line_shape": "pseudo_voigt",
+        "fraction": 0.5,
+        "fraction_bounds": [
+          0.0,
+          1.0
+        ],
+        "fixed": [],
+        "width_group": null,
+        "fraction_group": null,
+        "centre_offset_from": null,
+        "area_ratio_to": null
+      }
+    ],
+    "background": "linear",
+    "robust_loss": "linear",
+    "multistart": 8,
+    "random_seed": 42,
+    "release_fraction": false,
+    "max_background_iterations": 3,
+    "width_penalty": 0.0,
+    "metadata": {
+      "candidate_family": "N1s_1",
+      "background_identity": "linear",
+      "sensitivity_only": false,
+      "publication_eligible_without_review": false,
+      "expected_nitrogen_environments": 1,
+      "assignment": {
+        "imide_N-C=O": "Two chemically equivalent imide nitrogen atoms"
+      },
+      "chemistry_rationale": "PDI-OMe-COOH contains one expected imide-N chemical environment; no second component is justified by the assumed analogous molecular structure or experimental scan.",
+      "position_basis": "Absolute uncalibrated initial guess from the 399.800054 eV raw maximum with deliberately broad search bounds; sample-wide C 1s calibration is applied only after review."
+    }
+  },
+  "metadata": {
+    "data_origin": "experimental",
+    "vgd_spectrum_index": 0,
+    "title": "N1s Scan",
+    "technique": "XPS",
+    "source_energy_eV": 1486.6800537109375,
+    "pass_energy_eV": 50.0,
+    "dwell_time_s": 0.05000000074505806,
+    "periods": 10,
+    "txf_applied": true,
+    "original_order": "descending",
+    "input_rows": 181,
+    "clean_rows": 181,
+    "source_file": "data/raw/PDI-OMe-COOH/N1s Scan.VGD",
+    "sample_name": "PDI-OMe-COOH",
+    "region": "N1s",
+    "configuration_file": "configs/fits/pdi_ome_cooh_n1s_1.json",
+    "configuration_file_sha256": "b853b9b5f04ab369b68e5564dfd8aec5cf17f1249fe5f8955b9f2f837edc1fac",
+    "artifact_id": "pdi-ome-cooh-n1s-f3ccdab677887c82",
+    "artifact_state": "candidate",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "publication_eligible": false,
+    "source_sha256": "b0bfe2c55da7433d1c696b4d426ee1d72d079ec8abcb38209fb2ec56237008bf",
+    "configuration_sha256": "b9737925c63a3102aad6c26a53af278a02e3b8cd9225bb6da2d499c3d97ec771",
+    "artifact_created_at": "2026-07-22T08:20:32.380769+00:00",
+    "historical_result_recovered": false,
+    "review_generation": "new_review",
+    "replaces_unrecoverable_historical_plot": true
+  },
+  "convergence": {
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "evaluations": 20,
+    "backend": "lmfit",
+    "multistart_rss": [
+      12701232.086286644,
+      12701232.086310146,
+      12701232.086304635,
+      12701232.086286575,
+      12701232.08631272,
+      12701232.086293831,
+      12701232.086286094,
+      12701232.086286105
+    ],
+    "background_iterations": 0,
+    "stoichiometric_area_ratio": {}
+  },
+  "software_versions": {
+    "xps_fitting": "0.3.0",
+    "python": "3.13.14",
+    "numpy": "2.5.1",
+    "scipy": "1.18.0",
+    "lmfit": "1.3.4"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "format": "xps-fitting-workbench-fit-bundle",
+  "format_version": 1,
+  "package_version": "0.3.0",
+  "files": {
+    "curves": "curves.csv",
+    "metadata": "metadata.json"
+  },
+  "integrity": {
+    "curves.csv": "e8b88a1f44075a256c887fa2aa92c3030cc0454a3537bc13c5f1297a1fcde86e",
+    "metadata.json": "e8b826746941ecda8154a077f146dc472ea7fea1f8ad2fa25b7f9c16427f05ab"
+  },
+  "artifact": {
+    "artifact_id": "pdi-ome-cooh-o1s-d539962f7402f2d4",
+    "state": "candidate",
+    "sample": "PDI-OMe-COOH",
+    "region": "O1s",
+    "model": "O1s_3_linear",
+    "created_at": "2026-07-22T08:20:45.368499+00:00",
+    "data_origin": "experimental",
+    "review_status": "candidate",
+    "calibration_status": "uncalibrated",
+    "lineage": {
+      "historical_result_recovered": false,
+      "review_generation": "new_review",
+      "replaces_unrecoverable_historical_plot": true
+    },
+    "review_record": null,
+    "calibration_record": null,
+    "schema_version": 1,
+    "source": {
+      "path": "data/raw/PDI-OMe-COOH/O1s Scan.VGD",
+      "sha256": "cf92069e882b9dc7bf2135869dd7ad6f1c50dab686b18daa08a9dcf6fde31dad",
+      "point_count": 201
+    },
+    "configuration": {
+      "sha256": "9f0f870c997f511149ee8d05d52da74e4b963bcf04354da0d851d7cd0f968526"
+    }
+  }
+}
