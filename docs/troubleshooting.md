@@ -3,8 +3,9 @@
 ## Raw VGD file or region is missing
 
 Place the file under `data/raw/SAMPLE/` using names such as `C1s Scan.VGD` or
-`XPS Survey.VGD`, then run `xps-fit inspect-sample`. Calibration stops on missing
-reviewed regions unless `--allow-incomplete` is explicitly supplied.
+`XPS Survey.VGD`, then run `xps-fit inspect-sample`. Calibration stops when a
+required reviewed region is missing. For the final sample, review all five
+regions; do not use incomplete calibration.
 
 ## Synthetic provenance, raw equals total fit, or missing background
 
@@ -32,9 +33,29 @@ The full parameter name ends in `.centre` inside the bundle.
 
 ## Permission or environment errors
 
-Run `uv sync --python 3.13`, then prefix commands with `uv run`. On macOS, make the launcher
-executable with `chmod +x Start_XPS_Workflow.command`. Ensure the repository and
-artifact directories are writable and that raw files are readable.
+Run `uv run xps-fit doctor`. If `uv run` reports `No module named 'xps_fitting'`,
+repair the editable installation with:
+
+```bash
+uv sync --python 3.13 --reinstall-package xps-fitting-workbench
+uv run xps-fit doctor
+```
+
+The normal workflow is editable; `--no-editable` is not required. On macOS, make
+the launcher executable with `chmod +x Start_XPS_Workflow.command`. Ensure the
+repository and artifact directories are writable and that raw files are readable.
+
+## Candidate or figure output already exists
+
+Existing scientific candidates are protected from silent replacement. If you
+really intend to recreate an unreviewed fit, use:
+
+```bash
+uv run xps-fit fit-region --sample SAMPLE --region REGION \
+  --overwrite-candidates --overwrite-figures
+```
+
+Do not append `overwrite=True`; that is Python syntax, not a CLI argument.
 
 ## Old output clutter
 
