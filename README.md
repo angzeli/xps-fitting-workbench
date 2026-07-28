@@ -76,6 +76,7 @@ original order is recorded in metadata.
 
 ```python
 from xps_fitting.io import read_csv
+
 spectrum = read_csv("spectrum.csv", region="C 1s", sample_name="sample")
 ```
 
@@ -253,6 +254,7 @@ fixed at 1.8 pt; attempts to override that contract fail theme validation.
 
 ```python
 from xps_fitting.plotting import load_theme, core_level_colour
+
 theme = load_theme("angze_publication")
 colour = core_level_colour("C1s_Scan")  # #8C8C8C
 ```
@@ -280,14 +282,23 @@ text. The background remains visible but is deliberately omitted from the legend
 
 ```python
 from xps_fitting.plotting import export_figure, plot_xps_fit
+
 fig, axes = plot_xps_fit(
-    result, theme="angze_publication", core_level="C 1s",
-    component_display_mode="filled_to_background", sample_label="PDI-H-COOH",
-    show_sample_title=False, core_level_label_position=(0.97, 0.96),
-    show_y_ticks=False, show_top_ticks=False,
-    tick_spacing=5, x_minor_interval=2.5,
-    show_peak_positions=True, peak_position_precision=1,
-    peak_position_unit=True, peak_annotation_leaders=True,
+    result,
+    theme="angze_publication",
+    core_level="C 1s",
+    component_display_mode="filled_to_background",
+    sample_label="PDI-H-COOH",
+    show_sample_title=False,
+    core_level_label_position=(0.97, 0.96),
+    show_y_ticks=False,
+    show_top_ticks=False,
+    tick_spacing=5,
+    x_minor_interval=2.5,
+    show_peak_positions=True,
+    peak_position_precision=1,
+    peak_position_unit=True,
+    peak_annotation_leaders=True,
 )
 export_figure(fig, "outputs/c1s", formats=("png", "pdf"))
 ```
