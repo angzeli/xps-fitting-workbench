@@ -10,7 +10,9 @@ from typing import Any, Iterator
 import matplotlib as mpl
 import numpy as np
 from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 from matplotlib.legend import Legend
+from matplotlib.text import Text
 
 VISIBLE_SPINE_WIDTH = 1.8
 SUPPORTED_OUTPUT_FORMATS = frozenset({"png", "pdf"})
@@ -22,12 +24,13 @@ FIGURE_SIZE_PRESETS = {
     "presentation": (8.0, 5.0),
 }
 _FIXED_SPINE_THEMES = frozenset({"angze_publication", "monochrome_publication", "presentation"})
+_MATH_FONTSET = "stix"
 
 
 @dataclass(frozen=True)
 class PlotTheme:
     name: str
-    font_family: str = "DejaVu Sans"
+    font_family: str = "Arial"
     font_size: float = 14
     axis_label_size: float = 22
     tick_label_size: float = 14
@@ -124,9 +127,15 @@ class PlotTheme:
         ):
             raise ValueError("theme widths and annotation sizes must be positive")
 
-    def rc_params(self) -> dict[str, object]:
+    def font_rc_params(self) -> dict[str, object]:
         return {
             "font.family": self.font_family,
+            "mathtext.fontset": _MATH_FONTSET,
+        }
+
+    def rc_params(self) -> dict[str, object]:
+        return {
+            **self.font_rc_params(),
             "font.size": self.font_size,
             "axes.labelsize": self.axis_label_size,
             "axes.titlesize": self.title_size,
@@ -308,6 +317,13 @@ def style_legend(legend: Legend, theme: PlotTheme) -> Legend:
         text.set_fontweight(theme.legend_font_weight)
         text.set_fontsize(theme.legend_font_size)
     return legend
+
+
+def _apply_figure_font_family(figure: Figure, font_family: str) -> None:
+    """Apply the theme's text family and STIX math fontset to a figure."""
+    for artist in figure.findobj(match=Text):
+        artist.set_fontfamily(font_family)
+        artist.set_math_fontfamily(_MATH_FONTSET)
 
 
 def apply_vertical_headroom(

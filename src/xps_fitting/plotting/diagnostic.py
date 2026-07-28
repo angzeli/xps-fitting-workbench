@@ -10,6 +10,7 @@ from matplotlib.figure import Figure
 from ..result import FitResult
 from .annotations import PDI_H_C1S_LABELS
 from .export import export_figure
+from .themes import _apply_figure_font_family, load_theme
 
 
 def plot_fit(result: FitResult, path: str | Path | None = None, *, residual_panel: bool = True) -> Figure:
@@ -33,6 +34,8 @@ def plot_fit(result: FitResult, path: str | Path | None = None, *, residual_pane
     else:
         main.set_xlabel("Binding energy (eV)")
     figure.tight_layout()
+    theme = load_theme("angze_diagnostic")
+    _apply_figure_font_family(figure, theme.font_family)
     if path is not None:
-        export_figure(figure, path, theme="angze_diagnostic", tight=False)
+        export_figure(figure, path, theme=theme, tight=False)
     return figure

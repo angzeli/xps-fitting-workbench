@@ -10,7 +10,7 @@ from matplotlib.figure import Figure
 
 from ..result import FitResult
 from .multipanel import plot_xps_series
-from .themes import PlotTheme
+from .themes import PlotTheme, _apply_figure_font_family, load_theme
 
 
 def plot_fit_comparison(
@@ -66,4 +66,5 @@ def plot_fit_comparison(
             "Statistical preference does not prove chemical correctness.",
             prop={"size": 8, "weight": "normal"},
         )
+    _apply_figure_font_family(figure, load_theme(theme).font_family)
     return figure, axes

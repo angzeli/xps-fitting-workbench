@@ -68,7 +68,7 @@ def test_model_comparison_has_statistics_and_stability() -> None:
     plt.close(figure)
 
 
-def test_multipanel_uses_the_plain_satellite_label_and_semantic_colour() -> None:
+def test_multipanel_uses_the_mathtext_satellite_label_and_semantic_colour() -> None:
     energy = np.linspace(286, 294, 81)
     background = np.full_like(energy, 4.0)
     satellite = 3 * np.exp(-(((energy - 291) / 0.8) ** 2))
@@ -88,7 +88,7 @@ def test_multipanel_uses_the_plain_satellite_label_and_semantic_colour() -> None
     ]
     figure, axes = plot_xps_series(results)
     labels = [text.get_text() for text in figure.legends[0].get_texts()]
-    assert "π–π* satellite" in labels
+    assert r"$\pi$–$\pi^{*}$ satellite" in labels
     assert all(text.get_fontweight() == "bold" for text in figure.legends[0].get_texts())
     expected = mcolors.to_rgb(component_colour("pi-pi_star"))
     assert all(

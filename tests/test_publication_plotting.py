@@ -139,7 +139,7 @@ def test_publication_exports(tmp_path) -> None:
     plt.close(figure)
 
 
-def test_plain_text_satellite_legend_is_fully_bold_and_exports(tmp_path) -> None:
+def test_mathtext_satellite_legend_uses_superscript_star_and_exports(tmp_path) -> None:
     energy = np.linspace(286, 294, 81)
     background = np.full_like(energy, 4.0)
     satellite = 3 * np.exp(-(((energy - 291) / 0.8) ** 2))
@@ -155,10 +155,9 @@ def test_plain_text_satellite_legend_is_fully_bold_and_exports(tmp_path) -> None
     )
     figure, axis = plot_xps_fit(result, component_display_mode="filled_to_background")
     satellite_label = next(text for text in axis.get_legend().get_texts() if "satellite" in text.get_text())
-    assert satellite_label.get_text() == "π–π* satellite"
+    assert satellite_label.get_text() == r"$\pi$–$\pi^{*}$ satellite"
     assert satellite_label.get_fontweight() == "bold"
-    assert "$" not in satellite_label.get_text()
-    paths = export_figure(figure, tmp_path / "plain-satellite", formats=("png", "pdf"))
+    paths = export_figure(figure, tmp_path / "mathtext-satellite", formats=("png", "pdf"))
     assert all(path.stat().st_size > 100 for path in paths.values())
     assert b"/FontFile2" in paths["pdf"].read_bytes()
     plt.close(figure)

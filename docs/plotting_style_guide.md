@@ -24,6 +24,9 @@ figures add deterministic line styles.
 
 ## Geometry and typography
 
+Built-in themes use Arial for ordinary text and STIX for mathematical symbols.
+Matplotlib retains its normal fallback behaviour when Arial is unavailable.
+
 All four spines in `angze_publication`, `monochrome_publication`, and `presentation`
 are visible and exactly 1.8 pt. The same central theme value is applied to main,
 residual, multipanel, and inset axes; plotting functions do not override it. Major

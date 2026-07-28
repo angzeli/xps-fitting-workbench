@@ -19,7 +19,7 @@ COMPONENT_DISPLAY_LABELS = {
     "C-N_C-Cl": "C–N/C–Cl",
     "imide_N-C=O": "Imide N–C=O",
     "acid_O-C=O": "Carboxylic O–C=O",
-    "pi-pi_star": "π–π* satellite",
+    "pi-pi_star": r"$\pi$–$\pi^{*}$ satellite",
     "carbonyl_O": "Carbonyl O",
     "imide_carbonyl_O": "Imide C=O",
     "acid_carbonyl_O": "Acid C=O",
@@ -298,7 +298,7 @@ def _place_automatic_annotations_locally(
         height = max(0.0, min(first.y1, second.y1) - max(first.y0, second.y0))
         return width * height
 
-    def placement_score(annotation: Annotation) -> tuple[float, float, float, int, float]:
+    def placement_score(annotation: Annotation) -> tuple[float, float, float, float, int, float]:
         box = Text.get_window_extent(annotation, renderer)
         outside = (
             max(axes_box.x0 - box.x0, 0.0)
@@ -308,6 +308,8 @@ def _place_automatic_annotations_locally(
         )
         obstacle_overlap = sum(overlap_area(box, obstacle) for obstacle in obstacle_boxes)
         annotation_overlap = sum(overlap_area(box, placed) for placed in placed_boxes)
+        clearance_y = axis.transData.transform((annotation.xy[0], annotation._xps_clearance_height))[1]
+        vertical_clearance = max(clearance_y + 3.0 - box.y0, 0.0) if annotation.get_position()[0] == 0 else 0.0
         line_hits = sum(
             int(
                 np.count_nonzero(
@@ -319,7 +321,14 @@ def _place_automatic_annotations_locally(
             )
             for vertices in line_vertices
         )
-        return outside, obstacle_overlap, annotation_overlap, line_hits, float(np.hypot(*annotation.get_position()))
+        return (
+            outside,
+            obstacle_overlap,
+            annotation_overlap,
+            vertical_clearance,
+            line_hits,
+            float(np.hypot(*annotation.get_position())),
+        )
 
     for annotation in annotations:
         if annotation._xps_recipe_placement:
@@ -350,7 +359,7 @@ def _place_automatic_annotations_locally(
             offset for offset in nearby_offsets if offset is not None and float(np.hypot(*offset)) <= max_points
         ]
         best_offset = valid_offsets[0]
-        best_score: tuple[float, float, float, int, float] | None = None
+        best_score: tuple[float, float, float, float, int, float] | None = None
         for candidate in valid_offsets:
             annotation.set_position(candidate)
             score = placement_score(annotation)

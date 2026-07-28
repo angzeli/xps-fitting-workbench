@@ -36,11 +36,31 @@ def test_themes_aliases_and_deterministic_colours() -> None:
         assert component_colour("unknown assignment") == UNKNOWN_COMPONENT_COLOUR
 
 
+@pytest.mark.parametrize(
+    "theme_name",
+    ("angze_publication", "angze_diagnostic", "monochrome_publication", "presentation"),
+)
+def test_every_built_in_theme_requests_arial(theme_name: str) -> None:
+    assert load_theme(theme_name).font_family == "Arial"
+
+
 def test_theme_context_does_not_leak_rcparams() -> None:
     before = mpl.rcParams.copy()
     with theme_context("presentation"):
+        assert mpl.rcParams["font.family"] == ["Arial"]
         assert mpl.rcParams["font.size"] == 15
+        assert mpl.rcParams["mathtext.fontset"] == "stix"
+        assert mpl.rcParams["mathtext.default"] == before["mathtext.default"]
+        assert mpl.rcParams["pdf.fonttype"] == 42
+        assert mpl.rcParams["ps.fonttype"] == 42
     assert dict(mpl.rcParams) == dict(before)
+
+
+def test_custom_theme_font_family_remains_supported() -> None:
+    theme = PlotTheme("custom", font_family="Liberation Sans")
+
+    assert theme.font_rc_params()["font.family"] == "Liberation Sans"
+    assert theme.font_rc_params()["mathtext.fontset"] == "stix"
 
 
 def test_semantic_component_lines_have_white_background_contrast() -> None:

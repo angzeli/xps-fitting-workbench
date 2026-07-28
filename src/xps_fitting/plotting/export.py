@@ -7,7 +7,14 @@ from typing import Iterable
 
 from matplotlib.figure import Figure
 
-from .themes import SUPPORTED_OUTPUT_FORMATS, PlotTheme, load_theme, theme_context, validate_theme
+from .themes import (
+    SUPPORTED_OUTPUT_FORMATS,
+    PlotTheme,
+    _apply_figure_font_family,
+    load_theme,
+    theme_context,
+    validate_theme,
+)
 
 SUPPORTED_FORMATS = SUPPORTED_OUTPUT_FORMATS
 
@@ -43,6 +50,7 @@ def export_figure(
     if dry_run:
         return paths
     with theme_context(selected):
+        _apply_figure_font_family(figure, selected.font_family)
         for format_name, path in paths.items():
             path.parent.mkdir(parents=True, exist_ok=True)
             is_vector = format_name == "pdf"

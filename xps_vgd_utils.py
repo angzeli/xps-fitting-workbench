@@ -1,8 +1,11 @@
 from pathlib import Path
 
-import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+import pandas as pd
 from vgd_reader import read_vgd
+
+from xps_fitting.plotting.themes import _apply_figure_font_family, load_theme
 
 
 def min_max_normalise(series: pd.Series) -> pd.Series:
@@ -298,12 +301,15 @@ def plot_normalised_xps(
                 text.set_color("black")
 
     fig.tight_layout()
+    theme = load_theme("angze_publication")
+    _apply_figure_font_family(fig, theme.font_family)
 
-    if save:
-        fig.savefig(fig_path_png, dpi=300, bbox_inches="tight", facecolor="white")
-        fig.savefig(fig_path_pdf, bbox_inches="tight", facecolor="white")
+    with mpl.rc_context(theme.font_rc_params()):
+        if save:
+            fig.savefig(fig_path_png, dpi=300, bbox_inches="tight", facecolor="white")
+            fig.savefig(fig_path_pdf, bbox_inches="tight", facecolor="white")
 
-    plt.show()
+        plt.show()
 
     if save:
         print(f"Saved figure to: {fig_path_png}")
