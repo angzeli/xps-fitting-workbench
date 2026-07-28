@@ -8,6 +8,7 @@ from pathlib import Path
 
 import matplotlib
 
+# Select the non-interactive backend before importing pyplot.
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -31,9 +32,16 @@ SAMPLES = ("PDI-H-COOH", "PDI-Me-COOH", "PDI-OMe-COOH")
 
 
 def _raw_panel(spectra, labels, core_levels):
+    """Plot stored spectrum arrays without fitting or normalising their intensities."""
     with theme_context(load_theme("angze_publication").for_multipanel()) as theme:
-        figure, axes = plt.subplots(1, len(spectra), figsize=figure_size_preset("double-column"), squeeze=False)
-        for index, (axis, spectrum, label, core_level) in enumerate(zip(axes.ravel(), spectra, labels, core_levels)):
+        figure, axes = plt.subplots(
+            1,
+            len(spectra),
+            figsize=figure_size_preset("double-column"),
+            squeeze=False,
+        )
+        panels = zip(axes.ravel(), spectra, labels, core_levels)
+        for index, (axis, spectrum, label, core_level) in enumerate(panels):
             axis.plot(
                 spectrum.binding_energy,
                 spectrum.intensity,
@@ -68,19 +76,37 @@ def _raw_panel(spectra, labels, core_levels):
 
 
 def _export(figure, output: Path, *, overwrite: bool) -> list[str]:
+    """Save and close a figure, returning its PNG and PDF paths in export order."""
     paths = export_figure(figure, output, formats=("png", "pdf"), overwrite=overwrite)
     plt.close(figure)
     return [str(path) for path in paths.values()]
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Fit, persist, and plot the tracked spectra for workflow validation.
+
+    Candidate bundles are written before their diagnostic figures. On success,
+    the JSON summary is printed to standard output and zero is returned.
+
+    Args:
+        argv: Optional command-line arguments. Process arguments are used when
+            this is ``None``.
+
+    Returns:
+        Zero after all candidate bundles and figures have been written.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output-dir", type=Path, default=ROOT / "figures" / "diagnostic" / "experimental_validation")
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=ROOT / "figures" / "diagnostic" / "experimental_validation",
+    )
     parser.add_argument("--artifacts-dir", type=Path, default=ROOT / "artifacts" / "candidates")
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--overwrite-candidates", action="store_true")
     args = parser.parse_args(argv)
 
+    # Persist both C 1s candidates before rendering diagnostics from their fitted arrays.
     configs = [load_config(ROOT / "configs" / "fits" / f"pdi_h_cooh_c1s_{count}.json") for count in (4, 5)]
     c1s = read_vgd(ROOT / "data" / "raw" / "PDI-H-COOH" / "C1s Scan.VGD")
     c1s_results = compare_models(c1s, configs)
@@ -106,11 +132,22 @@ def main(argv: list[str] | None = None) -> int:
             fit_statistics=True,
         )
         created.extend(
-            _export(diagnostic, args.output_dir / f"pdi_h_cooh_{model.casefold()}_candidate", overwrite=args.overwrite)
+            _export(
+                diagnostic,
+                args.output_dir / f"pdi_h_cooh_{model.casefold()}_candidate",
+                overwrite=args.overwrite,
+            )
         )
     comparison, _ = plot_fit_comparison(c1s_results, show_residual=False, show_peak_positions=True)
-    created.extend(_export(comparison, args.output_dir / "pdi_h_cooh_c1s_model_comparison", overwrite=args.overwrite))
+    created.extend(
+        _export(
+            comparison,
+            args.output_dir / "pdi_h_cooh_c1s_model_comparison",
+            overwrite=args.overwrite,
+        )
+    )
 
+    # Persist the configured constrained Cl 2p candidate before plotting it.
     cl2p = read_vgd(ROOT / "data" / "raw" / "PDI-H-COOH" / "Cl2p Scan.VGD")
     cl_config = load_config(ROOT / "configs" / "fits" / "pdi_h_cooh_cl2p_constrained.json")
     cl_result = fit_spectrum(cl2p, cl_config)
@@ -132,17 +169,36 @@ def main(argv: list[str] | None = None) -> int:
         show_peak_positions=True,
         label_map={"Cl_2p3/2": "Cl 2p3/2", "Cl_2p1/2": "Cl 2p1/2"},
     )
-    created.extend(_export(cl_figure, args.output_dir / "pdi_h_cooh_cl2p_constrained", overwrite=args.overwrite))
+    created.extend(
+        _export(
+            cl_figure,
+            args.output_dir / "pdi_h_cooh_cl2p_constrained",
+            overwrite=args.overwrite,
+        )
+    )
 
+    # Compare the three stored C 1s intensity arrays without fitting or normalising them.
     c1s_series = [read_vgd(ROOT / "data" / "raw" / sample / "C1s Scan.VGD") for sample in SAMPLES]
     series_figure = _raw_panel(c1s_series, SAMPLES, ("C 1s",) * len(SAMPLES))
     created.extend(_export(series_figure, args.output_dir / "pdi_c1s_raw_series", overwrite=args.overwrite))
 
+    # Plot the stored N 1s and O 1s intensity arrays without fitting them.
     n1s = read_vgd(ROOT / "data" / "raw" / "PDI-H-COOH" / "N1s Scan.VGD")
     o1s = read_vgd(ROOT / "data" / "raw" / "PDI-H-COOH" / "O1s Scan.VGD")
-    heteroatom_figure = _raw_panel((n1s, o1s), ("PDI-H-COOH", "PDI-H-COOH"), ("N 1s", "O 1s"))
-    created.extend(_export(heteroatom_figure, args.output_dir / "pdi_h_cooh_n1s_o1s_raw", overwrite=args.overwrite))
+    heteroatom_figure = _raw_panel(
+        (n1s, o1s),
+        ("PDI-H-COOH", "PDI-H-COOH"),
+        ("N 1s", "O 1s"),
+    )
+    created.extend(
+        _export(
+            heteroatom_figure,
+            args.output_dir / "pdi_h_cooh_n1s_o1s_raw",
+            overwrite=args.overwrite,
+        )
+    )
 
+    # Record candidate review state explicitly; this workflow does not create publication figures.
     summary = {
         "c1s_candidate_models": comparison_table(c1s_results),
         "candidate_bundles": {
