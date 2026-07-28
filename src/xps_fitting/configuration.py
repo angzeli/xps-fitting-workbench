@@ -1,4 +1,4 @@
-"""Validated fitting configuration dataclasses."""
+"""Validated candidate-model configuration for XPS peak fitting."""
 
 from __future__ import annotations
 
@@ -11,6 +11,14 @@ from typing import Any
 
 @dataclass
 class PeakConfig:
+    """Configure the initial values, bounds, and links for one fitted peak.
+
+    Centres and FWHM values are in eV, and area scales an area-normalised
+    line shape. For pseudo-Voigt peaks, ``fraction`` is the Lorentzian
+    contribution. Group names share FWHM or fraction values; link pairs express
+    a centre offset or area ratio relative to another peak label.
+    """
+
     label: str
     centre: float
     centre_bounds: tuple[float, float]
@@ -52,6 +60,14 @@ class PeakConfig:
 
 @dataclass
 class FitConfig:
+    """Configure one candidate model and its staged constrained optimisation.
+
+    Peak order is preserved. ``multistart`` and ``random_seed`` control seeded
+    initial-value perturbations, while ``release_fraction`` adds the fraction
+    stage. ``max_background_iterations`` limits Shirley updates per stage, and
+    ``width_penalty`` penalises FWHM differences between adjacent peaks.
+    """
+
     name: str
     region: str
     peaks: list[PeakConfig]
@@ -84,6 +100,8 @@ class FitConfig:
         labels = [peak.label for peak in self.peaks]
         if len(labels) != len(set(labels)):
             raise ValueError("peak labels must be unique")
+        # One parameter value represents each group, so all members need the
+        # same initial value and bounds.
         for attribute in ("width_group", "fraction_group"):
             groups: dict[str, list[PeakConfig]] = {}
             for peak in self.peaks:
@@ -98,15 +116,17 @@ class FitConfig:
                     raise ValueError(f"shared {parameter} group {group!r} requires identical initials and bounds")
 
     def to_dict(self) -> dict[str, Any]:
+        """Return the complete nested configuration as a dictionary."""
         return asdict(self)
 
 
 def load_config(path: str | Path) -> FitConfig:
-    """Load a JSON candidate-model configuration."""
+    """Load a JSON candidate model and validate peak and cross-peak settings."""
     with Path(path).open(encoding="utf-8") as stream:
         data = json.load(stream)
     data["peaks"] = [PeakConfig(**peak) for peak in data["peaks"]]
     config = FitConfig(**data)
+    # Defer the import because constraints imports PeakConfig from this module.
     from .constraints import validate_links
 
     validate_links(config.peaks)
