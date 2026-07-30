@@ -11,6 +11,13 @@ import numpy as np
 
 @dataclass(frozen=True)
 class Spectrum:
+    """Hold aligned one-dimensional XPS energy and intensity arrays.
+
+    Binding energy is stored in eV and must be finite and strictly ascending for
+    fitting. Optional normalised intensity must have the same shape; its scale and
+    the raw intensity units remain those supplied by the data source.
+    """
+
     binding_energy: np.ndarray
     intensity: np.ndarray
     region: str = ""
@@ -38,6 +45,7 @@ class Spectrum:
             object.__setattr__(self, "normalised_intensity", norm)
 
     def crop(self, minimum: float, maximum: float) -> "Spectrum":
+        """Return points within an inclusive energy interval, preserving alignment."""
         lo, hi = sorted((minimum, maximum))
         mask = (self.binding_energy >= lo) & (self.binding_energy <= hi)
         if mask.sum() < 2:
@@ -52,4 +60,5 @@ class Spectrum:
 
     @property
     def source_path(self) -> Path | None:
+        """Return the recorded source as a path, or ``None`` when it is absent."""
         return None if self.source_file is None else Path(self.source_file)

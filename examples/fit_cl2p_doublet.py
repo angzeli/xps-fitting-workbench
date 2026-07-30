@@ -14,6 +14,7 @@ from xps_fitting.spectrum import Spectrum
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Fit and plot a deterministic Cl 2p doublet with linked parameters."""
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

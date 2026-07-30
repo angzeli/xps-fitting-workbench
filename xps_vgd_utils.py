@@ -1,3 +1,5 @@
+"""Legacy DataFrame helpers for extracting, exporting, and plotting VGD spectra."""
+
 from pathlib import Path
 
 import matplotlib as mpl
@@ -9,6 +11,7 @@ from xps_fitting.plotting.themes import _apply_figure_font_family, load_theme
 
 
 def min_max_normalise(series: pd.Series) -> pd.Series:
+    """Scale a series to [0, 1], returning zeros for a constant series."""
     min_value = series.min()
     max_value = series.max()
 
@@ -19,6 +22,7 @@ def min_max_normalise(series: pd.Series) -> pd.Series:
 
 
 def read_vgd_to_dataframe(vgd_path: str | Path) -> pd.DataFrame:
+    """Parse every spectrum in a VGD file into one provenance-rich table."""
     vgd_path = Path(vgd_path)
     data = read_vgd(vgd_path)
 
@@ -125,6 +129,7 @@ def add_normalised_intensity(
     xps_df: pd.DataFrame,
     intensity_column: str = "corrected_intensity",
 ) -> pd.DataFrame:
+    """Add independently min--max-normalised intensity for each stored spectrum."""
     xps_df = xps_df.copy()
 
     xps_df["normalised_intensity"] = (
@@ -141,6 +146,7 @@ def save_xps_outputs(
     output_dir: str | Path,
     output_name: str,
 ) -> Path:
+    """Write the extracted spectrum table to CSV and return its path."""
     output_dir = Path(output_dir)
     output_dir.mkdir(exist_ok=True)
 

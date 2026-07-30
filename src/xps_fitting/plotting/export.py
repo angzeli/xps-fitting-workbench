@@ -31,6 +31,11 @@ def export_figure(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> dict[str, Path]:
+    """Export a figure to validated PNG/PDF targets under a temporary theme context.
+
+    Existing targets are rejected unless ``overwrite`` is explicit. ``dry_run``
+    performs naming, format, theme, and collision checks but writes no files.
+    """
     selected = load_theme(theme)
     output = Path(output)
     requested = [output.suffix.lstrip(".").lower()] if formats is None and output.suffix else list(formats or ("png",))
@@ -49,6 +54,7 @@ def export_figure(
         raise FileExistsError(f"output already exists: {names}; pass overwrite=True to replace it")
     if dry_run:
         return paths
+    # Isolate theme state so publication exports do not alter the caller's rcParams.
     with theme_context(selected):
         _apply_figure_font_family(figure, selected.font_family)
         for format_name, path in paths.items():

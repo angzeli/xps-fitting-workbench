@@ -9,6 +9,7 @@ from .lineshapes import gaussian, lorentzian, pseudo_voigt
 
 
 def evaluate_peak(x: np.ndarray, peak: PeakConfig, values: dict[str, float]) -> np.ndarray:
+    """Evaluate one configured peak from its resolved area, centre, width, and mix."""
     prefix = peak.label
     area, centre = values[f"{prefix}.area"], values[f"{prefix}.centre"]
     fwhm, fraction = values[f"{prefix}.fwhm"], values[f"{prefix}.fraction"]
@@ -22,6 +23,11 @@ def evaluate_peak(x: np.ndarray, peak: PeakConfig, values: dict[str, float]) -> 
 
 
 def resolve_links(peaks: list[PeakConfig], values: dict[str, float]) -> dict[str, float]:
+    """Resolve shared-shape, centre-offset, and area-ratio constraints in peak order.
+
+    For shared width and fraction groups, the first peak in ``peaks`` supplies the
+    group value. The input mapping is copied before linked values are applied.
+    """
     resolved = dict(values)
     width_groups: dict[str, float] = {}
     fraction_groups: dict[str, float] = {}

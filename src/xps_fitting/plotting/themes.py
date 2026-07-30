@@ -29,6 +29,8 @@ _MATH_FONTSET = "stix"
 
 @dataclass(frozen=True)
 class PlotTheme:
+    """Collect validated typography, geometry, colour, and export defaults."""
+
     name: str
     font_family: str = "Arial"
     font_size: float = 14
@@ -128,12 +130,14 @@ class PlotTheme:
             raise ValueError("theme widths and annotation sizes must be positive")
 
     def font_rc_params(self) -> dict[str, object]:
+        """Return the global font settings required while rendering this theme."""
         return {
             "font.family": self.font_family,
             "mathtext.fontset": _MATH_FONTSET,
         }
 
     def rc_params(self) -> dict[str, object]:
+        """Return the complete Matplotlib rcParams overlay for this theme."""
         return {
             **self.font_rc_params(),
             "font.size": self.font_size,
@@ -205,6 +209,7 @@ _THEMES = {
 
 
 def figure_size_preset(name: str) -> tuple[float, float]:
+    """Resolve a named figure-size preset to width and height in inches."""
     key = name.strip().lower().replace("_", "-")
     try:
         return FIGURE_SIZE_PRESETS[key]
@@ -219,6 +224,7 @@ def validate_theme(
     assignment_colours: dict[str, str] | None = None,
     required_assignments: tuple[str, ...] | None = None,
 ) -> PlotTheme:
+    """Validate theme geometry, output formats, and required assignment colours."""
     if theme.name in _FIXED_SPINE_THEMES and not math.isclose(theme.spine_width, VISIBLE_SPINE_WIDTH, abs_tol=1e-12):
         raise ValueError(f"{theme.name} requires a {VISIBLE_SPINE_WIDTH:.1f} pt spine width")
     if not 0 <= theme.component_alpha <= 1:
@@ -238,6 +244,7 @@ def validate_theme(
 
 
 def load_theme(theme: str | PlotTheme = "angze_publication", **overrides: Any) -> PlotTheme:
+    """Load a named theme or validate a theme instance with optional overrides."""
     selected = theme if isinstance(theme, PlotTheme) else _THEMES.get(theme)
     if selected is None:
         raise ValueError(f"unknown theme {theme!r}; choose from {sorted(_THEMES)}")
@@ -364,6 +371,7 @@ def fitted_region_y_limits(
 
 @contextmanager
 def theme_context(theme: str | PlotTheme = "angze_publication", **overrides: Any) -> Iterator[PlotTheme]:
+    """Temporarily apply a theme without leaking Matplotlib global state."""
     selected = load_theme(theme, **overrides)
     with mpl.rc_context(selected.rc_params()):
         yield selected

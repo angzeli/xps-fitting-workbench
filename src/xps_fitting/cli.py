@@ -59,6 +59,7 @@ def _repository(args: argparse.Namespace) -> Path:
 
 
 def _run_stored_plot(args: argparse.Namespace) -> int:
+    """Render one stored result or an ordered multipanel comparison."""
     config = load_plot_config(args.recipe)
     metadata = _metadata_sources(args.metadata, len(args.sources))
     results = [load_curve_result(source, details) for source, details in zip(args.sources, metadata)]
@@ -98,11 +99,13 @@ def _run_stored_plot(args: argparse.Namespace) -> int:
 
 
 def _run_inspect(args: argparse.Namespace) -> int:
+    """Print the repository-aware state of one sample."""
     _json_output(inspect_sample(_repository(args), args.sample))
     return 0
 
 
 def _run_doctor(args: argparse.Namespace) -> int:
+    """Report whether the active installation matches this repository."""
     root = _repository(args)
     distribution = importlib.metadata.distribution("xps-fitting-workbench")
     direct_url_text = distribution.read_text("direct_url.json")
@@ -134,6 +137,7 @@ def _run_doctor(args: argparse.Namespace) -> int:
 
 
 def _run_fit_region(args: argparse.Namespace) -> int:
+    """Fit and persist configured candidate models for one sample region."""
     result = fit_region_candidates(
         _repository(args),
         args.sample,
@@ -148,6 +152,7 @@ def _run_fit_region(args: argparse.Namespace) -> int:
 
 
 def _run_fit_sample(args: argparse.Namespace) -> int:
+    """Fit each region that has discoverable candidate configurations."""
     root = _repository(args)
     fitted: dict[str, object] = {}
     for region in ("C1s", "N1s", "O1s", "Cl2p"):
@@ -178,6 +183,7 @@ def _yes(prompt: str) -> bool:
 
 
 def _run_review(args: argparse.Namespace) -> int:
+    """Guide an explicit accept-one or reject-all candidate decision."""
     root = _repository(args)
     from .artifacts import canonical_region
 
@@ -308,6 +314,7 @@ def _run_review(args: argparse.Namespace) -> int:
 
 
 def _run_review_spectrum(args: argparse.Namespace) -> int:
+    """Review a raw Survey acquisition without introducing fitted components."""
     root = _repository(args)
     region = args.region.strip().replace(" ", "")
     if region != "Survey":
@@ -355,6 +362,7 @@ def _run_review_spectrum(args: argparse.Namespace) -> int:
 
 
 def _run_calibrate(args: argparse.Namespace) -> int:
+    """Print, confirm, and persist one sample-wide binding-energy shift."""
     root = _repository(args)
     manifest = sample_manifest_path(root, args.sample)
     plan = prepare_sample_calibration(
@@ -395,6 +403,7 @@ def _run_calibrate(args: argparse.Namespace) -> int:
 
 
 def _run_plot_region(args: argparse.Namespace) -> int:
+    """Render one calibrated, reviewed region with provenance disclosure."""
     root = _repository(args)
     figure, _, paths, provenance = plot_publication_region(
         sample_manifest_path(root, args.sample),
@@ -415,6 +424,7 @@ def _run_plot_region(args: argparse.Namespace) -> int:
 
 
 def _run_plot_sample(args: argparse.Namespace) -> int:
+    """Render every calibrated region and the configured sample panel."""
     root = _repository(args)
     outputs, provenance = plot_publication_sample(
         sample_manifest_path(root, args.sample),
@@ -437,6 +447,7 @@ def _run_plot_sample(args: argparse.Namespace) -> int:
 
 
 def _run_validate_bundle(args: argparse.Namespace) -> int:
+    """Validate one fit or spectrum bundle and print its report."""
     path = Path(args.path)
     manifest = json.loads((path / "manifest.json").read_text(encoding="utf-8"))
     report: Any
@@ -458,6 +469,7 @@ def _run_validate_bundle(args: argparse.Namespace) -> int:
 
 
 def _run_validate_sample(args: argparse.Namespace) -> int:
+    """Validate the active artifacts linked from one sample manifest."""
     result = validate_sample(
         _repository(args),
         args.sample,
@@ -468,6 +480,7 @@ def _run_validate_sample(args: argparse.Namespace) -> int:
 
 
 def _run_cleanup(args: argparse.Namespace) -> int:
+    """List or remove only allowlisted generated files."""
     files = clean_generated(_repository(args), dry_run=args.dry_run)
     prefix = "Would remove" if args.dry_run else "Removed"
     for path in files:
@@ -477,6 +490,7 @@ def _run_cleanup(args: argparse.Namespace) -> int:
 
 
 def _run_wizard(args: argparse.Namespace) -> int:
+    """Guide fitting, review, calibration, plotting, and final validation."""
     root = _repository(args)
     samples = sorted(path.name for path in (root / "data" / "raw").iterdir() if path.is_dir())
     print("Available samples:")
@@ -574,6 +588,7 @@ def _run_wizard(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Parse ``xps-fit`` arguments, dispatch a workflow, and return its exit code."""
     parser = argparse.ArgumentParser(
         prog="xps-fit", description="Persist, review, calibrate, validate, and plot XPS results."
     )

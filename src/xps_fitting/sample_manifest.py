@@ -43,6 +43,8 @@ def discover_raw_regions(directory: str | Path) -> dict[str, Path]:
 
 @dataclass
 class SampleManifest:
+    """Track raw inputs and the active reviewed/calibrated artifact for each region."""
+
     sample: str
     raw_regions: dict[str, str]
     raw_sha256: dict[str, str]
@@ -70,9 +72,11 @@ class SampleManifest:
 
     @property
     def missing_raw_regions(self) -> tuple[str, ...]:
+        """Return expected regions that have no raw source, preserving expected order."""
         return tuple(region for region in self.expected_regions if region not in self.raw_regions)
 
     def to_dict(self) -> dict[str, Any]:
+        """Return the persisted manifest schema, including derived missing regions."""
         data = asdict(self)
         data["expected_regions"] = list(self.expected_regions)
         data["missing_raw_regions"] = list(self.missing_raw_regions)
@@ -80,6 +84,7 @@ class SampleManifest:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "SampleManifest":
+        """Construct a manifest while ignoring its derived missing-region field."""
         values = dict(data)
         values.pop("missing_raw_regions", None)
         values["expected_regions"] = tuple(values.get("expected_regions", EXPECTED_REGIONS))
@@ -92,6 +97,7 @@ def save_sample_manifest(
     *,
     overwrite: bool = False,
 ) -> Path:
+    """Atomically persist a sample manifest, optionally replacing an existing file."""
     destination = Path(path)
     if destination.exists() and not overwrite:
         raise FileExistsError(f"sample manifest already exists: {destination}")
@@ -103,6 +109,7 @@ def save_sample_manifest(
 
 
 def load_sample_manifest(path: str | Path) -> SampleManifest:
+    """Load and validate a sample manifest from JSON."""
     return SampleManifest.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
 
 
@@ -115,6 +122,7 @@ def create_sample_manifest(
     created_at: str | None = None,
     overwrite: bool = False,
 ) -> SampleManifest:
+    """Create a manifest from recognised VGD files and their SHA-256 digests."""
     regions = discover_raw_regions(raw_directory)
     timestamp = created_at or utc_now()
     manifest = SampleManifest(

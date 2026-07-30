@@ -10,6 +10,7 @@ PROTECTED_DIRECTORIES = (Path("data") / "raw", Path("artifacts") / "reviewed")
 
 
 def generated_cleanup_plan(repository_root: str | Path) -> tuple[Path, ...]:
+    """List files beneath allowlisted generated roots after safety checks."""
     root = Path(repository_root).resolve()
     protected = tuple((root / path).resolve() for path in PROTECTED_DIRECTORIES)
     files: list[Path] = []

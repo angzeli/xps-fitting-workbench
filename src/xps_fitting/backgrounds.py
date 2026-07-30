@@ -6,6 +6,7 @@ import numpy as np
 
 
 def linear(x: np.ndarray, y_start: float, y_end: float) -> np.ndarray:
+    """Interpolate a straight background between the supplied endpoint levels."""
     x = np.asarray(x, dtype=float)
     if x[-1] == x[0]:
         raise ValueError("energy range must be nonzero")

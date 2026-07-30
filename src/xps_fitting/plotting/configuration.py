@@ -16,6 +16,8 @@ from .themes import load_theme, validate_theme
 
 @dataclass(frozen=True)
 class PlotConfig:
+    """Describe a validated, JSON-serialisable single- or multipanel plot recipe."""
+
     theme: str = "angze_publication"
     figure_size: tuple[float, float] | None = None
     figure_size_preset: str | None = None
@@ -107,9 +109,11 @@ class PlotConfig:
             raise ValueError("invalid panel_layout")
 
     def to_dict(self) -> dict[str, Any]:
+        """Return the recipe as a JSON-compatible field mapping."""
         return asdict(self)
 
     def save(self, path: str | Path) -> Path:
+        """Write the recipe as indented JSON, creating parent directories."""
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(self.to_dict(), indent=2) + "\n", encoding="utf-8")
@@ -117,6 +121,7 @@ class PlotConfig:
 
 
 def load_plot_config(path: str | Path) -> PlotConfig:
+    """Load a JSON recipe and restore tuple-valued plotting fields."""
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     for key in (
         "figure_size",

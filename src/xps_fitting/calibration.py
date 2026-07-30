@@ -26,6 +26,7 @@ class BindingEnergyCalibration:
     offset_eV: float
 
     def to_dict(self) -> dict[str, str | float]:
+        """Return the calibration parameters and sign convention for persistence."""
         return {
             "reference_core_level": self.reference_core_level,
             "reference_component": self.reference_component,

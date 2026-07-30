@@ -15,6 +15,7 @@ DEFAULT_RECIPE = ROOT / "configs" / "plots" / "c1s_publication.json"
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Render a publication figure from an active calibrated reviewed bundle."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--sample-manifest",

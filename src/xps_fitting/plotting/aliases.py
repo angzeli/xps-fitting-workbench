@@ -14,5 +14,6 @@ _CANONICAL = {
 
 
 def canonical_core_level(value: str) -> str:
+    """Return the spaced display spelling for recognised core-level aliases."""
     key = value.lower().replace(" ", "").replace("_", "").removesuffix("scan")
     return _CANONICAL.get(key, value.strip())

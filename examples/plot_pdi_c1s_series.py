@@ -10,6 +10,7 @@ from xps_fitting.result import FitResult
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Plot a normalised synthetic C 1s series for three samples."""
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

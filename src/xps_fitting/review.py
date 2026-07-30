@@ -23,6 +23,8 @@ ReviewDecision = Literal["accepted", "cancelled"]
 
 @dataclass(frozen=True)
 class ReviewRecord:
+    """Record an accepted human review and the candidate bundle it endorses."""
+
     sample: str
     region: str
     candidate_source: str
@@ -61,11 +63,14 @@ class ReviewRecord:
             raise ValueError("constraints and warnings must be explicitly reviewed")
 
     def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-compatible review record."""
         return asdict(self)
 
 
 @dataclass(frozen=True)
 class ReviewPromotion:
+    """Identify the immutable reviewed bundle and record created by promotion."""
+
     reviewed_bundle: Path
     review_record: Path
     version: int
@@ -74,6 +79,8 @@ class ReviewPromotion:
 
 @dataclass(frozen=True)
 class RejectionRecord:
+    """Record an explicit decision to reject every candidate for one region."""
+
     sample: str
     region: str
     candidate_sources: tuple[str, ...]
@@ -95,17 +102,21 @@ class RejectionRecord:
             raise ValueError("at least one rejected candidate is required")
 
     def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-compatible rejection record."""
         return asdict(self)
 
 
 @dataclass(frozen=True)
 class ReviewRejection:
+    """Identify the durable record created by a reject-all decision."""
+
     rejection_record: Path
     version: int
     record: RejectionRecord
 
 
 def load_review_record(path: str | Path) -> ReviewRecord:
+    """Load and validate an accepted review record from JSON."""
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     data["notes"] = tuple(data.get("notes", ()))
     return ReviewRecord(**data)

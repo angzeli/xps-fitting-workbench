@@ -65,6 +65,7 @@ def load_publication_region(
     calibration = json.loads(calibration_path.read_text(encoding="utf-8"))
     bundle = _resolve_link(manifest.calibrated[canonical], path.parent, root)
     bundle_manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))
+    # Load through the artifact validator appropriate to the recorded bundle format.
     result: FitResult | Spectrum
     report: Any
     if bundle_manifest.get("format") == "xps-fitting-workbench-fit-bundle":
@@ -77,6 +78,7 @@ def load_publication_region(
             raise ValueError("spectrum is not publication eligible:\n" + "\n".join(reasons))
     else:
         raise ValueError(f"unsupported calibrated artifact bundle: {bundle}")
+    # Cross-check the bundle, calibration record, and sample manifest before plotting.
     metadata = result.metadata.get("binding_energy_calibration", {})
     if report.sample != manifest.sample or _canonical_region_name(report.region) != canonical:
         raise ValueError("publication bundle sample or region is inconsistent with the sample manifest")
@@ -126,6 +128,7 @@ def plot_publication_region(
         raise ValueError("publication recipe core level does not match the requested region")
     if set(config.output_formats) != {"png", "pdf"}:
         raise ValueError("final publication recipes must request exactly PNG and PDF")
+    # Record the validated inputs and exact rendering recipe beside the figure files.
     provenance.update(
         {
             "plot_recipe": str(recipe_path),
@@ -148,6 +151,7 @@ def plot_publication_region(
     provenance_path = Path(output_directory) / f"{config.output_filename}.provenance.json"
     if provenance_path.exists() and not overwrite:
         raise FileExistsError(f"figure provenance already exists: {provenance_path}")
+    # Snapshot numerical inputs so rendering is also checked for in-memory mutation.
     if isinstance(result, FitResult):
         before = result.to_dict()
         figure, axes, paths = plot_from_config(
@@ -210,6 +214,7 @@ def plot_publication_sample(
     if set(individual_recipe_values) != set(PANEL_REGIONS):
         raise ValueError("sample publication recipe must provide one recipe for every region")
 
+    # Load every region first and require one shared calibration state for the sample.
     datasets = {}
     validations = {}
     source_bundles = {}
@@ -235,6 +240,7 @@ def plot_publication_sample(
     outputs: dict[str, dict[str, Path]] = {}
     import matplotlib.pyplot as plt
 
+    # Individual figures and the panel are regenerated from the same validated inputs.
     for region in PANEL_REGIONS:
         figure, _, paths, _ = plot_publication_region(
             path,

@@ -12,6 +12,7 @@ from xps_fitting.plotting import export_figure, load_curve_result, plot_xps_fit
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Exercise fitting, export/reload, direct plotting, and CLI plotting."""
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

@@ -10,6 +10,7 @@ from xps_fitting.plotting import export_figure, plot_fit_comparison
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Fit and plot both deterministic C 1s candidate configurations."""
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

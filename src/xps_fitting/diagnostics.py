@@ -6,6 +6,7 @@ import numpy as np
 
 
 def statistics(residual: np.ndarray, n_parameters: int) -> dict[str, float]:
+    """Summarise an unweighted residual vector and its fitted degrees of freedom."""
     n = residual.size
     rss = float(residual @ residual)
     dof = n - n_parameters

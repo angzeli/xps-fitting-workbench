@@ -58,6 +58,8 @@ _PEAK_ANNOTATION_KEYS = frozenset({"offset_points", "connector", "horizontal_ali
 
 @dataclass(frozen=True)
 class PeakAnnotationOptions:
+    """Hold validated point offsets, connector choice, and text alignment."""
+
     offset_points: tuple[float, float]
     connector: bool
     horizontal_alignment: str
@@ -117,6 +119,7 @@ def _with_semantic_annotation_defaults(
 
 
 def statistics_text(result: FitResult) -> str:
+    """Format available model-selection statistics as a compact multiline label."""
     parts = []
     for key, label in (("aicc", "AICc"), ("bic", "BIC"), ("reduced_chi_square", r"$\chi_\nu^2$")):
         if key in result.fit_statistics:

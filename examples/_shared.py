@@ -15,6 +15,7 @@ DEFAULT_OUTPUT = ROOT / "outputs" / "examples"
 
 
 def add_output_argument(parser: argparse.ArgumentParser) -> None:
+    """Add the common output-directory and overwrite options to an example."""
     parser.add_argument(
         "--output-dir", type=Path, default=DEFAULT_OUTPUT, help="Directory for generated example files."
     )
@@ -22,11 +23,13 @@ def add_output_argument(parser: argparse.ArgumentParser) -> None:
 
 
 def prepare_output(path: Path) -> Path:
+    """Create an example output directory and return it unchanged."""
     path.mkdir(parents=True, exist_ok=True)
     return path
 
 
 def check_output_paths(paths: list[Path], *, overwrite: bool) -> None:
+    """Reject existing example targets unless replacement is explicit."""
     collisions = [path for path in paths if path.exists()]
     if collisions and not overwrite:
         names = ", ".join(str(path) for path in collisions)
@@ -34,6 +37,7 @@ def check_output_paths(paths: list[Path], *, overwrite: bool) -> None:
 
 
 def synthetic_c1s(points: int = 401) -> Spectrum:
+    """Return a deterministic five-component synthetic C 1s spectrum."""
     energy = np.linspace(280, 294, points)
     peaks = ((1000, 284.65, 1.4), (500, 285.85, 1.4), (400, 287.9, 1.5), (250, 289.15, 1.5), (150, 290.7, 2.2))
     intensity = 20 + sum(pseudo_voigt(energy, area, centre, width, 0.5) for area, centre, width in peaks)

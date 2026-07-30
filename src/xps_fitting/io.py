@@ -43,10 +43,12 @@ def spectrum_from_dataframe(
 
 
 def read_csv(path: str | Path, **kwargs: Any) -> Spectrum:
+    """Read a CSV table and apply :func:`spectrum_from_dataframe` cleaning."""
     path = Path(path)
     return spectrum_from_dataframe(pd.read_csv(path), source_file=str(path), **kwargs)
 
 
 def read_xlsx(path: str | Path, *, sheet_name: str | int = 0, **kwargs: Any) -> Spectrum:
+    """Read one Excel sheet and apply :func:`spectrum_from_dataframe` cleaning."""
     path = Path(path)
     return spectrum_from_dataframe(pd.read_excel(path, sheet_name=sheet_name), source_file=str(path), **kwargs)

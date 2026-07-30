@@ -24,6 +24,8 @@ SPECTRUM_CONFIGURATION_SHA256 = sha256_json({"artifact_kind": "raw_spectrum"})
 
 @dataclass(frozen=True)
 class SpectrumReviewRecord:
+    """Record an accepted human review of one raw experimental spectrum."""
+
     sample: str
     region: str
     decision: str
@@ -43,11 +45,14 @@ class SpectrumReviewRecord:
             raise ValueError("spectrum reviewer is required")
 
     def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-compatible spectrum review record."""
         return asdict(self)
 
 
 @dataclass(frozen=True)
 class SpectrumValidationReport:
+    """Collect integrity findings and publication blockers for a spectrum bundle."""
+
     bundle_path: str
     sample: str
     region: str
@@ -60,6 +65,8 @@ class SpectrumValidationReport:
 
 @dataclass(frozen=True)
 class SpectrumReviewPromotion:
+    """Identify the reviewed spectrum bundle and record created by promotion."""
+
     reviewed_spectrum: Path
     review_record: Path
     version: int
@@ -78,6 +85,7 @@ def save_spectrum_bundle(
     artifact: Mapping[str, Any] | None = None,
     overwrite: bool = False,
 ) -> dict[str, Path]:
+    """Persist aligned spectrum arrays, metadata, hashes, and optional lineage."""
     directory = Path(directory)
     paths = {
         "manifest": directory / "manifest.json",
@@ -120,6 +128,7 @@ def save_spectrum_bundle(
 
 
 def read_spectrum_bundle_manifest(directory: str | Path) -> dict[str, Any]:
+    """Load a supported spectrum-bundle manifest without loading its arrays."""
     path = Path(directory) / "manifest.json"
     if not path.is_file():
         raise FileNotFoundError(f"spectrum bundle manifest is missing: {path}")
@@ -130,6 +139,7 @@ def read_spectrum_bundle_manifest(directory: str | Path) -> dict[str, Any]:
 
 
 def load_spectrum_bundle(directory: str | Path) -> Spectrum:
+    """Load a spectrum bundle after verifying member paths and recorded hashes."""
     directory = Path(directory)
     manifest = read_spectrum_bundle_manifest(directory)
 
@@ -188,6 +198,7 @@ def validate_spectrum_bundle(
     require_calibrated: bool = False,
     repository_root: str | Path | None = None,
 ) -> SpectrumValidationReport:
+    """Validate spectrum integrity, provenance, review, and calibration lineage."""
     bundle = Path(directory).resolve()
     manifest = read_spectrum_bundle_manifest(bundle)
     spectrum = load_spectrum_bundle(bundle)

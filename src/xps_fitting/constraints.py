@@ -42,6 +42,7 @@ def cl2p_doublet(
 
 
 def validate_links(peaks: list[PeakConfig]) -> None:
+    """Require unique peak labels and references to peaks in the same model."""
     labels = {peak.label for peak in peaks}
     if len(labels) != len(peaks):
         raise ValueError("peak labels must be unique")

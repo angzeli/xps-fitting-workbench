@@ -10,6 +10,7 @@ from xps_fitting.result import FitResult
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Build a vertical panel of three deterministic fitted core levels."""
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

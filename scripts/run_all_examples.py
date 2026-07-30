@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Run each public example in isolation and summarise pass/skip/fail counts."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/examples"))
     parser.add_argument(

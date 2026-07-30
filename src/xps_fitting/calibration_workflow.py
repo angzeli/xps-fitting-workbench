@@ -39,6 +39,8 @@ CALIBRATION_RECORD_SCHEMA_VERSION = 1
 
 @dataclass(frozen=True)
 class CalibrationPlan:
+    """Preview a sample-wide rigid energy shift before any files are written."""
+
     sample: str
     reference_region: str
     reference_component: str
@@ -50,6 +52,7 @@ class CalibrationPlan:
     missing_regions: tuple[str, ...]
 
     def format_text(self) -> str:
+        """Format the proposed shift and its unchanged quantities for confirmation."""
         exact_offset = repr(self.energy_offset_eV)
         if not exact_offset.startswith("-"):
             exact_offset = "+" + exact_offset
@@ -80,6 +83,8 @@ class CalibrationPlan:
 
 @dataclass(frozen=True)
 class CalibrationRecord:
+    """Persist the approved shift, rationale, and immutable artifact lineage."""
+
     sample: str
     reference_region: str
     reference_component: str
@@ -99,11 +104,14 @@ class CalibrationRecord:
     schema_version: int = CALIBRATION_RECORD_SCHEMA_VERSION
 
     def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-compatible calibration record."""
         return asdict(self)
 
 
 @dataclass(frozen=True)
 class CalibrationOutcome:
+    """Report the plan, record, and calibrated bundles created by a run."""
+
     plan: CalibrationPlan
     record: CalibrationRecord
     calibration_record: Path
@@ -173,6 +181,12 @@ def prepare_sample_calibration(
     allow_incomplete: bool = False,
     repository_root: str | Path | None = None,
 ) -> CalibrationPlan:
+    """Validate reviewed inputs and calculate a sample-wide energy-shift plan.
+
+    The returned plan is read-only: preparation never calibrates arrays or writes
+    artifact bundles. Missing required regions block the plan unless the caller
+    explicitly allows an incomplete sample.
+    """
     path = Path(manifest_path).resolve()
     manifest = load_sample_manifest(path)
     root = _repository_root(path.parent, repository_root)

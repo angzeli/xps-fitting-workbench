@@ -10,6 +10,7 @@ from xps_fitting.plotting import export_figure, plot_xps_fit
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Fit and export diagnostics for both synthetic C 1s hypotheses."""
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

@@ -9,12 +9,14 @@ from .spectrum import Spectrum
 
 
 def compare_models(spectrum: Spectrum, configurations: list[FitConfig]) -> dict[str, FitResult]:
+    """Fit each uniquely named configuration, preserving configuration order."""
     if len({config.name for config in configurations}) != len(configurations):
         raise ValueError("candidate model names must be unique")
     return {config.name: fit_spectrum(spectrum, config) for config in configurations}
 
 
 def comparison_table(results: dict[str, FitResult]) -> list[dict[str, object]]:
+    """Project candidate results into ordered fit-statistic and warning records."""
     table = []
     for name, result in results.items():
         table.append(

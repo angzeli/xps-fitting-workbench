@@ -10,6 +10,7 @@ from xps_fitting.plotting import export_figure, plot_xps_fit
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Export publication, diagnostic, and monochrome views of one fit."""
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

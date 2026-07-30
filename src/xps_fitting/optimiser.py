@@ -98,7 +98,13 @@ def _solve_stage(
 
 
 def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit") -> FitResult:
-    """Fit a configured chemical hypothesis using deterministic staged optimisation."""
+    """Fit a configured hypothesis using deterministic staged optimisation.
+
+    Each initialisation releases areas, centres, widths, and optionally line-shape
+    fractions in that order. Linked parameters are resolved at every evaluation;
+    Shirley backgrounds alternate with the current component envelope. The returned
+    result is the initialisation with the lowest unpenalised residual sum of squares.
+    """
     if backend not in {"lmfit", "scipy"}:
         raise ValueError("backend must be 'lmfit' or 'scipy'")
     validate_links(config.peaks)
@@ -110,6 +116,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
     solutions: list[float] = []
     final_names: list[str] = []
     stages = ["areas", "centres", "widths"] + (["fractions"] if config.release_fraction else [])
+    # Run the same ordered release schedule from each deterministic initialisation.
     for start in range(max(1, config.multistart)):
         trial = dict(values)
         if start:
@@ -157,6 +164,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
                 trial = resolve_links(config.peaks, trial)
         assert result is not None
         current = resolve_links(config.peaks, trial)
+        # Rank starts by the physical residual, excluding any width-penalty terms.
         physical_residual = (
             y - background - sum((evaluate_peak(x, peak, current) for peak in config.peaks), start=np.zeros_like(x))
         )
@@ -166,6 +174,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
             best = (score, result, trial, background, names, background_iterations)
     assert best is not None
     _, raw_result, fitted, background, final_names, background_iterations = best
+    # Reconstruct aligned curves and diagnostics from the best linked parameter set.
     components = {peak.label: evaluate_peak(x, peak, fitted) for peak in config.peaks}
     total = background + sum(components.values(), start=np.zeros_like(x))
     residual = y - total
@@ -173,6 +182,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
     uncertainties: dict[str, float | None] = {name: None for name in fitted}
     correlations: dict[str, dict[str, float]] = {}
     warnings: list[str] = []
+    # Prefer backend covariance, with a Jacobian estimate when the backend omits it.
     covariance = raw_result.covar
     if (
         covariance is None

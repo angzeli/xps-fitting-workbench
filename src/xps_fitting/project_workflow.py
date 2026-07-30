@@ -25,6 +25,7 @@ from .workflows import persist_candidate_results
 
 
 def find_repository_root(start: str | Path = ".") -> Path:
+    """Find the nearest ancestor containing ``pyproject.toml``."""
     resolved = Path(start).resolve()
     for candidate in (resolved, *resolved.parents):
         if (candidate / "pyproject.toml").is_file():
@@ -33,15 +34,18 @@ def find_repository_root(start: str | Path = ".") -> Path:
 
 
 def sample_raw_directory(root: str | Path, sample: str) -> Path:
+    """Return the repository path reserved for one sample's raw inputs."""
     repository = Path(root).resolve()
     return repository / "data" / "raw" / sample
 
 
 def sample_manifest_path(root: str | Path, sample: str) -> Path:
+    """Return the canonical reviewed-artifact manifest path for a sample."""
     return Path(root).resolve() / "artifacts" / "reviewed" / sample / "sample_manifest.json"
 
 
 def ensure_sample_manifest(root: str | Path, sample: str) -> SampleManifest:
+    """Load a sample manifest or create it from the current raw VGD files."""
     repository = Path(root).resolve()
     path = sample_manifest_path(repository, sample)
     if path.is_file():
@@ -55,6 +59,7 @@ def ensure_sample_manifest(root: str | Path, sample: str) -> SampleManifest:
 
 
 def inspect_sample(root: str | Path, sample: str) -> dict[str, Any]:
+    """Summarise raw regions, hashes, acquisition metadata, and artifact state."""
     repository = Path(root).resolve()
     raw_directory = sample_raw_directory(repository, sample)
     regions = discover_raw_regions(raw_directory)
@@ -86,6 +91,7 @@ def inspect_sample(root: str | Path, sample: str) -> dict[str, Any]:
 
 
 def discover_fit_configs(root: str | Path, sample: str, region: str) -> tuple[Path, ...]:
+    """Find sample/region fit configurations in deterministic directory order."""
     repository = Path(root).resolve()
     sample_key = "_".join(part.casefold() for part in sample.split("-"))
     region_key = canonical_region(region).casefold()
@@ -120,6 +126,7 @@ def fit_region_candidates(
     mismatched = [config.name for config in configurations if canonical_region(config.region) != canonical]
     if mismatched:
         raise ValueError(f"candidate configuration region differs from {canonical}: {', '.join(mismatched)}")
+    # Record the complete proposed fit before running the optimiser or writing files.
     plan = {
         "sample": sample,
         "region": canonical,
@@ -148,6 +155,7 @@ def fit_region_candidates(
                 "configuration_file_sha256": sha256_file(path),
             }
         )
+    # Candidate bundles are the durable scientific outputs; validate them before plotting.
     bundles = persist_candidate_results(
         results,
         sample=sample,
@@ -167,6 +175,7 @@ def fit_region_candidates(
             raise RuntimeError(f"persisted candidate {model} failed validation:\n" + "\n".join(report.errors))
         validations[model] = report.to_dict()
         summaries[model] = candidate_review_summary(bundle)
+    # Render diagnostics only after every persisted candidate passes integrity checks.
     diagnostic_directory = repository / "figures" / "diagnostic" / sample / canonical
     figures: dict[str, list[str]] = {}
     for model, result in results.items():
@@ -236,6 +245,7 @@ def _resolve_manifest_link(value: str, manifest_path: Path, repository: Path) ->
 
 
 def validate_sample(root: str | Path, sample: str, *, require_calibrated: bool = False) -> dict[str, Any]:
+    """Validate raw hashes and active reviewed or calibrated artifact links."""
     repository = Path(root).resolve()
     path = sample_manifest_path(repository, sample)
     manifest = load_sample_manifest(path)

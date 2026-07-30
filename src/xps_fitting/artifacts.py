@@ -22,21 +22,25 @@ CALIBRATION_STATES = {"uncalibrated", "calibrated"}
 
 
 def utc_now() -> str:
+    """Return the current UTC timestamp in ISO 8601 form."""
     return datetime.now(timezone.utc).isoformat()
 
 
 def canonical_region(value: str) -> str:
+    """Return the compact canonical spelling used in artifact paths and records."""
     compact = "".join(character for character in value if character.isalnum()).casefold()
     aliases = {"c1s": "C1s", "n1s": "N1s", "o1s": "O1s", "cl2p": "Cl2p", "survey": "Survey"}
     return aliases.get(compact, value.strip().replace(" ", ""))
 
 
 def display_region(value: str) -> str:
+    """Return a publication-style core-level label when an alias is recognised."""
     canonical = canonical_region(value)
     return {"C1s": "C 1s", "N1s": "N 1s", "O1s": "O 1s", "Cl2p": "Cl 2p"}.get(canonical, canonical)
 
 
 def portable_path(path: str | Path, repository_root: str | Path | None = None) -> str:
+    """Represent a path relative to the repository when it lies within that root."""
     resolved = Path(path).resolve()
     root = Path(repository_root).resolve() if repository_root is not None else None
     if root is not None and resolved.is_relative_to(root):
@@ -46,6 +50,8 @@ def portable_path(path: str | Path, repository_root: str | Path | None = None) -
 
 @dataclass(frozen=True)
 class ArtifactDescriptor:
+    """Describe the identity, provenance, and review state of a durable artifact."""
+
     artifact_id: str
     state: str
     sample: str
@@ -75,6 +81,7 @@ class ArtifactDescriptor:
             raise ValueError("artifact source and configuration SHA-256 values are required")
 
     def to_dict(self) -> dict[str, Any]:
+        """Serialise the descriptor using the nested artifact-manifest schema."""
         data = asdict(self)
         data["source"] = {
             "path": data.pop("source_path"),
@@ -86,6 +93,7 @@ class ArtifactDescriptor:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "ArtifactDescriptor":
+        """Construct a descriptor from its nested artifact-manifest representation."""
         source = data.get("source", {})
         configuration = data.get("configuration", {})
         return cls(
@@ -111,6 +119,8 @@ class ArtifactDescriptor:
 
 @dataclass(frozen=True)
 class BundleValidationReport:
+    """Collect integrity findings and publication blockers for one fit bundle."""
+
     bundle_path: str
     classification: str
     sample: str
@@ -137,9 +147,11 @@ class BundleValidationReport:
     warnings: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-compatible mapping of all validation fields."""
         return asdict(self)
 
     def format_text(self) -> str:
+        """Format the report as a stable, line-oriented diagnostic summary."""
         rows = [
             f"Bundle: {self.bundle_path}",
             f"Classification: {self.classification}",
@@ -166,6 +178,7 @@ class BundleValidationReport:
 
 
 def classify_origin(value: object) -> str:
+    """Classify a recorded data origin as experimental, synthetic, or unclassified."""
     origin = str(value or "").strip().casefold()
     if any(marker in origin for marker in ("synthetic", "fixture", "generated")):
         return "synthetic"

@@ -42,10 +42,12 @@ MONOCHROME_STYLES = ("-", "--", "-.", ":")
 
 
 def core_level_colour(core_level: str) -> str:
+    """Return the stable semantic colour for a recognised core level."""
     return CORE_LEVEL_COLOURS.get(canonical_core_level(core_level), "#4B5563")
 
 
 def component_colour(label: str, overrides: dict[str, str] | None = None) -> str:
+    """Resolve an override or semantic component colour, warning on fallback."""
     if overrides and label in overrides:
         return overrides[label]
     if label in COMPONENT_COLOURS:
@@ -59,5 +61,6 @@ def component_colour(label: str, overrides: dict[str, str] | None = None) -> str
 
 
 def component_style(label: str) -> str:
+    """Map a component label deterministically to a monochrome line style."""
     index = int.from_bytes(sha256(label.encode("utf-8")).digest()[4:8], "big") % len(MONOCHROME_STYLES)
     return MONOCHROME_STYLES[index]

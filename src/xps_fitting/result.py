@@ -25,6 +25,13 @@ def _jsonable(value: Any) -> Any:
 
 @dataclass
 class FitResult:
+    """Store aligned measured and fitted arrays plus fitting provenance.
+
+    ``energy``, ``raw_intensity``, ``background``, every component, ``total_fit``,
+    and ``residual`` describe the same ordered points. Array validation is applied
+    by fitting, loading, and artifact-integrity workflows rather than this container.
+    """
+
     energy: np.ndarray
     raw_intensity: np.ndarray
     background: np.ndarray
@@ -42,4 +49,5 @@ class FitResult:
     software_versions: dict[str, str] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        """Return a recursively JSON-compatible representation of the result."""
         return _jsonable(asdict(self))

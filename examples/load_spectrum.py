@@ -9,6 +9,7 @@ from xps_fitting.io import read_csv, read_xlsx, spectrum_from_dataframe
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Demonstrate cleaning and loading tabular spectra in supported formats."""
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

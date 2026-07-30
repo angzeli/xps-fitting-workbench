@@ -11,6 +11,12 @@ from .spectrum import Spectrum
 
 
 def read_vgd(path: str | Path, *, spectrum_index: int = 0, intensity_column: str = "corrected_intensity") -> Spectrum:
+    """Load one VGD spectrum and retain its recorded acquisition metadata.
+
+    The selected binding-energy and intensity columns are cleaned, duplicate
+    energies are averaged, and the resulting arrays are returned in ascending
+    binding-energy order.
+    """
     try:
         from vgd_reader import read_vgd as parse_vgd
     except ImportError as exc:

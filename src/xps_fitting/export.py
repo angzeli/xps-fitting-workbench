@@ -17,6 +17,7 @@ from .result import FitResult
 
 
 def curve_table(result: FitResult) -> pd.DataFrame:
+    """Return aligned energy, measured, fitted, component, and residual columns."""
     data: dict[str, Any] = {
         "binding_energy_eV": result.energy,
         "raw_intensity": result.raw_intensity,

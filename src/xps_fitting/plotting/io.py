@@ -31,6 +31,7 @@ def _require_fields(available: set[str], required: tuple[str, ...], source: str)
 
 
 def fit_result_from_dict(data: dict[str, Any]) -> FitResult:
+    """Reconstruct a plotting result only when every required stored curve exists."""
     _require_fields(set(data), _REQUIRED_ARRAY_KEYS, "full FitResult JSON")
     arrays = {key: np.asarray(data[key], dtype=float) for key in _REQUIRED_ARRAY_KEYS}
     components = {label: np.asarray(curve, dtype=float) for label, curve in data.get("components", {}).items()}

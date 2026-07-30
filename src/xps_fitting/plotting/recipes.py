@@ -42,6 +42,7 @@ def plot_from_config(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> tuple[Figure, Axes | np.ndarray, dict[str, Path]]:
+    """Render and export one result according to a validated plot recipe."""
     theme = _theme_from_config(config)
     disclosure = "; ".join(
         value for value in (config.normalisation_disclosure, config.intensity_offset_disclosure) if value
@@ -96,6 +97,7 @@ def plot_series_from_config(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> tuple[Figure, np.ndarray, dict[str, Path]]:
+    """Render and export two or more results according to a multipanel recipe."""
     if len(results) < 2:
         raise ValueError("multipanel plotting requires at least two fit results")
     if config.panel_layout == "single":
