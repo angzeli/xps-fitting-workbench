@@ -1,4 +1,4 @@
-"""FitResult export bundle."""
+"""Human-readable tables, reports, figures, and hash-addressed FitResult bundles."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from .result import FitResult
 
 
 def curve_table(result: FitResult) -> pd.DataFrame:
-    """Return aligned energy, measured, fitted, component, and residual columns."""
+    """Return one row per energy point with ordered measured and fitted columns."""
     data: dict[str, Any] = {
         "binding_energy_eV": result.energy,
         "raw_intensity": result.raw_intensity,
@@ -29,6 +29,7 @@ def curve_table(result: FitResult) -> pd.DataFrame:
 
 
 def _summary(result: FitResult) -> dict[str, Any]:
+    """Return non-curve fields stored beside a readable curve table."""
     complete = result.to_dict()
     return {
         key: complete[key]
@@ -47,6 +48,7 @@ def _summary(result: FitResult) -> dict[str, Any]:
 
 
 def _check_collisions(paths: dict[str, Path], *, overwrite: bool) -> None:
+    """Reject any existing output target unless replacement is explicit."""
     collisions = [path for path in paths.values() if path.exists()]
     if collisions and not overwrite:
         names = ", ".join(str(path) for path in collisions)
@@ -61,7 +63,11 @@ def export_result(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> dict[str, Path]:
-    """Write XLSX, CSV, JSON, Markdown, and diagnostic PNG exports."""
+    """Write XLSX, CSV, JSON, Markdown, and diagnostic PNG exports.
+
+    ``dry_run`` performs naming and collision checks but creates no directory or
+    file. The returned mapping preserves XLSX, CSV, JSON, Markdown, and PNG order.
+    """
     directory = Path(directory)
     stem = validate_output_stem(stem)
     paths = {suffix: directory / f"{stem}.{suffix}" for suffix in ("xlsx", "csv", "json", "md", "png")}
@@ -118,7 +124,7 @@ def save_fit_bundle(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> dict[str, Path]:
-    """Save a readable bundle, optionally with lifecycle provenance."""
+    """Save curves, metadata, and their hashes, optionally with lifecycle provenance."""
     directory = Path(directory)
     paths = {
         "manifest": directory / "manifest.json",
@@ -165,13 +171,14 @@ def read_fit_bundle_manifest(directory: str | Path) -> dict[str, Any]:
 
 
 def load_fit_bundle(directory: str | Path) -> FitResult:
-    """Reload a directory created by :func:`save_fit_bundle`."""
+    """Reload a readable bundle after path, presence, hash, and curve checks."""
     from .plotting.io import load_curve_result
 
     directory = Path(directory)
     manifest = read_fit_bundle_manifest(directory)
 
     def member(name: str) -> Path:
+        """Resolve one declared member without permitting directory escape."""
         candidate = (directory / str(manifest["files"][name])).resolve()
         if directory.resolve() not in candidate.parents:
             raise ValueError(f"fit bundle member escapes its directory: {candidate}")

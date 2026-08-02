@@ -1,4 +1,4 @@
-"""Predictable, filesystem-safe output naming."""
+"""Predictable filesystem-safe names derived from sample and result identity."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 def safe_slug(value: object, *, fallback: str = "untitled", max_length: int = 48) -> str:
-    """Return a lowercase ASCII slug with deterministic length limiting."""
+    """Return a lowercase ASCII slug truncated deterministically to ``max_length``."""
     text = unicodedata.normalize("NFKD", str(value)).encode("ascii", "ignore").decode("ascii").lower()
     slug = re.sub(r"[^a-z0-9]+", "-", text).strip("-") or fallback
     return slug[:max_length].rstrip("-")
@@ -25,7 +25,7 @@ def sample_slug(sample: str) -> str:
 
 
 def resolve_sample_output_stem(template: str, *, sample: str) -> str:
-    """Resolve the supported publication filename template and validate its result."""
+    """Resolve only ``sample_slug`` fields and validate the resulting filename stem."""
     try:
         fields = tuple(Formatter().parse(template))
     except ValueError as exc:
@@ -67,7 +67,7 @@ def result_output_name(result: FitResult, *, plot_type: str = "fit") -> str:
 
 
 def validate_output_stem(value: str) -> str:
-    """Validate a 1--96 character filename stem without path separators."""
+    """Validate a 1--96 character ASCII filename stem without path separators."""
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,95}", value):
         raise ValueError("output filename must be a 1-96 character filesystem-safe stem")
     return value

@@ -1,4 +1,4 @@
-"""Scientific-array identities and reproducible SHA-256 helpers."""
+"""Aligned-array identities and reproducible SHA-256 helpers for stored results."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ def sha256_json(value: Any) -> str:
 
 
 def result_identity_metrics(result: FitResult) -> dict[str, float]:
-    """Calculate the two exact FitResult curve-identity residuals."""
+    """Return maximum absolute errors for the two FitResult curve identities."""
     component_sum = sum(result.components.values(), start=np.zeros_like(result.energy))
     return {
         "max_abs_component_envelope_error": float(np.max(np.abs(result.background + component_sum - result.total_fit))),
@@ -39,7 +39,11 @@ def result_identity_metrics(result: FitResult) -> dict[str, float]:
 
 
 def validate_result_integrity(result: FitResult, *, rtol: float = 1e-9, atol: float = 1e-12) -> None:
-    """Raise when stored arrays violate the stable FitResult numerical contract."""
+    """Require finite equal-shape arrays and both reconstruction identities.
+
+    ``rtol`` and ``atol`` are passed unchanged to NumPy's elementwise closeness
+    checks for the component envelope and residual reconstruction.
+    """
     arrays = {
         "energy": result.energy,
         "raw_intensity": result.raw_intensity,
@@ -63,7 +67,7 @@ def validate_result_integrity(result: FitResult, *, rtol: float = 1e-9, atol: fl
 
 
 def result_arrays_equal(first: FitResult, second: FitResult, *, energy_offset: float = 0.0) -> bool:
-    """Compare two results, allowing only a declared rigid energy-axis shift."""
+    """Compare arrays exactly except for a declared rigid energy-axis shift in eV."""
     if set(first.components) != set(second.components):
         return False
     if not np.allclose(second.energy, first.energy + energy_offset, rtol=0.0, atol=1e-12):

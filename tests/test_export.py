@@ -1,3 +1,5 @@
+"""Verify complete exports, readable bundles, collisions, and curve round-trips."""
+
 import json
 
 import numpy as np

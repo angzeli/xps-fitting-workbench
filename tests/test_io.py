@@ -1,3 +1,5 @@
+"""Verify tabular coercion, duplicate averaging, ordering, and file loading."""
+
 import numpy as np
 import pandas as pd
 

@@ -1,4 +1,4 @@
-"""Tabular spectrum input."""
+"""Tabular spectrum ingestion with deterministic cleaning and energy ordering."""
 
 from __future__ import annotations
 
@@ -21,7 +21,12 @@ def spectrum_from_dataframe(
     source_file: str | None = None,
     metadata: dict[str, Any] | None = None,
 ) -> Spectrum:
-    """Clean a table, average duplicate energies, and return ascending arrays."""
+    """Return finite ascending arrays after coercion and duplicate-energy averaging.
+
+    The selected energy column is interpreted according to its source label; the
+    default declares eV. Intensity retains the scale supplied by the table. Rows
+    with non-numeric or non-finite selected values are discarded.
+    """
     if energy_column not in frame or intensity_column not in frame:
         raise ValueError(f"required columns: {energy_column!r}, {intensity_column!r}")
     original_order = (

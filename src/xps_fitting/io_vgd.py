@@ -1,4 +1,4 @@
-"""Adapter for the repository's VGD reader workflow."""
+"""VGD adapter that selects one acquisition and preserves recorded metadata."""
 
 from __future__ import annotations
 
@@ -13,9 +13,10 @@ from .spectrum import Spectrum
 def read_vgd(path: str | Path, *, spectrum_index: int = 0, intensity_column: str = "corrected_intensity") -> Spectrum:
     """Load one VGD spectrum and retain its recorded acquisition metadata.
 
-    The selected binding-energy and intensity columns are cleaned, duplicate
-    energies are averaged, and the resulting arrays are returned in ascending
-    binding-energy order.
+    ``spectrum_index`` selects the parser record, and ``intensity_column`` selects
+    its source-defined intensity series. Binding energy is recorded in eV. Invalid
+    rows are removed, duplicate energies are averaged, and the arrays are returned
+    in ascending binding-energy order with acquisition metadata attached.
     """
     try:
         from vgd_reader import read_vgd as parse_vgd

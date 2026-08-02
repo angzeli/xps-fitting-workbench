@@ -1,3 +1,5 @@
+"""Verify deterministic, bounded, and path-safe output naming rules."""
+
 import pytest
 
 from xps_fitting.naming import (
