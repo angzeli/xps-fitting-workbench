@@ -1,4 +1,4 @@
-"""Deterministic staged constrained fitting."""
+"""Deterministic staged constrained fitting of aligned one-dimensional spectra."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ from .spectrum import Spectrum
 
 
 def _parameter_table(peaks: list[PeakConfig]) -> tuple[dict[str, float], dict[str, tuple[float, float]]]:
+    """Flatten peak initials and inclusive bounds into label-qualified mappings."""
     values, bounds = {}, {}
     for peak in peaks:
         for name in ("area", "centre", "fwhm", "fraction"):
@@ -30,6 +31,7 @@ def _parameter_table(peaks: list[PeakConfig]) -> tuple[dict[str, float], dict[st
 
 
 def _independent_names(peaks: list[PeakConfig], stage: str, release_fraction: bool) -> list[str]:
+    """Return independently fitted parameters for one ordered release stage."""
     allowed = {"area"}
     if stage in {"centres", "widths", "fractions"}:
         allowed.add("centre")
@@ -66,6 +68,7 @@ def _solve_stage(
     robust_loss: str,
     backend: str,
 ) -> Any:
+    """Solve one parameter vector through the selected least-squares backend."""
     lower = np.array([bounds[name][0] for name in names])
     upper = np.array([bounds[name][1] for name in names])
     if backend == "scipy":
@@ -81,6 +84,7 @@ def _solve_stage(
         parameters.add(f"v{index}", value=trial[name], min=bounds[name][0], max=bounds[name][1])
 
     def lmfit_residual(params: Any) -> np.ndarray:
+        """Translate lmfit parameters back to the optimizer's ordered vector."""
         return residual(np.array([params[f"v{index}"].value for index in range(len(names))]))
 
     fitted_result = lmfit.minimize(lmfit_residual, parameters, method="least_squares", loss=robust_loss)
@@ -97,13 +101,20 @@ def _solve_stage(
     )
 
 
+def _component_envelope(x: np.ndarray, peaks: list[PeakConfig], values: dict[str, float]) -> np.ndarray:
+    """Sum configured components in peak order on the supplied energy grid."""
+    return sum((evaluate_peak(x, peak, values) for peak in peaks), start=np.zeros_like(x))
+
+
 def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit") -> FitResult:
     """Fit a configured hypothesis using deterministic staged optimisation.
 
     Each initialisation releases areas, centres, widths, and optionally line-shape
     fractions in that order. Linked parameters are resolved at every evaluation;
-    Shirley backgrounds alternate with the current component envelope. The returned
-    result is the initialisation with the lowest unpenalised residual sum of squares.
+    Shirley backgrounds alternate with the current component envelope. A seeded
+    generator perturbs later starts in peak/parameter order. The returned result is
+    the initialisation with the lowest unpenalised residual sum of squares; backend
+    covariance is retained when available, otherwise a Jacobian estimate is tried.
     """
     if backend not in {"lmfit", "scipy"}:
         raise ValueError("backend must be 'lmfit' or 'scipy'")
@@ -136,7 +147,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
                 current = dict(trial)
                 current.update(zip(names, vector))
                 current = resolve_links(config.peaks, current)
-                model = sum((evaluate_peak(x, peak, current) for peak in config.peaks), start=np.zeros_like(x))
+                model = _component_envelope(x, config.peaks, current)
                 data_residual = y - background - model
                 if config.width_penalty > 0 and len(config.peaks) > 1:
                     widths = np.array([current[f"{peak.label}.fwhm"] for peak in config.peaks])
@@ -151,7 +162,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
                 trial = resolve_links(config.peaks, trial)
                 if config.background != "shirley":
                     break
-                components = sum((evaluate_peak(x, peak, trial) for peak in config.peaks), start=np.zeros_like(x))
+                components = _component_envelope(x, config.peaks, trial)
                 updated_background = shirley(y - components)
                 background_iterations += 1
                 converged = np.max(np.abs(updated_background - background)) <= 1e-7 * max(1.0, np.ptp(y))
@@ -165,9 +176,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
         assert result is not None
         current = resolve_links(config.peaks, trial)
         # Rank starts by the physical residual, excluding any width-penalty terms.
-        physical_residual = (
-            y - background - sum((evaluate_peak(x, peak, current) for peak in config.peaks), start=np.zeros_like(x))
-        )
+        physical_residual = y - background - _component_envelope(x, config.peaks, current)
         score = float(physical_residual @ physical_residual)
         solutions.append(score)
         if best is None or score < best[0]:
@@ -209,6 +218,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
                 warnings.append("Parameter correlation exceeds 0.95.")
         except np.linalg.LinAlgError:
             warnings.append("Covariance matrix is singular; uncertainties are unavailable.")
+    # Append diagnostics in a stable order for reproducible reports and tests.
     fitted_area_total = sum(fitted[f"{peak.label}.area"] for peak in config.peaks)
     for peak in config.peaks:
         for name in ("area", "centre", "fwhm", "fraction"):
@@ -259,6 +269,7 @@ def fit_spectrum(spectrum: Spectrum, config: FitConfig, *, backend: str = "lmfit
         warnings.append("Background contains negative values.")
     if len(solutions) > 1 and (max(solutions) - min(solutions)) / max(min(solutions), 1e-30) > 0.05:
         warnings.append("Multiple initialisations produced materially different solutions.")
+    # Record the numerical environment after all fit-derived fields are final.
     versions = {
         "xps_fitting": __version__,
         "python": platform.python_version(),

@@ -1,3 +1,5 @@
+"""Characterize deterministic multistart recovery and diagnostic export."""
+
 import numpy as np
 import pytest
 

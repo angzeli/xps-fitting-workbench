@@ -1,3 +1,5 @@
+"""Verify synthetic PDI recovery and persistence-before-plotting workflow order."""
+
 from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
@@ -18,6 +20,7 @@ FIT_CONFIGS = ROOT / "configs" / "fits"
 
 
 def _linear_background(x: np.ndarray, low: float, high: float) -> np.ndarray:
+    """Return an endpoint-defined background on the test energy grid."""
     return low + (high - low) * (x - x[0]) / (x[-1] - x[0])
 
 
