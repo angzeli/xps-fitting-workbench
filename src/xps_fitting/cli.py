@@ -1,4 +1,4 @@
-"""Command-line entry points."""
+"""Command-line parsing and workflow dispatch for the ``xps-fit`` entry point."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import importlib.metadata
 import importlib.util
 import json
 import sys
+from collections.abc import Callable
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -37,6 +38,7 @@ from .spectrum_artifacts import review_spectrum, validate_spectrum_bundle
 
 
 def _metadata_sources(values: list[str] | None, count: int) -> list[str | None]:
+    """Align optional metadata sources one-to-one with ordered plot inputs."""
     if not values:
         return [None] * count
     if len(values) != count:
@@ -45,16 +47,19 @@ def _metadata_sources(values: list[str] | None, count: int) -> list[str | None]:
 
 
 def _print_paths(paths: dict[str, Path], *, dry_run: bool) -> None:
+    """Print created or planned output paths in mapping order."""
     prefix = "Would create" if dry_run else "Created"
     for path in paths.values():
         print(f"{prefix}: {path}")
 
 
 def _json_output(value: Any) -> None:
+    """Print a stable, indented JSON representation of CLI output."""
     print(json.dumps(value, indent=2, default=str))
 
 
 def _repository(args: argparse.Namespace) -> Path:
+    """Resolve the repository option through project-root discovery."""
     return find_repository_root(args.repository)
 
 
@@ -91,6 +96,7 @@ def _run_stored_plot(args: argparse.Namespace) -> int:
             overwrite=args.overwrite,
             dry_run=args.dry_run,
         )
+    # Defer pyplot import so non-plotting commands remain headless and lightweight.
     import matplotlib.pyplot as plt
 
     plt.close(figure)
@@ -173,17 +179,20 @@ def _run_fit_sample(args: argparse.Namespace) -> int:
 
 
 def _candidate_paths(root: Path, sample: str, region: str) -> list[Path]:
+    """Return persisted candidate bundles in deterministic filename order."""
     from .artifacts import canonical_region
 
     return sorted((root / "artifacts" / "candidates" / sample / canonical_region(region)).glob("*.bundle"))
 
 
 def _yes(prompt: str) -> bool:
+    """Accept only explicit yes responses to a destructive or scientific gate."""
     return input(f"{prompt} [y/N] ").strip().casefold() in {"y", "yes"}
 
 
 def _run_review(args: argparse.Namespace) -> int:
     """Guide an explicit accept-one or reject-all candidate decision."""
+    # Present stored evidence before collecting a selection or approval.
     root = _repository(args)
     from .artifacts import canonical_region
 
@@ -250,6 +259,7 @@ def _run_review(args: argparse.Namespace) -> int:
         else:
             selected = candidates[int(choice) - 1]
     if reject_all:
+        # Rejection writes only a versioned decision record, never a promoted bundle.
         if not args.reject_all and not _yes(f"Reject all {len(candidates)} persisted {region} candidates?"):
             print("Review cancelled; no files were changed.")
             return 0
@@ -272,6 +282,7 @@ def _run_review(args: argparse.Namespace) -> int:
         return 0
     if selected is None:
         raise RuntimeError("no review candidate was selected")
+    # Promotion requires explicit scientific checks before updating the active link.
     if not args.approve and not _yes(f"Approve {selected.name} as the reviewed scientific fit?"):
         print("Review cancelled; no reviewed artifact was created.")
         return 0
@@ -491,6 +502,7 @@ def _run_cleanup(args: argparse.Namespace) -> int:
 
 def _run_wizard(args: argparse.Namespace) -> int:
     """Guide fitting, review, calibration, plotting, and final validation."""
+    # Sample selection precedes every workflow that can write repository state.
     root = _repository(args)
     samples = sorted(path.name for path in (root / "data" / "raw").iterdir() if path.is_dir())
     print("Available samples:")
@@ -504,6 +516,7 @@ def _run_wizard(args: argparse.Namespace) -> int:
     sample = samples[int(choice) - 1]
     _json_output(inspect_sample(root, sample))
     ensure_sample_manifest(root, sample)
+    # Candidate generation and region reviews retain their standalone prompt order.
     if not _candidate_paths(root, sample, "C1s") and _yes("Fit the configured candidate models now?"):
         _run_fit_sample(
             argparse.Namespace(
@@ -551,6 +564,7 @@ def _run_wizard(args: argparse.Namespace) -> int:
         print("Calibration is not ready. Missing reviewed regions: " + ", ".join(missing))
         print("No region was silently omitted. Fit and review the missing regions, then rerun the wizard.")
         return 0
+    # Calibration and publication remain unavailable until every region is reviewed.
     if manifest.calibration_status != "calibrated" and _yes("Prepare sample-wide calibration now?"):
         component = input("C 1s reference component key: ").strip()
         label = input("Reference component display label: ").strip()
@@ -587,8 +601,8 @@ def _run_wizard(args: argparse.Namespace) -> int:
     return 0
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Parse ``xps-fit`` arguments, dispatch a workflow, and return its exit code."""
+def _build_parser() -> argparse.ArgumentParser:
+    """Construct the complete ``xps-fit`` parser without parsing or dispatching."""
     parser = argparse.ArgumentParser(
         prog="xps-fit", description="Persist, review, calibrate, validate, and plot XPS results."
     )
@@ -701,26 +715,34 @@ def main(argv: list[str] | None = None) -> int:
     cleanup_parser.add_argument("--dry-run", action="store_true")
 
     subparsers.add_parser("wizard", help="start the guided beginner workflow")
-    args = parser.parse_args(argv)
+    return parser
+
+
+CommandHandler = Callable[[argparse.Namespace], int]
+_COMMAND_HANDLERS: dict[str, CommandHandler] = {
+    "plot": _run_stored_plot,
+    "inspect-sample": _run_inspect,
+    "doctor": _run_doctor,
+    "fit-region": _run_fit_region,
+    "fit-sample": _run_fit_sample,
+    "review-region": _run_review,
+    "review-spectrum": _run_review_spectrum,
+    "calibrate-sample": _run_calibrate,
+    "plot-region": _run_plot_region,
+    "plot-sample": _run_plot_sample,
+    "validate-bundle": _run_validate_bundle,
+    "validate-sample": _run_validate_sample,
+    "validate-calibration": _run_validate_sample,
+    "clean-generated": _run_cleanup,
+    "wizard": _run_wizard,
+}
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Parse ``xps-fit`` arguments, dispatch a workflow, and return its exit code."""
+    args = _build_parser().parse_args(argv)
     try:
-        handlers = {
-            "plot": _run_stored_plot,
-            "inspect-sample": _run_inspect,
-            "doctor": _run_doctor,
-            "fit-region": _run_fit_region,
-            "fit-sample": _run_fit_sample,
-            "review-region": _run_review,
-            "review-spectrum": _run_review_spectrum,
-            "calibrate-sample": _run_calibrate,
-            "plot-region": _run_plot_region,
-            "plot-sample": _run_plot_sample,
-            "validate-bundle": _run_validate_bundle,
-            "validate-sample": _run_validate_sample,
-            "validate-calibration": _run_validate_sample,
-            "clean-generated": _run_cleanup,
-            "wizard": _run_wizard,
-        }
-        return handlers[args.command](args)
+        return _COMMAND_HANDLERS[args.command](args)
     except Exception as exc:
         if getattr(args, "verbose", False):
             raise

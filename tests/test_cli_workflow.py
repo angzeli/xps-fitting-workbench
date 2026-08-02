@@ -1,3 +1,5 @@
+"""Exercise end-to-end CLI review, validation, and cleanup behavior."""
+
 import numpy as np
 
 from xps_fitting.artifacts import save_candidate_bundle
@@ -7,11 +9,13 @@ from xps_fitting.sample_manifest import create_sample_manifest
 
 
 def _repository(tmp_path):
+    """Create the minimal marker used by repository-root discovery."""
     (tmp_path / "pyproject.toml").write_text("[project]\nname='test'\nversion='0'\n")
     return tmp_path
 
 
 def _candidate(root):
+    """Persist one experimental-style candidate for CLI lifecycle tests."""
     energy = np.linspace(280.0, 290.0, 51)
     background = np.linspace(10.0, 20.0, energy.size)
     component = 50.0 * np.exp(-((energy - 284.4) ** 2))
