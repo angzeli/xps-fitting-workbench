@@ -1,4 +1,11 @@
-"""Legacy DataFrame helpers for extracting, exporting, and plotting VGD spectra."""
+"""Legacy DataFrame helpers for extracting, exporting, and plotting VGD spectra.
+
+Tables group observations by ``(core_level, spectrum_index)``. Binding and kinetic
+energies are recorded in eV, dwell time in seconds, and intensity columns retain
+the scales supplied by ``vgd-reader``. The helpers intentionally preserve their
+historical prints, filenames, sheet layout, ``plt.show()`` call, and filesystem
+side effects for notebook compatibility.
+"""
 
 from pathlib import Path
 
@@ -11,7 +18,7 @@ from xps_fitting.plotting.themes import _apply_figure_font_family, load_theme
 
 
 def min_max_normalise(series: pd.Series) -> pd.Series:
-    """Scale a series to [0, 1], returning zeros for a constant series."""
+    """Scale a numeric series to [0, 1], returning zeros when its range is zero."""
     min_value = series.min()
     max_value = series.max()
 
@@ -22,7 +29,12 @@ def min_max_normalise(series: pd.Series) -> pd.Series:
 
 
 def read_vgd_to_dataframe(vgd_path: str | Path) -> pd.DataFrame:
-    """Parse every spectrum in a VGD file into one provenance-rich table."""
+    """Parse every VGD spectrum into one provenance-rich, row-aligned table.
+
+    Each spectrum contributes energy/intensity arrays plus repeated acquisition
+    metadata. The output preserves reader spectrum order and records the source
+    path on every row.
+    """
     vgd_path = Path(vgd_path)
     data = read_vgd(vgd_path)
 
@@ -32,15 +44,18 @@ def read_vgd_to_dataframe(vgd_path: str | Path) -> pd.DataFrame:
     if len(data.spectra) == 0:
         raise ValueError(f"No spectra found in {vgd_path}")
 
-    dfs = []
+    dfs: list[pd.DataFrame] = []
 
+    # Preserve reader order while attaching spectrum-level metadata to every point.
     for spectrum in data.spectra:
-        df_spectrum = pd.DataFrame({
-            "binding_energy_eV": spectrum.binding_energy,
-            "kinetic_energy_eV": spectrum.kinetic_energy,
-            "intensity": spectrum.intensity,
-            "corrected_intensity": spectrum.corrected_intensity,
-        })
+        df_spectrum = pd.DataFrame(
+            {
+                "binding_energy_eV": spectrum.binding_energy,
+                "kinetic_energy_eV": spectrum.kinetic_energy,
+                "intensity": spectrum.intensity,
+                "corrected_intensity": spectrum.corrected_intensity,
+            }
+        )
 
         df_spectrum["core_level"] = spectrum.core_level
         df_spectrum["spectrum_index"] = spectrum.spectrum_index
@@ -58,8 +73,9 @@ def read_vgd_to_dataframe(vgd_path: str | Path) -> pd.DataFrame:
 
     return pd.concat(dfs, ignore_index=True)
 
+
 def _normalise_sheet_name(core_level: str) -> str:
-    """Convert parsed VGD core-level names into KherveFitting-compatible sheet names."""
+    """Return a KherveFitting-compatible Excel sheet name of at most 31 chars."""
     aliases = {
         "XPS_Survey": "Survey",
         "Survey": "Survey",
@@ -90,11 +106,13 @@ def save_khervefitting_xlsx(
     output_name: str,
     intensity_column: str = "corrected_intensity",
 ) -> Path:
-    """Save KherveFitting-compatible XLSX files.
+    """Save grouped spectra as a KherveFitting-compatible XLSX workbook.
 
     KherveFitting rejects default sheet names such as Sheet1. Each sheet is therefore
     named after the core level, such as C1s, N1s, S2p, or Survey. The first row uses
-    the headers expected by KherveFitting: Binding Energy and Raw Data.
+    the headers expected by KherveFitting: Binding Energy and Raw Data. Groups use
+    ``(core_level, spectrum_index)`` order; duplicate sheet names receive the
+    one-based spectrum suffix while respecting Excel's 31-character limit.
     """
     output_dir = Path(output_dir)
     output_dir.mkdir(exist_ok=True)
@@ -109,6 +127,7 @@ def save_khervefitting_xlsx(
     used_sheet_names: set[str] = set()
 
     with pd.ExcelWriter(xlsx_path, engine="openpyxl") as writer:
+        # One worksheet represents one stored spectrum, without changing row order.
         for (core_level, spectrum_index), group in xps_df.groupby(["core_level", "spectrum_index"]):
             sheet_name = _normalise_sheet_name(str(core_level))
 
@@ -125,18 +144,21 @@ def save_khervefitting_xlsx(
 
     return xlsx_path
 
+
 def add_normalised_intensity(
     xps_df: pd.DataFrame,
     intensity_column: str = "corrected_intensity",
 ) -> pd.DataFrame:
-    """Add independently min--max-normalised intensity for each stored spectrum."""
+    """Add per-spectrum min-max intensity while leaving the input table untouched.
+
+    Normalisation is independent for each ``(core_level, spectrum_index)`` group;
+    the selected intensity column otherwise retains its source-defined scale.
+    """
     xps_df = xps_df.copy()
 
-    xps_df["normalised_intensity"] = (
-        xps_df
-        .groupby(["core_level", "spectrum_index"], group_keys=False)[intensity_column]
-        .apply(min_max_normalise)
-    )
+    xps_df["normalised_intensity"] = xps_df.groupby(["core_level", "spectrum_index"], group_keys=False)[
+        intensity_column
+    ].apply(min_max_normalise)
 
     return xps_df
 
@@ -146,7 +168,7 @@ def save_xps_outputs(
     output_dir: str | Path,
     output_name: str,
 ) -> Path:
-    """Write the extracted spectrum table to CSV and return its path."""
+    """Write the complete table to ``<output_name>_extracted.csv``."""
     output_dir = Path(output_dir)
     output_dir.mkdir(exist_ok=True)
 
@@ -165,18 +187,18 @@ def extract_peak_maximum(
     intensity_column: str = "corrected_intensity",
     smoothing_window: int = 5,
 ) -> pd.DataFrame:
-    """Extract peak maximum position from a selected binding-energy window.
+    """Extract a smoothed peak maximum within an inclusive eV window.
 
     This is useful for quick peak-position comparison of clean single core-level peaks.
-    It is not a replacement for background-subtracted XPS peak fitting.
+    It is not a replacement for background-subtracted XPS peak fitting. The centred
+    rolling-mean window is measured in table rows and uses at least one observation
+    at edges; maxima are reported per ``(core_level, spectrum_index)`` group.
     """
-    results = []
+    results: list[dict[str, object]] = []
 
+    # Sort only the selected window before applying the row-based smoothing kernel.
     for (core_level, spectrum_index), group in xps_df.groupby(["core_level", "spectrum_index"]):
-        region = group[
-            (group["binding_energy_eV"] >= be_min)
-            & (group["binding_energy_eV"] <= be_max)
-        ].copy()
+        region = group[(group["binding_energy_eV"] >= be_min) & (group["binding_energy_eV"] <= be_max)].copy()
 
         if region.empty:
             raise ValueError(f"No data found between {be_min} and {be_max} eV")
@@ -184,24 +206,24 @@ def extract_peak_maximum(
         region = region.sort_values("binding_energy_eV")
 
         region["smoothed_intensity"] = (
-            region[intensity_column]
-            .rolling(window=smoothing_window, center=True, min_periods=1)
-            .mean()
+            region[intensity_column].rolling(window=smoothing_window, center=True, min_periods=1).mean()
         )
 
         max_row = region.loc[region["smoothed_intensity"].idxmax()]
 
-        results.append({
-            "core_level": core_level,
-            "spectrum_index": spectrum_index,
-            "peak_binding_energy_eV": max_row["binding_energy_eV"],
-            "peak_intensity": max_row[intensity_column],
-            "peak_smoothed_intensity": max_row["smoothed_intensity"],
-            "be_min": be_min,
-            "be_max": be_max,
-            "intensity_column": intensity_column,
-            "smoothing_window": smoothing_window,
-        })
+        results.append(
+            {
+                "core_level": core_level,
+                "spectrum_index": spectrum_index,
+                "peak_binding_energy_eV": max_row["binding_energy_eV"],
+                "peak_intensity": max_row[intensity_column],
+                "peak_smoothed_intensity": max_row["smoothed_intensity"],
+                "be_min": be_min,
+                "be_max": be_max,
+                "intensity_column": intensity_column,
+                "smoothing_window": smoothing_window,
+            }
+        )
 
     return pd.DataFrame(results)
 
@@ -219,10 +241,13 @@ def plot_normalised_xps(
     line_width: float = 2.0,
     save: bool = True,
 ) -> tuple[Path | None, Path | None]:
-    """Plot normalised XPS spectra.
+    """Plot grouped, pre-normalised XPS spectra and optionally save PNG/PDF.
 
-    mode="survey" is intended for wide survey scans.
-    mode="core_level" is intended for high-resolution core-level scans.
+    ``mode="survey"`` draws wide scans with y ticks; ``mode="core_level"`` draws
+    indexed high-resolution scans with a legend and optional peak marker. Binding
+    energy is displayed in eV and inverted. Widths are points and ``figsize`` is in
+    inches. When ``save`` is false no files are written, but the historical
+    ``plt.show()`` side effect is retained in both modes.
     """
 
     if mode not in {"survey", "core_level"}:
@@ -240,6 +265,7 @@ def plot_normalised_xps(
     fig_path_png = output_dir / f"{output_name}_normalized.png" if save else None
     fig_path_pdf = output_dir / f"{output_name}_normalized.pdf" if save else None
 
+    # Construct artists in historical order so notebook visuals remain unchanged.
     fig, ax = plt.subplots(figsize=figsize, facecolor="white")
     ax.set_facecolor("white")
 
@@ -311,6 +337,7 @@ def plot_normalised_xps(
     _apply_figure_font_family(fig, theme.font_family)
 
     with mpl.rc_context(theme.font_rc_params()):
+        # Apply export font state locally, then preserve the legacy interactive show.
         if save:
             fig.savefig(fig_path_png, dpi=300, bbox_inches="tight", facecolor="white")
             fig.savefig(fig_path_pdf, bbox_inches="tight", facecolor="white")

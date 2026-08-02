@@ -48,21 +48,14 @@ filterwarnings = [
 [tool.ruff]
 target-version = "py310"
 line-length = 120
-extend-exclude = ["xps_vgd_extraction_and_plotting.ipynb", "xps_vgd_utils.py"]
+extend-exclude = ["xps_vgd_extraction_and_plotting.ipynb"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.mypy]
 python_version = "3.10"
-files = [
-  "src/xps_fitting/_version.py",
-  "src/xps_fitting/spectrum.py",
-  "src/xps_fitting/result.py",
-  "src/xps_fitting/configuration.py",
-  "src/xps_fitting/naming.py",
-  "src/xps_fitting/export.py",
-]
+files = ["src/xps_fitting"]
 disallow_untyped_defs = true
 follow_imports = "skip"
 ignore_missing_imports = true
