@@ -1,3 +1,5 @@
+"""Exercise reviewed raw-spectrum lineage without constructing fitted results."""
+
 from dataclasses import replace
 from pathlib import Path
 from shutil import copyfile

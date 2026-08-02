@@ -1,4 +1,9 @@
-"""Durable scientific FitResult artifacts and publication eligibility."""
+"""Persist fitted-spectrum artifacts and audit their publication eligibility.
+
+Fit bundles retain fitted :class:`FitResult` arrays, immutable source and
+configuration hashes, and the review/calibration lineage needed to distinguish
+candidate, reviewed, and publication-eligible scientific records.
+"""
 
 from __future__ import annotations
 
@@ -50,7 +55,12 @@ def portable_path(path: str | Path, repository_root: str | Path | None = None) -
 
 @dataclass(frozen=True)
 class ArtifactDescriptor:
-    """Describe the identity, provenance, and review state of a durable artifact."""
+    """Describe the identity, provenance, and review state of a durable artifact.
+
+    Source and configuration hashes cover the recorded experimental input and
+    stored fit configuration. Paths are absolute or repository-relative portable
+    paths, while ``region`` uses the package's canonical core-level spelling.
+    """
 
     artifact_id: str
     state: str
@@ -71,6 +81,7 @@ class ArtifactDescriptor:
     schema_version: int = ARTIFACT_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
+        """Reject incomplete descriptors before they can be serialised."""
         if self.state not in ARTIFACT_STATES:
             raise ValueError(f"unsupported artifact state: {self.state}")
         if self.calibration_status not in CALIBRATION_STATES:
@@ -119,7 +130,14 @@ class ArtifactDescriptor:
 
 @dataclass(frozen=True)
 class BundleValidationReport:
-    """Collect integrity findings and publication blockers for one fit bundle."""
+    """Collect integrity findings and publication blockers for one fit bundle.
+
+    Energy bounds are binding energies in eV. Intensity and curve-error fields
+    retain the source-defined intensity scale; no physical intensity unit is
+    inferred. ``errors`` denote invalid evidence, whereas
+    ``publication_reasons`` denote valid bundles that do not pass the requested
+    publication gate.
+    """
 
     bundle_path: str
     classification: str
@@ -201,6 +219,7 @@ def _descriptor_for_candidate(
     repository_root: str | Path | None,
     created_at: str | None,
 ) -> ArtifactDescriptor:
+    """Build the immutable provenance descriptor for an experimental candidate."""
     source = Path(source_path)
     if not source.is_file():
         raise FileNotFoundError(f"experimental source file is missing: {source}")
@@ -283,6 +302,7 @@ def save_candidate_bundle(
 
 
 def _resolve_source(path: str, bundle: Path, repository_root: str | Path | None) -> Path | None:
+    """Resolve recorded provenance using absolute, repository, then bundle roots."""
     source = Path(path)
     if source.is_absolute():
         return source if source.is_file() else None
@@ -321,7 +341,13 @@ def validate_fit_bundle(
     require_calibrated: bool = False,
     repository_root: str | Path | None = None,
 ) -> BundleValidationReport:
-    """Audit a bundle and derive publication eligibility from stored evidence."""
+    """Audit stored arrays and lineage, then derive publication eligibility.
+
+    Validation preserves the diagnostic order: descriptor and numerical checks,
+    identity/provenance checks, review evidence, then calibration evidence. The
+    returned metrics compare curves in their stored source-defined intensity
+    scale and report binding-energy limits in eV.
+    """
     bundle = Path(directory).resolve()
     manifest = read_fit_bundle_manifest(bundle)
     result = load_fit_bundle(bundle)
@@ -330,6 +356,7 @@ def validate_fit_bundle(
     warnings: list[str] = list(result.warnings)
     artifact_data = manifest.get("artifact")
     descriptor: ArtifactDescriptor | None = None
+    # Establish whether the manifest supplies a structurally valid artifact record.
     if artifact_data is None:
         publication_reasons.append("legacy bundle has no scientific artifact descriptor")
     else:
@@ -363,6 +390,7 @@ def validate_fit_bundle(
     state = "legacy"
     review_status = str(result.metadata.get("review_status") or "legacy")
     calibration_status = str(result.metadata.get("calibration_status") or "unknown")
+    # Cross-check stored scientific identity before following review/calibration links.
     if descriptor is not None:
         state = descriptor.state
         if sample != descriptor.sample:

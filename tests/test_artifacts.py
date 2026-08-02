@@ -1,3 +1,5 @@
+"""Exercise fit-artifact hashing, tamper detection, and publication gating."""
+
 import copy
 import json
 
@@ -11,6 +13,7 @@ from xps_fitting.workflows import persist_candidate_results
 
 
 def experimental_result() -> FitResult:
+    """Return a compact experimental-style result with aligned stored curves."""
     energy = np.linspace(280.0, 292.0, 121)
     background = np.linspace(20.0, 35.0, energy.size)
     component = 100.0 * np.exp(-(((energy - 284.3762) / 0.8) ** 2))

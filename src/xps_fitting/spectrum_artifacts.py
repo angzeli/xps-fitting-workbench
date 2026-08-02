@@ -1,4 +1,10 @@
-"""Durable reviewed artifacts for raw spectra such as Survey scans."""
+"""Persist and validate reviewed raw spectra such as Survey scans.
+
+These bundles deliberately represent measured spectra rather than fitted
+``FitResult`` objects: they contain aligned binding-energy and intensity arrays,
+source provenance, and human review/calibration lineage without synthetic fit
+curves or parameters.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +30,11 @@ SPECTRUM_CONFIGURATION_SHA256 = sha256_json({"artifact_kind": "raw_spectrum"})
 
 @dataclass(frozen=True)
 class SpectrumReviewRecord:
-    """Record an accepted human review of one raw experimental spectrum."""
+    """Record an accepted human review of one raw experimental spectrum.
+
+    ``region`` is canonical, ``source_sha256`` identifies the immutable raw input,
+    and the version selects a distinct review record rather than overwriting one.
+    """
 
     sample: str
     region: str
@@ -39,6 +49,7 @@ class SpectrumReviewRecord:
     schema_version: int = SPECTRUM_REVIEW_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
+        """Require the accepted-review state represented by this record type."""
         if self.decision != "accepted" or self.review_status != "reviewed":
             raise ValueError("a spectrum review record must describe an accepted decision")
         if not self.reviewer.strip():
@@ -51,7 +62,11 @@ class SpectrumReviewRecord:
 
 @dataclass(frozen=True)
 class SpectrumValidationReport:
-    """Collect integrity findings and publication blockers for a spectrum bundle."""
+    """Collect integrity findings and publication blockers for a spectrum bundle.
+
+    ``point_count`` counts aligned binding-energy/intensity observations. As with
+    fitted bundles, invalid evidence is separated from unmet publication gates.
+    """
 
     bundle_path: str
     sample: str
@@ -73,6 +88,7 @@ class SpectrumReviewPromotion:
 
 
 def _check_bundle_collisions(paths: Mapping[str, Path], *, overwrite: bool) -> None:
+    """Reject pre-existing bundle members unless explicit overwrite is enabled."""
     collisions = [path for path in paths.values() if path.exists()]
     if collisions and not overwrite:
         raise FileExistsError("spectrum bundle output already exists: " + ", ".join(map(str, collisions)))
@@ -144,6 +160,7 @@ def load_spectrum_bundle(directory: str | Path) -> Spectrum:
     manifest = read_spectrum_bundle_manifest(directory)
 
     def member(name: str) -> Path:
+        """Resolve one manifest member without permitting directory escape."""
         candidate = (directory / str(manifest["files"][name])).resolve()
         if directory.resolve() not in candidate.parents or not candidate.is_file():
             raise ValueError(f"invalid spectrum bundle member: {candidate}")
@@ -168,6 +185,7 @@ def load_spectrum_bundle(directory: str | Path) -> Spectrum:
 
 
 def _resolve_recorded_file(value: str, bundle: Path, repository_root: str | Path | None) -> Path | None:
+    """Resolve a recorded lineage file without altering the stored path value."""
     recorded = Path(value)
     candidates = [recorded] if recorded.is_absolute() else []
     if repository_root is not None and not recorded.is_absolute():
@@ -178,6 +196,7 @@ def _resolve_recorded_file(value: str, bundle: Path, repository_root: str | Path
 
 
 def _canonical_region_name(value: str) -> str:
+    """Map supported region aliases to the stable artifact spelling."""
     compact = "".join(character for character in value if character.isalnum()).casefold()
     aliases = {
         "survey": "Survey",
@@ -198,12 +217,18 @@ def validate_spectrum_bundle(
     require_calibrated: bool = False,
     repository_root: str | Path | None = None,
 ) -> SpectrumValidationReport:
-    """Validate spectrum integrity, provenance, review, and calibration lineage."""
+    """Validate raw-spectrum integrity, provenance, review, and calibration lineage.
+
+    The stored intensity scale is left uninterpreted. Binding-energy arrays are
+    loaded from the bundle in eV, and publication eligibility is derived only
+    after source, review, and optional calibration records have been checked.
+    """
     bundle = Path(directory).resolve()
     manifest = read_spectrum_bundle_manifest(bundle)
     spectrum = load_spectrum_bundle(bundle)
     errors: list[str] = []
     reasons: list[str] = []
+    # Raw-spectrum artifacts have review lineage but no fabricated fit descriptor.
     try:
         descriptor = ArtifactDescriptor.from_dict(dict(manifest.get("artifact") or {}))
     except (KeyError, TypeError, ValueError) as exc:
@@ -275,6 +300,7 @@ def validate_spectrum_bundle(
 
 
 def _next_version(directory: Path, region: str) -> int:
+    """Return the next unused positive review version for a canonical region."""
     prefix = f"{region}.review-v"
     versions = []
     for artifact in directory.glob(f"{prefix}*.spectrum"):
@@ -295,7 +321,12 @@ def review_spectrum(
     review_date: str | None = None,
     version: int | None = None,
 ) -> SpectrumReviewPromotion:
-    """Create a versioned reviewed raw-spectrum artifact without changing its arrays."""
+    """Create a versioned reviewed raw-spectrum artifact without changing arrays.
+
+    The source file is hashed before an immutable review record and bundle are
+    written. Binding energy remains in eV and intensity remains on its original,
+    source-defined scale.
+    """
     source = Path(source_path)
     if not source.is_file():
         raise FileNotFoundError(f"experimental spectrum source is missing: {source}")
