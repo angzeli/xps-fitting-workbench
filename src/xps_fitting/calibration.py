@@ -1,4 +1,4 @@
-"""Non-mutating sample-wide binding-energy calibration."""
+"""Apply a non-mutating, sample-wide rigid binding-energy calibration."""
 
 from __future__ import annotations
 
@@ -17,7 +17,12 @@ CALIBRATION_METADATA_KEY = "binding_energy_calibration"
 
 @dataclass(frozen=True)
 class BindingEnergyCalibration:
-    """A rigid binding-energy reference shared by every core level of a sample."""
+    """A rigid binding-energy reference shared by every core level of a sample.
+
+    All numerical fields are in eV and follow ``offset = target - observed``;
+    calibrated binding energies therefore equal uncalibrated energies plus the
+    recorded offset.
+    """
 
     reference_core_level: str
     reference_component: str
@@ -38,12 +43,14 @@ class BindingEnergyCalibration:
 
 
 def _sample_name(dataset: FitResult | Spectrum) -> str:
+    """Read the sample identity from either supported scientific record type."""
     if isinstance(dataset, Spectrum):
         return dataset.sample_name or str(dataset.metadata.get("sample_name", ""))
     return str(dataset.metadata.get("sample_name", ""))
 
 
 def _validate_datasets(fit_results: Mapping[str, FitResult], spectra: Mapping[str, Spectrum]) -> None:
+    """Reject mixed samples and records that already carry calibration metadata."""
     datasets: list[tuple[str, FitResult | Spectrum]] = [*fit_results.items(), *spectra.items()]
     names = {_sample_name(dataset) for _, dataset in datasets} - {""}
     if len(names) > 1:
@@ -56,6 +63,7 @@ def _validate_datasets(fit_results: Mapping[str, FitResult], spectra: Mapping[st
 
 
 def _shift_bounds(bounds: Any, offset_eV: float) -> Any:
+    """Shift a two-value centre bound while preserving list/tuple representation."""
     if not isinstance(bounds, (list, tuple)) or len(bounds) != 2:
         raise ValueError("peak centre_bounds must contain exactly two values")
     shifted = [float(bound) + offset_eV for bound in bounds]
@@ -63,6 +71,7 @@ def _shift_bounds(bounds: Any, offset_eV: float) -> Any:
 
 
 def _shift_configuration(configuration: dict[str, Any], offset_eV: float) -> dict[str, Any]:
+    """Shift only absolute peak centres and centre bounds in copied configuration."""
     shifted = deepcopy(configuration)
     peaks = shifted.get("peaks", [])
     if not isinstance(peaks, list):
@@ -84,6 +93,7 @@ def _calibration_metadata(metadata: dict[str, Any], calibration: BindingEnergyCa
 
 
 def _shift_fit_result(result: FitResult, calibration: BindingEnergyCalibration) -> FitResult:
+    """Copy a fit result and shift its absolute binding-energy coordinates in eV."""
     shifted = deepcopy(result)
     shifted.energy = np.asarray(result.energy, dtype=float).copy() + calibration.offset_eV
     shifted.fitted_parameters = {
@@ -96,6 +106,7 @@ def _shift_fit_result(result: FitResult, calibration: BindingEnergyCalibration) 
 
 
 def _shift_spectrum(spectrum: Spectrum, calibration: BindingEnergyCalibration) -> Spectrum:
+    """Copy a spectrum and shift only its binding-energy axis in eV."""
     return replace(
         deepcopy(spectrum),
         binding_energy=np.asarray(spectrum.binding_energy, dtype=float).copy() + calibration.offset_eV,
@@ -116,7 +127,9 @@ def calibrate_sample_binding_energy(
     The offset is ``target_eV - fitted reference centre``. It is applied to every
     energy axis, absolute fitted centre, and configuration centre/bound. Intensity,
     background, component, total-fit, residual, area, width, and relative-offset
-    values are copied unchanged.
+    values are copied unchanged. Every input record must describe the same sample,
+    and a record carrying existing calibration metadata is rejected to prevent a
+    second shift.
     """
     if not fit_results:
         raise ValueError("at least one FitResult is required for binding-energy calibration")

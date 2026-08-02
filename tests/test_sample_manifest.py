@@ -1,3 +1,5 @@
+"""Exercise raw-source discovery and explicit active-review manifest links."""
+
 import numpy as np
 import pytest
 

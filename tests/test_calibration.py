@@ -1,3 +1,5 @@
+"""Verify rigid sample-wide energy shifts and intensity-domain invariance."""
+
 import copy
 
 import matplotlib.pyplot as plt
@@ -11,6 +13,7 @@ from xps_fitting.spectrum import Spectrum
 
 
 def fitted_result(core_level: str, component: str, centre: float, sample: str = "PDI-H-COOH") -> FitResult:
+    """Construct an aligned fitted core level on a source-defined intensity scale."""
     energy = np.linspace(centre - 3, centre + 3, 61)
     background = np.linspace(4, 6, energy.size)
     main = 20 * np.exp(-(((energy - centre) / 0.7) ** 2))

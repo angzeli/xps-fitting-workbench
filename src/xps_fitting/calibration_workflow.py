@@ -1,4 +1,4 @@
-"""Persisted calibration of complete sets of reviewed sample artifacts."""
+"""Plan and persist calibration of complete reviewed sample artifact sets."""
 
 from __future__ import annotations
 
@@ -39,7 +39,11 @@ CALIBRATION_RECORD_SCHEMA_VERSION = 1
 
 @dataclass(frozen=True)
 class CalibrationPlan:
-    """Preview a sample-wide rigid energy shift before any files are written."""
+    """Preview a sample-wide rigid energy shift before any files are written.
+
+    Centres, target, and offset are binding energies in eV. ``applied_regions``
+    preserves manifest iteration order so confirmation and persistence agree.
+    """
 
     sample: str
     reference_region: str
@@ -83,7 +87,11 @@ class CalibrationPlan:
 
 @dataclass(frozen=True)
 class CalibrationRecord:
-    """Persist the approved shift, rationale, and immutable artifact lineage."""
+    """Persist the approved shift, rationale, and immutable artifact lineage.
+
+    The record hashes both reviewed inputs and calibrated outputs; all energy
+    fields are in eV and the explicit sign convention is stored with the record.
+    """
 
     sample: str
     reference_region: str
@@ -119,6 +127,7 @@ class CalibrationOutcome:
 
 
 def _repository_root(anchor: Path, explicit: str | Path | None) -> Path | None:
+    """Prefer an explicit repository root, then discover one from ``anchor``."""
     if explicit is not None:
         return Path(explicit).resolve()
     for parent in (anchor.resolve(), *anchor.resolve().parents):
@@ -128,6 +137,7 @@ def _repository_root(anchor: Path, explicit: str | Path | None) -> Path | None:
 
 
 def _resolve_path(value: str, anchor: Path, repository_root: Path | None) -> Path:
+    """Resolve an artifact path by absolute, repository, then manifest location."""
     candidate = Path(value)
     attempts = [candidate] if candidate.is_absolute() else []
     if repository_root is not None and not candidate.is_absolute():
@@ -145,6 +155,7 @@ def _reviewed_inputs(
     manifest: SampleManifest,
     repository_root: Path | None,
 ) -> tuple[dict[str, Path], dict[str, Any], dict[str, Any]]:
+    """Load active reviewed fit and raw-spectrum bundles after lineage validation."""
     paths: dict[str, Path] = {}
     results: dict[str, Any] = {}
     spectra: dict[str, Any] = {}
@@ -223,6 +234,7 @@ def prepare_sample_calibration(
 
 
 def _validate_pair(original: Any, calibrated: Any, offset_eV: float) -> None:
+    """Verify that a fitted artifact changed only in binding-energy coordinates."""
     if not result_arrays_equal(original, calibrated, energy_offset=offset_eV):
         raise RuntimeError("calibration changed intensity-domain FitResult arrays")
     for name, value in original.fitted_parameters.items():
@@ -242,6 +254,7 @@ def _validate_pair(original: Any, calibrated: Any, offset_eV: float) -> None:
 
 
 def _validate_spectrum_pair(original: Any, calibrated: Any, offset_eV: float) -> None:
+    """Verify that a raw spectrum retained every intensity array exactly."""
     if not np.allclose(calibrated.binding_energy, original.binding_energy + offset_eV, rtol=0.0, atol=1e-12):
         raise RuntimeError("calibration changed a spectrum energy axis incorrectly")
     if not np.array_equal(calibrated.intensity, original.intensity):
@@ -254,6 +267,7 @@ def _validate_spectrum_pair(original: Any, calibrated: Any, offset_eV: float) ->
 
 
 def _patch_calibration_record_hash(bundle: Path, record_sha256: str) -> None:
+    """Atomically attach the final calibration-record hash to a staged manifest."""
     manifest_path = bundle / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["artifact"].setdefault("lineage", {})["calibration_record_sha256"] = record_sha256
@@ -277,7 +291,13 @@ def calibrate_reviewed_sample(
     repository_root: str | Path | None = None,
     calibration_date: str | None = None,
 ) -> CalibrationOutcome:
-    """Create calibrated copies only after the caller records explicit confirmation."""
+    """Create calibrated copies only after the caller records confirmation.
+
+    Planning and user-input gates precede all writes. Outputs are assembled and
+    checked in a temporary directory, promoted in region order, and only then
+    linked from the sample manifest. Any failure before promotion removes the
+    temporary staging tree and leaves reviewed inputs untouched.
+    """
     path = Path(manifest_path).resolve()
     plan = prepare_sample_calibration(
         path,
@@ -293,6 +313,7 @@ def calibrate_reviewed_sample(
         raise PermissionError("calibration confirmation is required; no files were written")
     if not reviewer.strip() or not scientific_rationale.strip():
         raise ValueError("calibration requires both a reviewer and a scientific rationale")
+    # Re-read active lineage after confirmation, before constructing shifted copies.
     manifest = load_sample_manifest(path)
     if manifest.calibration is not None or manifest.calibration_status == "calibrated":
         raise FileExistsError("sample calibration already exists; reviewed uncalibrated artifacts were not changed")
@@ -333,6 +354,7 @@ def calibrate_reviewed_sample(
     staging.mkdir(parents=True)
     staged_bundles: dict[str, Path] = {}
     try:
+        # Build and verify every calibrated bundle before promoting any output.
         for region in plan.applied_regions:
             is_fit_result = region in source_results
             source_manifest = (
@@ -439,6 +461,7 @@ def calibrate_reviewed_sample(
         for bundle in staged_bundles.values():
             _patch_calibration_record_hash(bundle, record_sha256)
 
+        # Promote verified bundles and their shared record in deterministic order.
         calibrated_directory.mkdir(parents=True, exist_ok=True)
         for region, staged in staged_bundles.items():
             staged.replace(final_bundles[region])
@@ -447,6 +470,7 @@ def calibrate_reviewed_sample(
         if staging.exists():
             shutil.rmtree(staging)
 
+    # Publish active calibrated lineage only after every artifact is durable.
     manifest.calibrated = {region: portable_path(bundle, root) for region, bundle in final_bundles.items()}
     manifest.calibration = portable_path(calibration_record_path, root)
     manifest.calibration_status = "calibrated"

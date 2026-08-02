@@ -1,3 +1,5 @@
+"""Exercise persisted calibration gates, lineage, and transactional outputs."""
+
 import copy
 import json
 

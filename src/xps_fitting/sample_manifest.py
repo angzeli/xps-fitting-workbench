@@ -1,4 +1,4 @@
-"""Sample-level links between raw data and reviewed scientific artifacts."""
+"""Maintain sample-level links from raw data to reviewed artifact versions."""
 
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ EXPECTED_REGIONS = ("C1s", "N1s", "O1s", "Cl2p", "Survey")
 
 
 def _region_from_vgd_name(path: Path) -> str | None:
+    """Infer a supported canonical region from a VGD filename only."""
     compact = "".join(character for character in path.stem if character.isalnum()).casefold()
     if "survey" in compact:
         return "Survey"
@@ -43,7 +44,12 @@ def discover_raw_regions(directory: str | Path) -> dict[str, Path]:
 
 @dataclass
 class SampleManifest:
-    """Track raw inputs and the active reviewed/calibrated artifact for each region."""
+    """Track raw inputs and active reviewed/calibrated artifacts for one sample.
+
+    Raw paths and SHA-256 values share identical region keys. Reviewed entries are
+    repository-relative when possible and point to immutable versions; replacing
+    which version is active requires an explicit caller choice.
+    """
 
     sample: str
     raw_regions: dict[str, str]
@@ -61,6 +67,7 @@ class SampleManifest:
     schema_version: int = SAMPLE_MANIFEST_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
+        """Validate sample identity, calibration state, and raw-hash alignment."""
         if not self.sample.strip():
             raise ValueError("sample manifest requires a sample name")
         if self.calibration_status not in {"uncalibrated", "calibrated"}:
@@ -143,7 +150,11 @@ def activate_reviewed_bundle(
     repository_root: str | Path | None = None,
     replace_active: bool = False,
 ) -> SampleManifest:
-    """Make one immutable reviewed version active without modifying its bundle."""
+    """Activate one immutable reviewed version without modifying its bundle.
+
+    The bundle must match the manifest sample and remain uncalibrated. An existing
+    active link is replaced only when ``replace_active`` is explicitly true.
+    """
     path = Path(manifest_path)
     manifest = load_sample_manifest(path)
     bundle_path = Path(bundle).resolve()

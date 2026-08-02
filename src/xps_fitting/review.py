@@ -1,4 +1,4 @@
-"""Explicit human review and immutable candidate promotion."""
+"""Record explicit human decisions and promote candidates immutably."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import copy
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, TypedDict, cast
 
 import numpy as np
 
@@ -21,9 +21,22 @@ REJECTION_RECORD_SCHEMA_VERSION = 1
 ReviewDecision = Literal["accepted", "cancelled"]
 
 
+class _CorrelationRecord(TypedDict):
+    """Typed high-correlation entry emitted by the reviewer summary."""
+
+    parameter_1: str
+    parameter_2: str
+    correlation: float
+
+
 @dataclass(frozen=True)
 class ReviewRecord:
-    """Record an accepted human review and the candidate bundle it endorses."""
+    """Record an accepted human review and the candidate bundle it endorses.
+
+    The candidate identifier and hashes bind the decision to immutable source,
+    configuration, and bundle contents; ``review_version`` selects a new record
+    rather than replacing a previous decision.
+    """
 
     sample: str
     region: str
@@ -48,6 +61,7 @@ class ReviewRecord:
     schema_version: int = REVIEW_RECORD_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
+        """Require all scientific review gates for an accepted promotion."""
         if self.decision != "accepted" or self.review_status != "reviewed":
             raise ValueError("a durable review record must describe an accepted decision")
         if not self.reviewer.strip():
@@ -123,10 +137,12 @@ def load_review_record(path: str | Path) -> ReviewRecord:
 
 
 def _bundle_fingerprint(manifest: dict[str, Any]) -> str:
+    """Hash the artifact descriptor and recorded bundle-member integrity values."""
     return sha256_json({"artifact": manifest.get("artifact"), "integrity": manifest.get("integrity")})
 
 
 def _next_review_version(directory: Path, region: str) -> int:
+    """Return the next unused positive reviewed-bundle version for a region."""
     prefix = f"{canonical_region(region)}.review-v"
     versions = []
     for candidate in directory.glob(f"{prefix}*.bundle"):
@@ -137,6 +153,7 @@ def _next_review_version(directory: Path, region: str) -> int:
 
 
 def _parse_optional_bounds(bounds: Any) -> tuple[float | None, float | None] | None:
+    """Parse optional two-sided bounds without assigning values to open ends."""
     if not isinstance(bounds, list | tuple) or len(bounds) != 2:
         return None
     lower, upper = bounds
@@ -144,11 +161,16 @@ def _parse_optional_bounds(bounds: Any) -> tuple[float | None, float | None] | N
 
 
 def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
-    """Return the numerical evidence a reviewer needs without selecting a model."""
+    """Return numerical evidence for review without selecting or approving a model.
+
+    Centres and FWHM values use eV; areas retain the fit's source-defined scale.
+    Correlations are unique unordered parameter pairs sorted by decreasing
+    absolute value, preserving values and tie order from the stored matrix.
+    """
     result = load_fit_bundle(candidate_bundle)
     areas = {label: float(result.fitted_parameters.get(f"{label}.area", 0.0)) for label in result.components}
     total_area = sum(areas.values())
-    high_correlations: list[dict[str, str | float]] = []
+    high_correlations: list[_CorrelationRecord] = []
     seen_pairs: set[tuple[str, str]] = set()
     for first, row in result.correlation_matrix.items():
         for second, value in row.items():
@@ -156,7 +178,7 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
             if first != second and pair not in seen_pairs and abs(float(value)) >= 0.9:
                 seen_pairs.add(pair)
                 high_correlations.append({"parameter_1": pair[0], "parameter_2": pair[1], "correlation": float(value)})
-    high_correlations.sort(key=lambda item: abs(float(item["correlation"])), reverse=True)
+    high_correlations.sort(key=lambda item: abs(item["correlation"]), reverse=True)
     components = []
     bound_hits = []
     peaks = {str(peak.get("label")): peak for peak in result.configuration.get("peaks", ())}
@@ -183,10 +205,11 @@ def candidate_review_summary(candidate_bundle: str | Path) -> dict[str, Any]:
             if lower is None and upper is None:
                 continue
             numeric_value = float(fitted_value)
+            finite_bound = cast(float, lower if lower is not None else upper)
             tolerance = (
                 max(1e-8, abs(upper - lower) * 1e-5)
                 if lower is not None and upper is not None
-                else max(1e-8, max(abs(numeric_value), abs(lower if lower is not None else upper)) * 1e-5)
+                else max(1e-8, max(abs(numeric_value), abs(finite_bound)) * 1e-5)
             )
             if lower is not None and abs(numeric_value - lower) <= tolerance:
                 bound_hits.append({"parameter": f"{label}.{parameter}", "bound": "lower", "value": float(fitted_value)})
@@ -219,7 +242,7 @@ def reject_all_candidates(
     repository_root: str | Path | None = None,
     review_date: str | None = None,
 ) -> ReviewRejection:
-    """Persist an explicit rejection without promoting or modifying any candidate."""
+    """Persist a versioned rejection without promoting or modifying candidates."""
     if not candidate_bundles:
         raise ValueError("at least one candidate is required")
     paths = tuple(Path(path).resolve() for path in candidate_bundles)
@@ -280,7 +303,11 @@ def review_candidate(
     review_date: str | None = None,
     version: int | None = None,
 ) -> ReviewPromotion | None:
-    """Promote a candidate into a new reviewed version; cancellation writes nothing."""
+    """Promote a candidate into a new reviewed version; cancellation writes nothing.
+
+    Promotion validates stored evidence, records the accepted decision, and writes
+    a distinct reviewed version. Existing reviewed artifacts are never replaced.
+    """
     if decision == "cancelled":
         return None
     candidate_path = Path(candidate_bundle).resolve()

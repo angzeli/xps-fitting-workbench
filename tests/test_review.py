@@ -1,3 +1,5 @@
+"""Exercise cancellation, rejection, and immutable candidate review promotion."""
+
 import json
 from pathlib import Path
 
@@ -12,6 +14,7 @@ from xps_fitting.review import candidate_review_summary, load_review_record, rej
 
 
 def candidate_result() -> FitResult:
+    """Return a fitted experimental-style candidate suitable for review tests."""
     energy = np.linspace(280.0, 292.0, 121)
     background = np.linspace(15.0, 25.0, energy.size)
     component = 100.0 * np.exp(-(((energy - 284.3762) / 0.8) ** 2))
