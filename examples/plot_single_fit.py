@@ -1,4 +1,4 @@
-"""Generate publication, residual-diagnostic, and monochrome synthetic examples."""
+"""Generate three display treatments of one deterministic synthetic fit."""
 
 import argparse
 
@@ -10,7 +10,14 @@ from xps_fitting.plotting import export_figure, plot_xps_fit
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Export publication, diagnostic, and monochrome views of one fit."""
+    """Export publication, diagnostic, and monochrome views of one fit.
+
+    Args:
+        argv: Optional command-line arguments; process arguments are used if absent.
+
+    Returns:
+        Zero after all configured synthetic figure files are written.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

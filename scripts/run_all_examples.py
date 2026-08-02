@@ -1,4 +1,4 @@
-"""Run every public example independently and fail if any example fails."""
+"""Run every public example in an isolated subprocess with a headless backend."""
 
 from __future__ import annotations
 
@@ -10,7 +10,15 @@ from pathlib import Path
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run each public example in isolation and summarise pass/skip/fail counts."""
+    """Run each public example in isolation and summarise pass/skip/fail counts.
+
+    Args:
+        argv: Optional output, overwrite, and calibrated-manifest arguments.
+
+    Returns:
+        One if any subprocess fails; otherwise zero. The experimental publication
+        example is skipped unless its calibrated sample manifest is supplied.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/examples"))
     parser.add_argument(
@@ -25,6 +33,7 @@ def main(argv: list[str] | None = None) -> int:
     root = Path(__file__).resolve().parents[1]
     examples = sorted(path for path in (root / "examples").glob("*.py") if not path.name.startswith("_"))
     environment = dict(os.environ)
+    # Make current sources importable and force non-interactive rendering in children.
     current_pythonpath = environment.get("PYTHONPATH")
     environment["PYTHONPATH"] = os.pathsep.join(filter(None, (str(root / "src"), current_pythonpath)))
     environment.setdefault("MPLBACKEND", "Agg")

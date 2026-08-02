@@ -1,4 +1,4 @@
-"""Compare the deterministic four- and five-component C 1s hypotheses."""
+"""Compare deterministic four- and five-component synthetic C 1s hypotheses."""
 
 import argparse
 
@@ -10,7 +10,14 @@ from xps_fitting.plotting import export_figure, plot_fit_comparison
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Fit and plot both deterministic C 1s candidate configurations."""
+    """Fit and plot both deterministic C 1s candidate configurations.
+
+    Args:
+        argv: Optional command-line arguments; process arguments are used if absent.
+
+    Returns:
+        Zero after writing the comparison PNG and PDF.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

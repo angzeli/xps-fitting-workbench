@@ -1,4 +1,4 @@
-"""Render the active calibrated reviewed PDI-H-COOH C 1s artifact without refitting."""
+"""Render active calibrated reviewed PDI-H-COOH C 1s data without refitting."""
 
 from __future__ import annotations
 
@@ -15,7 +15,16 @@ DEFAULT_RECIPE = ROOT / "configs" / "plots" / "c1s_publication.json"
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Render a publication figure from an active calibrated reviewed bundle."""
+    """Render a publication figure from an active calibrated reviewed bundle.
+
+    Args:
+        argv: Optional manifest, recipe, output, and overwrite arguments.
+
+    Returns:
+        Zero after PNG, PDF, and provenance files are written. Review and
+        calibration evidence are required; this example never automates chemical
+        approval.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--sample-manifest",

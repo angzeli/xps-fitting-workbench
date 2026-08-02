@@ -1,4 +1,9 @@
-"""Exercise tracked PDI spectra without claiming automated chemical validation."""
+"""Validate tracked PDI workflow mechanics without automating chemical approval.
+
+The script fits experimental inputs, persists candidates before diagnostics, and
+exports raw/fitted panels. Its success establishes software workflow integrity,
+not scientific acceptance of a component assignment or model.
+"""
 
 from __future__ import annotations
 
@@ -32,7 +37,11 @@ SAMPLES = ("PDI-H-COOH", "PDI-Me-COOH", "PDI-OMe-COOH")
 
 
 def _raw_panel(spectra, labels, core_levels):
-    """Plot stored spectrum arrays without fitting or normalising their intensities."""
+    """Plot stored arrays without fitting or normalising source intensities.
+
+    Binding energy is displayed in eV. The recorded intensity scale is labelled as
+    counts only because the tracked acquisition supplies that authoritative label.
+    """
     with theme_context(load_theme("angze_publication").for_multipanel()) as theme:
         figure, axes = plt.subplots(
             1,
@@ -76,7 +85,7 @@ def _raw_panel(spectra, labels, core_levels):
 
 
 def _export(figure, output: Path, *, overwrite: bool) -> list[str]:
-    """Save and close a figure, returning its PNG and PDF paths in export order."""
+    """Save and close a figure, returning PNG/PDF paths in export order."""
     paths = export_figure(figure, output, formats=("png", "pdf"), overwrite=overwrite)
     plt.close(figure)
     return [str(path) for path in paths.values()]

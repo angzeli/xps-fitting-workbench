@@ -1,4 +1,4 @@
-"""Fit a constrained synthetic Cl 2p doublet."""
+"""Fit a deterministic synthetic Cl 2p doublet with exact parameter links."""
 
 import argparse
 
@@ -14,7 +14,14 @@ from xps_fitting.spectrum import Spectrum
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Fit and plot a deterministic Cl 2p doublet with linked parameters."""
+    """Fit and plot a deterministic Cl 2p doublet with linked parameters.
+
+    Args:
+        argv: Optional command-line arguments; process arguments are used if absent.
+
+    Returns:
+        Zero after writing PNG/PDF figures and printing fit statistics.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

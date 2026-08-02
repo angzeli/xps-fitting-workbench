@@ -1,4 +1,4 @@
-"""Several core levels for one synthetic sample."""
+"""Render several deterministic fitted core levels for one synthetic sample."""
 
 import argparse
 
@@ -10,7 +10,14 @@ from xps_fitting.result import FitResult
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Build a vertical panel of three deterministic fitted core levels."""
+    """Build a vertical panel of three deterministic fitted core levels.
+
+    Args:
+        argv: Optional command-line arguments; process arguments are used if absent.
+
+    Returns:
+        Zero after writing the synthetic panel as PNG and PDF.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

@@ -1,4 +1,4 @@
-"""Three-sample synthetic PDI C 1s series with disclosed normalisation."""
+"""Render a three-sample synthetic PDI C 1s series with disclosed normalisation."""
 
 import argparse
 
@@ -10,7 +10,14 @@ from xps_fitting.result import FitResult
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Plot a normalised synthetic C 1s series for three samples."""
+    """Plot a normalised synthetic C 1s series for three samples.
+
+    Args:
+        argv: Optional command-line arguments; process arguments are used if absent.
+
+    Returns:
+        Zero after writing the demonstration series as PNG and PDF.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

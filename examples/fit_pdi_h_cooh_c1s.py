@@ -1,4 +1,4 @@
-"""Fit and compare synthetic PDI-H-COOH C 1s candidate hypotheses."""
+"""Fit and compare deterministic synthetic PDI-H-COOH C 1s hypotheses."""
 
 import argparse
 
@@ -10,7 +10,14 @@ from xps_fitting.plotting import export_figure, plot_xps_fit
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Fit and export diagnostics for both synthetic C 1s hypotheses."""
+    """Fit and export diagnostics for both synthetic C 1s hypotheses.
+
+    Args:
+        argv: Optional command-line arguments; process arguments are used if absent.
+
+    Returns:
+        Zero after writing one diagnostic PNG per ordered candidate model.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)

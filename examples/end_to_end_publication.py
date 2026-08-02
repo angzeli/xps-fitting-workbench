@@ -1,4 +1,4 @@
-"""End-to-end deterministic Phase 1 fit and Phase 2 publication export."""
+"""Demonstrate deterministic Phase 1 fitting and Phase 2 figure export."""
 
 import argparse
 
@@ -12,14 +12,23 @@ from xps_fitting.plotting import export_figure, load_curve_result, plot_xps_fit
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Exercise fitting, export/reload, direct plotting, and CLI plotting."""
+    """Exercise fitting, persistence, reload, direct plotting, and CLI plotting.
+
+    Args:
+        argv: Optional command-line arguments; process arguments are used if absent.
+
+    Returns:
+        Zero after all synthetic tables, metadata, and figures are created.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)
     output = prepare_output(args.output_dir)
+    # Phase 1: fit once and persist the authoritative numerical result.
     result = fit_spectrum(synthetic_c1s(), load_config(ROOT / "configs/fits/pdi_h_cooh_c1s_5.json"))
     paths = export_result(result, output, "pdi_h_cooh_c1s", overwrite=args.overwrite)
     reloaded = load_curve_result(paths["xlsx"], paths["json"])
+    # Phase 2: render the reloaded stored arrays directly and through the CLI.
     figure, _ = plot_xps_fit(
         reloaded,
         core_level="C 1s",

@@ -1,3 +1,5 @@
+"""Run examples in isolated headless processes and enforce manifest gating."""
+
 import ast
 import os
 import subprocess

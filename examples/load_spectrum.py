@@ -1,4 +1,4 @@
-"""Exercise DataFrame, CSV, XLSX, and optional tracked VGD spectrum loading."""
+"""Exercise tabular synthetic input and optional tracked experimental VGD input."""
 
 import argparse
 
@@ -9,12 +9,21 @@ from xps_fitting.io import read_csv, read_xlsx, spectrum_from_dataframe
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Demonstrate cleaning and loading tabular spectra in supported formats."""
+    """Demonstrate cleaning and loading tabular spectra in supported formats.
+
+    Args:
+        argv: Optional command-line arguments; process arguments are used if absent.
+
+    Returns:
+        Zero after writing and reloading synthetic CSV/XLSX tables. Tracked VGD
+        data are read only when the optional reader is available.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_argument(parser)
     args = parser.parse_args(argv)
     output = prepare_output(args.output_dir)
 
+    # Include descending values, a duplicate energy, and a non-numeric row deliberately.
     frame = pd.DataFrame({"energy": [286.0, 285.0, 285.0, "bad", 284.0], "counts": [1, 3, 5, 9, 2]})
     dataframe_spectrum = spectrum_from_dataframe(frame, "energy", "counts", region="C 1s", sample_name="synthetic")
     table = pd.DataFrame(

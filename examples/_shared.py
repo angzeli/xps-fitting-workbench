@@ -1,4 +1,4 @@
-"""Shared deterministic inputs for executable examples."""
+"""Shared output guards and deterministic synthetic inputs for examples."""
 
 from __future__ import annotations
 
@@ -37,7 +37,15 @@ def check_output_paths(paths: list[Path], *, overwrite: bool) -> None:
 
 
 def synthetic_c1s(points: int = 401) -> Spectrum:
-    """Return a deterministic five-component synthetic C 1s spectrum."""
+    """Return a deterministic five-component synthetic C 1s demonstration.
+
+    Args:
+        points: Number of aligned binding-energy/intensity samples.
+
+    Returns:
+        Spectrum with binding energy in eV and a synthetic arbitrary intensity
+        scale. It is demonstration data, not experimental chemical evidence.
+    """
     energy = np.linspace(280, 294, points)
     peaks = ((1000, 284.65, 1.4), (500, 285.85, 1.4), (400, 287.9, 1.5), (250, 289.15, 1.5), (150, 290.7, 2.2))
     intensity = 20 + sum(pseudo_voigt(energy, area, centre, width, 0.5) for area, centre, width in peaks)
