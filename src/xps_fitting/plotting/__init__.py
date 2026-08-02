@@ -1,4 +1,9 @@
-"""Publication plotting API for immutable Phase 1 numerical results."""
+"""Plot immutable Phase 1 results without recomputing scientific curves.
+
+This package exposes Phase 2 rendering, recipe, theme, and export utilities. It
+accepts stored Phase 1 arrays as authoritative and never refits or reconstructs
+missing raw intensity or background data.
+"""
 
 from .aliases import canonical_core_level
 from .comparison import plot_fit_comparison

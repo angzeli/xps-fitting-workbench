@@ -1,4 +1,4 @@
-"""Reconstruct plotting-only results from Phase 1 exports."""
+"""Load plotting-only results from complete stored Phase 1 exports."""
 
 from __future__ import annotations
 
@@ -22,6 +22,7 @@ _REQUIRED_CURVE_COLUMNS = (
 
 
 def _require_fields(available: set[str], required: tuple[str, ...], source: str) -> None:
+    """Require authoritative stored arrays instead of reconstructing missing curves."""
     missing = [name for name in required if name not in available]
     if missing:
         raise ValueError(
@@ -31,7 +32,7 @@ def _require_fields(available: set[str], required: tuple[str, ...], source: str)
 
 
 def fit_result_from_dict(data: dict[str, Any]) -> FitResult:
-    """Reconstruct a plotting result only when every required stored curve exists."""
+    """Load a plotting result only when every required stored 1-D curve exists."""
     _require_fields(set(data), _REQUIRED_ARRAY_KEYS, "full FitResult JSON")
     arrays = {key: np.asarray(data[key], dtype=float) for key in _REQUIRED_ARRAY_KEYS}
     components = {label: np.asarray(curve, dtype=float) for label, curve in data.get("components", {}).items()}
@@ -51,7 +52,12 @@ def fit_result_from_dict(data: dict[str, Any]) -> FitResult:
 
 
 def load_curve_result(path: str | Path, metadata: str | Path | dict[str, Any] | None = None) -> FitResult:
-    """Load a full-result JSON or CSV/XLSX curves plus Phase 1 JSON metadata."""
+    """Load complete JSON/bundle data or stored CSV/XLSX curves with metadata.
+
+    Curve tables require binding energy in eV plus raw intensity, background,
+    total fit, and residual columns on their shared source-defined scale. Missing
+    raw intensity or background is an error; neither is reconstructed.
+    """
     path = Path(path)
     if path.is_dir():
         if metadata is not None:

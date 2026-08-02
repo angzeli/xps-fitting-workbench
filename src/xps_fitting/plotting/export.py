@@ -1,4 +1,4 @@
-"""Controlled publication-figure exports."""
+"""Controlled PNG/PDF publication-figure exports."""
 
 from __future__ import annotations
 
@@ -35,6 +35,9 @@ def export_figure(
 
     Existing targets are rejected unless ``overwrite`` is explicit. ``dry_run``
     performs naming, format, theme, and collision checks but writes no files.
+    Raster/vector transparency defaults come from the theme, its font is applied
+    only to the supplied figure, and metadata values are passed to Matplotlib
+    without changing the figure's scientific arrays or artists.
     """
     selected = load_theme(theme)
     output = Path(output)

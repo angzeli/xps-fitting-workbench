@@ -1,4 +1,4 @@
-"""Apply a validated recipe to a FitResult."""
+"""Apply validated recipes to immutable stored fit results."""
 
 from __future__ import annotations
 
@@ -20,6 +20,7 @@ from .themes import PlotTheme, figure_size_preset, load_theme
 
 
 def _theme_from_config(config: PlotConfig) -> PlotTheme:
+    """Translate optional recipe fields into validated theme overrides."""
     overrides: dict[str, object] = {}
     if config.figure_size_preset is not None:
         overrides["figure_size"] = figure_size_preset(config.figure_size_preset)
@@ -42,7 +43,11 @@ def plot_from_config(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> tuple[Figure, Axes | np.ndarray, dict[str, Path]]:
-    """Render and export one result according to a validated plot recipe."""
+    """Render and export one stored result according to a validated recipe.
+
+    Dry runs still build the figure and validate every output target but do not
+    write files. Metadata values are converted to strings only for figure export.
+    """
     theme = _theme_from_config(config)
     disclosure = "; ".join(
         value for value in (config.normalisation_disclosure, config.intensity_offset_disclosure) if value
@@ -97,7 +102,7 @@ def plot_series_from_config(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> tuple[Figure, np.ndarray, dict[str, Path]]:
-    """Render and export two or more results according to a multipanel recipe."""
+    """Render and export two or more stored results using one panel recipe."""
     if len(results) < 2:
         raise ValueError("multipanel plotting requires at least two fit results")
     if config.panel_layout == "single":

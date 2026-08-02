@@ -1,3 +1,5 @@
+"""Verify plotting-theme validation, accessibility, and rcParams isolation."""
+
 import warnings
 
 import matplotlib as mpl

@@ -1,4 +1,4 @@
-"""Validated, local-only plotting themes."""
+"""Validated plotting themes applied through isolated Matplotlib contexts."""
 
 from __future__ import annotations
 
@@ -29,7 +29,12 @@ _MATH_FONTSET = "stix"
 
 @dataclass(frozen=True)
 class PlotTheme:
-    """Collect validated typography, geometry, colour, and export defaults."""
+    """Collect validated typography, geometry, colour, and export defaults.
+
+    Figure dimensions are inches; line, spine, tick, and annotation dimensions
+    are points; ``dpi`` controls raster resolution. Alpha and fraction fields use
+    the closed interval [0, 1]. Binding-energy axes are inverted by default.
+    """
 
     name: str
     font_family: str = "Arial"
@@ -97,6 +102,7 @@ class PlotTheme:
     vector_transparent: bool = True
 
     def __post_init__(self) -> None:
+        """Validate physical display dimensions and bounded visual fractions."""
         if self.tick_direction not in {"in", "out", "inout"}:
             raise ValueError("tick_direction must be in, out, or inout")
         if (
@@ -224,7 +230,7 @@ def validate_theme(
     assignment_colours: dict[str, str] | None = None,
     required_assignments: tuple[str, ...] | None = None,
 ) -> PlotTheme:
-    """Validate theme geometry, output formats, and required assignment colours."""
+    """Validate geometry, PNG/PDF formats, and required semantic colours."""
     if theme.name in _FIXED_SPINE_THEMES and not math.isclose(theme.spine_width, VISIBLE_SPINE_WIDTH, abs_tol=1e-12):
         raise ValueError(f"{theme.name} requires a {VISIBLE_SPINE_WIDTH:.1f} pt spine width")
     if not 0 <= theme.component_alpha <= 1:
@@ -266,7 +272,7 @@ def style_axes(
     show_top_ticks: bool | None = None,
     show_y_ticks: bool = True,
 ) -> None:
-    """Apply the theme to every visible spine and tick without changing global state."""
+    """Apply spine/tick rules to an axis without changing global rcParams."""
     top_visible = theme.top_spine if top is None else top
     right_visible = theme.right_spine if right is None else right
     axis.spines["top"].set_visible(top_visible)
@@ -353,7 +359,12 @@ def fitted_region_y_limits(
     total_fit: np.ndarray,
     theme: PlotTheme,
 ) -> tuple[float, float]:
-    """Return baseline-relative limits from the displayed fitted envelope."""
+    """Return padded limits from finite displayed raw/background/fit curves.
+
+    Curves are interpreted on their shared source-defined intensity scale. The
+    padding fractions are applied to the displayed envelope span, with a stable
+    fallback when that span is zero.
+    """
     curves = tuple(np.asarray(curve, dtype=float) for curve in (raw_intensity, background, total_fit))
     finite = tuple(curve[np.isfinite(curve)] for curve in curves)
     if any(curve.size == 0 for curve in finite):
@@ -371,7 +382,7 @@ def fitted_region_y_limits(
 
 @contextmanager
 def theme_context(theme: str | PlotTheme = "angze_publication", **overrides: Any) -> Iterator[PlotTheme]:
-    """Temporarily apply a theme without leaking Matplotlib global state."""
+    """Apply a theme in a local rc context and restore global state on exit."""
     selected = load_theme(theme, **overrides)
     with mpl.rc_context(selected.rc_params()):
         yield selected

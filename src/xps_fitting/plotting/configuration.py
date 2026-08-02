@@ -1,4 +1,4 @@
-"""Serializable plotting recipes."""
+"""Validated, JSON-serialisable plotting recipes."""
 
 from __future__ import annotations
 
@@ -16,7 +16,14 @@ from .themes import load_theme, validate_theme
 
 @dataclass(frozen=True)
 class PlotConfig:
-    """Describe a validated, JSON-serialisable single- or multipanel plot recipe."""
+    """Describe a validated single- or multipanel plotting recipe.
+
+    Figure sizes are ``(width, height)`` in inches. Line widths, marker sizes, and
+    annotation offsets are points; label positions are axes-relative coordinates
+    in [0, 1]. Scalar or two-value x limits retain binding-energy units (eV).
+    Layout, annotations, disclosure text, transparency, and export metadata are
+    persisted without adding unstated scientific interpretation.
+    """
 
     theme: str = "angze_publication"
     figure_size: tuple[float, float] | None = None
@@ -59,6 +66,7 @@ class PlotConfig:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        """Validate mutually exclusive sizing, geometry, and annotation options."""
         theme = load_theme(self.theme)
         if self.figure_size is not None and self.figure_size_preset is not None:
             raise ValueError("set either figure_size or figure_size_preset, not both")

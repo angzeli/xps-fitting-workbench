@@ -1,4 +1,4 @@
-"""Stable semantic colours and monochrome fallbacks."""
+"""Stable semantic colours and deterministic monochrome fallbacks."""
 
 from __future__ import annotations
 
@@ -47,7 +47,11 @@ def core_level_colour(core_level: str) -> str:
 
 
 def component_colour(label: str, overrides: dict[str, str] | None = None) -> str:
-    """Resolve an override or semantic component colour, warning on fallback."""
+    """Resolve an override or semantic colour, warning before neutral fallback.
+
+    Explicit overrides take precedence. An unknown assignment retains its label
+    and emits a ``UserWarning`` rather than receiving an invented semantic colour.
+    """
     if overrides and label in overrides:
         return overrides[label]
     if label in COMPONENT_COLOURS:
@@ -61,6 +65,6 @@ def component_colour(label: str, overrides: dict[str, str] | None = None) -> str
 
 
 def component_style(label: str) -> str:
-    """Map a component label deterministically to a monochrome line style."""
+    """Map a label hash deterministically to a monochrome line style."""
     index = int.from_bytes(sha256(label.encode("utf-8")).digest()[4:8], "big") % len(MONOCHROME_STYLES)
     return MONOCHROME_STYLES[index]

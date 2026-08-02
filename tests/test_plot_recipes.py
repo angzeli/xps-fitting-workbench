@@ -1,3 +1,5 @@
+"""Exercise recipe round-trips, stored-curve requirements, and dry-run exports."""
+
 import json
 from pathlib import Path
 

@@ -1,3 +1,5 @@
+"""Verify requested figure fonts without altering unrelated text properties."""
+
 import re
 
 import matplotlib.pyplot as plt
