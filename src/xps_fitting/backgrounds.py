@@ -1,4 +1,4 @@
-"""XPS background estimators."""
+"""One-dimensional XPS background estimators that preserve input point order."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import numpy as np
 
 
 def linear(x: np.ndarray, y_start: float, y_end: float) -> np.ndarray:
-    """Interpolate a straight background between the supplied endpoint levels."""
+    """Interpolate endpoint levels over a non-degenerate one-dimensional coordinate."""
     x = np.asarray(x, dtype=float)
     if x[-1] == x[0]:
         raise ValueError("energy range must be nonzero")
@@ -14,7 +14,12 @@ def linear(x: np.ndarray, y_start: float, y_end: float) -> np.ndarray:
 
 
 def shirley(intensity: np.ndarray, *, max_iter: int = 200, tolerance: float = 1e-7) -> np.ndarray:
-    """Iterative discrete Shirley background for data in either acquisition order."""
+    """Iterate a discrete Shirley estimate over a finite 1D intensity array.
+
+    Convergence is measured against ``tolerance`` times the larger of one and
+    the intensity range. If the positive residual integral is numerically zero,
+    the endpoint line is returned.
+    """
     y = np.asarray(intensity, dtype=float)
     if y.ndim != 1 or y.size < 2 or not np.all(np.isfinite(y)):
         raise ValueError("intensity must be a finite 1D array")

@@ -1,3 +1,5 @@
+"""Verify background endpoints, finiteness, and deterministic Shirley iteration."""
+
 import numpy as np
 
 from xps_fitting.backgrounds import linear, shirley

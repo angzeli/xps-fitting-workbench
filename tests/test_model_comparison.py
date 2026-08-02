@@ -1,3 +1,5 @@
+"""Verify ordered candidate comparison on a known five-component signal."""
+
 from pathlib import Path
 
 import numpy as np

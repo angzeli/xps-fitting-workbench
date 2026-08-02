@@ -1,4 +1,4 @@
-"""Numerical evaluation of configured component models."""
+"""Numerical evaluation and ordered constraint resolution for peak components."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from .lineshapes import gaussian, lorentzian, pseudo_voigt
 
 
 def evaluate_peak(x: np.ndarray, peak: PeakConfig, values: dict[str, float]) -> np.ndarray:
-    """Evaluate one configured peak from its resolved area, centre, width, and mix."""
+    """Evaluate one peak on ``x`` from resolved area, centre, FWHM, and fraction."""
     prefix = peak.label
     area, centre = values[f"{prefix}.area"], values[f"{prefix}.centre"]
     fwhm, fraction = values[f"{prefix}.fwhm"], values[f"{prefix}.fraction"]
@@ -26,7 +26,8 @@ def resolve_links(peaks: list[PeakConfig], values: dict[str, float]) -> dict[str
     """Resolve shared-shape, centre-offset, and area-ratio constraints in peak order.
 
     For shared width and fraction groups, the first peak in ``peaks`` supplies the
-    group value. The input mapping is copied before linked values are applied.
+    group value. Centre offsets use the coordinate unit of the configured centre;
+    area links are dimensionless ratios. The input mapping is copied first.
     """
     resolved = dict(values)
     width_groups: dict[str, float] = {}

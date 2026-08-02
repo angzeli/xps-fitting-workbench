@@ -1,3 +1,5 @@
+"""Verify two-pass consensus shapes while retaining spectrum-specific areas."""
+
 import numpy as np
 
 from xps_fitting.configuration import FitConfig, PeakConfig

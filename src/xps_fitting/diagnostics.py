@@ -1,4 +1,4 @@
-"""Residual diagnostics and warning generation."""
+"""Unweighted residual statistics used for fit comparison and diagnostics."""
 
 from __future__ import annotations
 
@@ -6,7 +6,11 @@ import numpy as np
 
 
 def statistics(residual: np.ndarray, n_parameters: int) -> dict[str, float]:
-    """Summarise an unweighted residual vector and its fitted degrees of freedom."""
+    """Summarise a 1D residual using RSS-based criteria and fitted degrees of freedom.
+
+    The reduced-chi-square field is the unweighted RSS divided by degrees of
+    freedom; it is not an uncertainty-weighted goodness-of-fit statistic.
+    """
     n = residual.size
     rss = float(residual @ residual)
     dof = n - n_parameters

@@ -1,3 +1,5 @@
+"""Verify profile area normalization and full-width-at-half-maximum conventions."""
+
 import numpy as np
 import pytest
 from scipy.integrate import trapezoid
