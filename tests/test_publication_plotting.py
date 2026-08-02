@@ -1,3 +1,5 @@
+"""Verify publication artist hierarchy, axes geometry, exports, and immutability."""
+
 import copy
 import json
 from pathlib import Path

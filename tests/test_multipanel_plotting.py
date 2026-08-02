@@ -1,3 +1,5 @@
+"""Verify multipanel consistency, semantic styling, and input immutability."""
+
 import copy
 
 import matplotlib.colors as mcolors

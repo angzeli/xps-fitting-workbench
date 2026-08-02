@@ -1,4 +1,4 @@
-"""Heterogeneous Survey plus fitted-region publication panel."""
+"""Render a heterogeneous Survey plus four fitted-region publication panel."""
 
 from __future__ import annotations
 
@@ -26,6 +26,11 @@ PANEL_REGIONS = ("Survey", "C1s", "N1s", "O1s", "Cl2p")
 
 
 def _draw_fitted_axis(axis: Axes, result: FitResult, config: PlotConfig, theme: PlotTheme) -> None:
+    """Draw stored fitted-region arrays with background-relative components.
+
+    The helper preserves input component order, binding-energy inversion, legend
+    construction, and the source-defined intensity scale.
+    """
     energy = np.asarray(result.energy)
     raw = np.asarray(result.raw_intensity)
     background = np.asarray(result.background)
@@ -100,7 +105,12 @@ def plot_sample_panel(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> tuple[Figure, dict[str, Axes], dict[str, Path]]:
-    """Render Survey wide above four fitted regions without recalculation."""
+    """Render Survey above four fitted regions without recalculation.
+
+    The Survey entry must be a raw ``Spectrum`` and the remaining canonical
+    regions must be stored ``FitResult`` objects. The fixed panel geometry and
+    return mapping preserve the canonical region order.
+    """
     missing = [region for region in PANEL_REGIONS if region not in datasets or region not in configs]
     if missing:
         raise ValueError("sample panel is missing regions or recipes: " + ", ".join(missing))

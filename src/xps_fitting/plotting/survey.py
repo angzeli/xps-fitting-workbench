@@ -1,4 +1,4 @@
-"""Publication rendering for a reviewed raw Survey spectrum."""
+"""Publication rendering for reviewed raw Survey spectra without fitting."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from .themes import PlotTheme, apply_vertical_headroom, figure_size_preset, load
 
 
 def _theme_from_config(config: PlotConfig) -> PlotTheme:
+    """Build Survey-relevant theme overrides from a validated recipe."""
     overrides = {}
     if config.figure_size_preset is not None:
         overrides["figure_size"] = figure_size_preset(config.figure_size_preset)
@@ -28,7 +29,11 @@ def _theme_from_config(config: PlotConfig) -> PlotTheme:
 
 
 def draw_survey_axis(axis: Axes, spectrum: Spectrum, theme: PlotTheme, config: PlotConfig) -> None:
-    """Draw one immutable Survey trace on an existing axes."""
+    """Draw one immutable Survey trace on existing axes.
+
+    Binding energy is in eV; the source-defined intensity is plotted directly.
+    No fit, interpolation, normalisation, or mutation is performed.
+    """
     energy = np.asarray(spectrum.binding_energy)
     intensity = np.asarray(spectrum.intensity)
     axis.plot(energy, intensity, color=config.core_level_colour or theme.fit_colour, linewidth=theme.fit_line_width)

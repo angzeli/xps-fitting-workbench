@@ -1,4 +1,4 @@
-"""Publication-quality rendering of one immutable FitResult."""
+"""Publication-quality rendering of one immutable stored ``FitResult``."""
 
 from __future__ import annotations
 
@@ -64,7 +64,15 @@ def plot_xps_fit(
     title: str | None = None,
     fit_colour: str | None = None,
 ) -> tuple[Figure, Axes | np.ndarray]:
-    """Render supplied curves without recalculation, interpolation, or mutation."""
+    """Render supplied curves without recalculation, interpolation, or mutation.
+
+    Components may be hidden, outlined, filled from zero or background, or shown
+    as a baseline-relative visual stack. Scaling affects displayed curves only;
+    callers remain responsible for disclosing normalisation or offsets. Artist
+    creation order, binding-energy inversion, and the ``(figure, axes)`` return
+    contract are stable across modes.
+    """
+    # Validate aliases, geometry, and stored curve identities before creating artists.
     aliases = [("component_style_mode", component_style_mode), ("component_style", component_style)]
     supplied_aliases = [(name, value) for name, value in aliases if value is not None]
     if len({value for _, value in supplied_aliases}) > 1:
@@ -92,6 +100,7 @@ def plot_xps_fit(
     labels = dict(PDI_H_C1S_LABELS)
     labels.update(label_map or {})
     with theme_context(theme) as selected:
+        # Construct the main/residual axes before selecting display-only arrays.
         core_label = None
         if show_residual:
             height = selected.residual_height_ratio
@@ -138,6 +147,7 @@ def plot_xps_fit(
         displayed_curves = [raw, background, total]
         cumulative = background.copy()
         total_component_area = sum(float(trapezoid(curve, energy)) for curve in result.components.values())
+        # Render components in stored mapping order to preserve stacking and legends.
         for label, source_curve in result.components.items():
             curve = np.asarray(source_curve) / scale_factor
             colour = component_colour(label, dict(component_colours or {}))
@@ -226,6 +236,7 @@ def plot_xps_fit(
                 y_upper, float(np.max((raw, background, total))) + selected.fitted_region_upper_padding * signal_span
             )
         main.set_ylim(y_lower, y_upper)
+        # Configure axes, scientific labels, and legend after every curve is present.
         style_axes(main, selected, show_top_ticks=show_top_ticks, show_y_ticks=show_y_ticks)
         if title and selected.show_title:
             main.set_title(title, fontsize=selected.title_size, fontweight="bold")
@@ -292,6 +303,7 @@ def plot_xps_fit(
         )
         style_legend(legend, selected)
         if residual_axis is not None:
+            # Residuals use the exact stored Phase 1 array and the same display scale.
             residual_axis.plot(energy, np.asarray(result.residual) / scale_factor, color="#222222", linewidth=1)
             zero = selected.residual_zero_line if show_residual_zero is None else show_residual_zero
             if zero:
@@ -311,6 +323,7 @@ def plot_xps_fit(
         else:
             main.set_xlabel("Binding energy (eV)", labelpad=selected.axis_padding)
         if show_peak_positions:
+            # Annotation placement runs last so it can avoid final labels and legends.
             annotation_obstacles = (legend,) if core_label is None else (legend, core_label)
             annotate_peak_positions(
                 main,

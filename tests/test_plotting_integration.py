@@ -1,3 +1,5 @@
+"""Check numerical curve equivalence across supported plotting input paths."""
+
 import json
 
 import matplotlib.pyplot as plt

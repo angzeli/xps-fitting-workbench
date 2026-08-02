@@ -1,4 +1,4 @@
-"""Aligned XPS series and core-level panels."""
+"""Aligned, non-mutating XPS series and core-level panels."""
 
 from __future__ import annotations
 
@@ -57,7 +57,14 @@ def plot_xps_series(
     annotate_negligible_components: bool = False,
     annotate_hidden_components: bool = False,
 ) -> tuple[Figure, np.ndarray]:
-    """Plot related immutable results on an aligned grid."""
+    """Plot related immutable results on an aligned grid.
+
+    Per-panel expansion is validated before rendering. Intensity offsets and
+    normalisation are display states disclosed on each panel, while components
+    remain background-relative. Stored result arrays are never modified; unused
+    axes are hidden and residual insets use the exact stored residual arrays.
+    """
+    # Expand and validate all per-panel arguments before allocating the figure.
     if not results:
         raise ValueError("at least one result is required")
     for result in results:
@@ -99,6 +106,7 @@ def plot_xps_series(
         )
         flat = axes.ravel()
         legend_handles: dict[str, object] = {}
+        # Draw panels in input order so artists and shared-legend entries stay stable.
         for index, (result, axis) in enumerate(zip(results, flat)):
             offset = offsets[index]
             energy = np.asarray(result.energy)
@@ -250,6 +258,7 @@ def plot_xps_series(
                 )
         for axis in flat[count:]:
             axis.set_visible(False)
+        # Assemble the shared legend only after all per-panel handles are known.
         if shared_legend and legend_handles:
             legend = figure.legend(
                 list(legend_handles.values()),
@@ -266,7 +275,7 @@ def plot_xps_series(
             style_legend(legend, selected)
         figure.get_layout_engine().set(w_pad=spacing[0], h_pad=spacing[1])
         if show_residual:
-            # Residuals remain available as a compact inset and use the exact Phase 1 arrays.
+            # Residual insets use exact Phase 1 arrays after the main layout is complete.
             for result, axis, offset in zip(results, flat, offsets):
                 inset = axis.inset_axes([0.12, -0.34, 0.82, 0.22])
                 inset.plot(result.energy, result.residual, color="#222222", linewidth=0.8)

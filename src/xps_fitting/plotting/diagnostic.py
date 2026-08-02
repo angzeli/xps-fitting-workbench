@@ -1,4 +1,4 @@
-"""Phase 1 diagnostic plotting compatibility."""
+"""Compatibility rendering for the original Phase 1 diagnostic view."""
 
 from __future__ import annotations
 
@@ -14,7 +14,12 @@ from .themes import _apply_figure_font_family, load_theme
 
 
 def plot_fit(result: FitResult, path: str | Path | None = None, *, residual_panel: bool = True) -> Figure:
-    """Render the legacy diagnostic view and optionally export it immediately."""
+    """Render stored fit curves in the legacy diagnostic artist hierarchy.
+
+    Binding energy is displayed in eV and inverted. Intensity and residuals retain
+    their source-defined scale; providing ``path`` exports after rendering without
+    changing the returned figure or the input result.
+    """
     figure, axes = plt.subplots(
         2 if residual_panel else 1, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]} if residual_panel else None
     )

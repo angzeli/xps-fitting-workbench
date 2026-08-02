@@ -1,4 +1,4 @@
-"""Labels and compact statistical annotations."""
+"""Build semantic labels and collision-aware fitted-peak annotations."""
 
 from __future__ import annotations
 
@@ -58,7 +58,11 @@ _PEAK_ANNOTATION_KEYS = frozenset({"offset_points", "connector", "horizontal_ali
 
 @dataclass(frozen=True)
 class PeakAnnotationOptions:
-    """Hold validated point offsets, connector choice, and text alignment."""
+    """Hold point offsets, connector choice, and text alignment.
+
+    Offsets and connector limits are measured in display points, independently
+    of binding-energy and intensity data coordinates.
+    """
 
     offset_points: tuple[float, float]
     connector: bool
@@ -72,7 +76,7 @@ def validate_peak_annotation_options(
     default_connector: bool,
     max_connector_points: float,
 ) -> dict[str, PeakAnnotationOptions]:
-    """Validate and normalise exact per-component annotation presentation."""
+    """Validate exact per-component placement without changing label ordering."""
     normalised: dict[str, PeakAnnotationOptions] = {}
     for label, options in options_by_label.items():
         unknown = set(options) - _PEAK_ANNOTATION_KEYS
@@ -112,6 +116,7 @@ def validate_peak_annotation_options(
 def _with_semantic_annotation_defaults(
     annotation_options: Mapping[str, Mapping[str, object]],
 ) -> dict[str, dict[str, object]]:
+    """Merge recipe options over assignment-specific placement defaults."""
     merged = {label: dict(options) for label, options in SEMANTIC_ANNOTATION_DEFAULTS.items()}
     for label, options in annotation_options.items():
         merged[label] = {**merged.get(label, {}), **options}
@@ -143,7 +148,14 @@ def annotate_peak_positions(
     clearance_curves: Sequence[np.ndarray] = (),
     obstacles: tuple[Artist, ...] = (),
 ) -> list[Annotation]:
-    """Annotate fitted centres above displayed component apices."""
+    """Label fitted centres while anchoring leaders at component apices.
+
+    Candidate text reports each stored fitted centre in eV, but its leader anchor
+    uses the sampled component apex. Recipe placement takes precedence over
+    semantic defaults and automatic collision handling. Display-point offsets,
+    pixel collision geometry, and the configured displacement cap are kept
+    separate from scientific data coordinates.
+    """
     if isinstance(precision, bool) or not isinstance(precision, int) or precision < 0:
         raise ValueError("peak-position precision must be a non-negative integer")
     manual_offsets = dict(offsets or {})
@@ -256,6 +268,7 @@ def annotate_peak_positions(
         )
         annotation.set_clip_on(True)
         annotation.set_gid(f"peak-position:{label}")
+        # Private Matplotlib metadata carries placement evidence between local passes.
         annotation._xps_component_label = label
         annotation._xps_fitted_centre = centre
         annotation._xps_stagger_level = stagger_level
@@ -297,11 +310,13 @@ def _place_automatic_annotations_locally(
     placed_boxes: list[Bbox] = []
 
     def overlap_area(first: Bbox, second: Bbox) -> float:
+        """Return overlapping display area in squared pixels."""
         width = max(0.0, min(first.x1, second.x1) - max(first.x0, second.x0))
         height = max(0.0, min(first.y1, second.y1) - max(first.y0, second.y0))
         return width * height
 
     def placement_score(annotation: Annotation) -> tuple[float, float, float, float, int, float]:
+        """Rank local candidates by clipping, collisions, crossings, then travel."""
         box = Text.get_window_extent(annotation, renderer)
         outside = (
             max(axes_box.x0 - box.x0, 0.0)

@@ -1,4 +1,4 @@
-"""Visual comparison of alternative fitted hypotheses."""
+"""Visually compare ordered alternative fitted hypotheses."""
 
 from __future__ import annotations
 
@@ -21,7 +21,12 @@ def plot_fit_comparison(
     show_residual: bool = True,
     show_peak_positions: bool = False,
 ) -> tuple[Figure, np.ndarray]:
-    """Compare statistics and component stability without claiming chemical truth."""
+    """Compare statistics and component stability without claiming chemical truth.
+
+    Mapping or sequence order determines panel order. AICc/BIC and warnings are
+    copied from stored results, while shared component centres and FWHM values are
+    attached as private figure metadata for downstream inspection.
+    """
     if isinstance(results, Mapping):
         model_names, values = list(results), list(results.values())
     else:
@@ -60,7 +65,8 @@ def plot_fit_comparison(
         centres = [result.fitted_parameters.get(f"{label}.centre") for result in values]
         widths = [result.fitted_parameters.get(f"{label}.fwhm") for result in values]
         stability[label] = {"centres": centres, "fwhms": widths}
-    figure._xps_component_stability = stability  # machine-readable companion to the visual
+    # Intentional private metadata is the machine-readable companion to the visual.
+    figure._xps_component_stability = stability
     if figure.legends:
         figure.legends[0].set_title(
             "Statistical preference does not prove chemical correctness.",

@@ -1,3 +1,5 @@
+"""Verify annotation geometry, semantic defaults, and displacement limits."""
+
 import copy
 from itertools import combinations
 
@@ -13,6 +15,7 @@ from xps_fitting.result import FitResult
 
 
 def annotation_result(sample: str = "PDI-H-COOH") -> FitResult:
+    """Build a dense fitted result for annotation-collision tests."""
     energy = np.linspace(280, 292, 241)
     background = np.linspace(2, 3, energy.size)
     aromatic = 10 * np.exp(-(((energy - 285.0) / 0.55) ** 2))
