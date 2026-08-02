@@ -1,3 +1,5 @@
+"""Verify package metadata, installation entry points, and source discovery."""
+
 import json
 import subprocess
 import sys

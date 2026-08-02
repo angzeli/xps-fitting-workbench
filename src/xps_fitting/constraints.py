@@ -1,4 +1,4 @@
-"""Helpers for common chemistry/physics parameter relationships."""
+"""Explicit centre-offset, area-ratio, and shared-shape parameter relationships."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ def cl2p_doublet(
     fwhm: float = 1.2,
     fraction: float = 0.5,
 ) -> list[PeakConfig]:
-    """Create a 2p3/2:2p1/2 doublet with shared shape/width and a 2:1 area ratio."""
+    """Create a 2p3/2:2p1/2 doublet with an eV separation and 2:1 area ratio."""
     group = f"{label}_doublet"
     main = PeakConfig(
         f"{label}_2p3/2",
@@ -42,7 +42,7 @@ def cl2p_doublet(
 
 
 def validate_links(peaks: list[PeakConfig]) -> None:
-    """Require unique peak labels and references to peaks in the same model."""
+    """Require unique labels and centre/area references within the same model."""
     labels = {peak.label for peak in peaks}
     if len(labels) != len(peaks):
         raise ValueError("peak labels must be unique")

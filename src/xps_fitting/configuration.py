@@ -1,4 +1,4 @@
-"""Validated candidate-model configuration for XPS peak fitting."""
+"""Validated peak, constraint, and staged-optimisation configuration contracts."""
 
 from __future__ import annotations
 
@@ -15,8 +15,9 @@ class PeakConfig:
 
     Centres and FWHM values are in eV, and area scales an area-normalised
     line shape. For pseudo-Voigt peaks, ``fraction`` is the Lorentzian
-    contribution. Group names share FWHM or fraction values; link pairs express
-    a centre offset or area ratio relative to another peak label.
+    contribution in ``[0, 1]``. Group names share FWHM or fraction values; link
+    pairs express an energy offset in eV or an area ratio relative to another
+    peak label. Peak order is significant when grouped values are resolved.
     """
 
     label: str
@@ -36,6 +37,7 @@ class PeakConfig:
     area_ratio_to: tuple[str, float] | None = None
 
     def __post_init__(self) -> None:
+        """Validate scalar domains and inclusive parameter bounds in declaration order."""
         for name, value, bounds in (
             ("centre", self.centre, self.centre_bounds),
             ("area", self.area, self.area_bounds),
@@ -81,6 +83,7 @@ class FitConfig:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        """Validate optimizer options, unique labels, and shared-value groups."""
         if not self.name.strip() or not self.region.strip() or not self.peaks:
             raise ValueError("fit name, region, and at least one peak are required")
         if self.background not in {"linear", "shirley"}:
@@ -121,12 +124,12 @@ class FitConfig:
 
 
 def load_config(path: str | Path) -> FitConfig:
-    """Load a JSON candidate model and validate peak and cross-peak settings."""
+    """Load JSON and validate both per-peak fields and cross-peak references."""
     with Path(path).open(encoding="utf-8") as stream:
         data = json.load(stream)
     data["peaks"] = [PeakConfig(**peak) for peak in data["peaks"]]
     config = FitConfig(**data)
-    # Defer the import because constraints imports PeakConfig from this module.
+    # Defer the import to keep the configuration/constraint dependency acyclic.
     from .constraints import validate_links
 
     validate_links(config.peaks)

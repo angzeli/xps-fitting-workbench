@@ -1,4 +1,4 @@
-"""Validated, numerically safe spectrum representation."""
+"""Validated representation of aligned XPS binding-energy and intensity arrays."""
 
 from __future__ import annotations
 
@@ -28,6 +28,7 @@ class Spectrum:
     acquisition_metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        """Coerce inputs to finite one-dimensional arrays in ascending energy order."""
         energy = np.asarray(self.binding_energy, dtype=float)
         intensity = np.asarray(self.intensity, dtype=float)
         if energy.ndim != 1 or intensity.ndim != 1 or energy.size != intensity.size:
@@ -45,7 +46,7 @@ class Spectrum:
             object.__setattr__(self, "normalised_intensity", norm)
 
     def crop(self, minimum: float, maximum: float) -> "Spectrum":
-        """Return points within an inclusive energy interval, preserving alignment."""
+        """Return an inclusive binding-energy interval in eV, preserving array alignment."""
         lo, hi = sorted((minimum, maximum))
         mask = (self.binding_energy >= lo) & (self.binding_energy <= hi)
         if mask.sum() < 2:

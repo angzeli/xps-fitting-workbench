@@ -1,4 +1,4 @@
-"""Chemistry-constrained XPS fitting tools."""
+"""Public contracts for chemistry-constrained XPS fitting and artifact workflows."""
 
 from ._version import __version__
 from .calibration import BindingEnergyCalibration, calibrate_sample_binding_energy

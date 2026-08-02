@@ -1,4 +1,4 @@
-"""Stable numerical result contract for fitting and Phase 2 plotting."""
+"""Stable aligned-array contract between fitting, persistence, and plotting."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ import numpy as np
 
 
 def _jsonable(value: Any) -> Any:
+    """Convert nested NumPy values to JSON types, mapping non-finite floats to null."""
     if isinstance(value, np.ndarray):
         return value.tolist()
     if isinstance(value, dict):
@@ -27,9 +28,11 @@ def _jsonable(value: Any) -> Any:
 class FitResult:
     """Store aligned measured and fitted arrays plus fitting provenance.
 
-    ``energy``, ``raw_intensity``, ``background``, every component, ``total_fit``,
-    and ``residual`` describe the same ordered points. Array validation is applied
-    by fitting, loading, and artifact-integrity workflows rather than this container.
+    ``energy`` is the binding-energy axis in eV. It, ``raw_intensity``,
+    ``background``, every component, ``total_fit``, and ``residual`` describe the
+    same ordered points. Intensity scales remain those of the source or upstream
+    processing. Array validation is applied by fitting, loading, and
+    artifact-integrity workflows rather than this container.
     """
 
     energy: np.ndarray

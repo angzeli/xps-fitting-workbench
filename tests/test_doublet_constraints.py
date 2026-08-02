@@ -1,3 +1,5 @@
+"""Verify fitted Cl 2p centre, area, and width links remain exact."""
+
 import numpy as np
 import pytest
 

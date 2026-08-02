@@ -1,3 +1,5 @@
+"""Verify parameter-domain checks and declared cross-peak relationships."""
+
 import pytest
 
 from xps_fitting.configuration import PeakConfig
