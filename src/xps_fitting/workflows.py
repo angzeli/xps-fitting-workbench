@@ -1,4 +1,4 @@
-"""Scientific lifecycle orchestration built on the numerical APIs."""
+"""Scientific lifecycle orchestration layered over numerical fitting APIs."""
 
 from __future__ import annotations
 
@@ -19,7 +19,12 @@ def persist_candidate_results(
     repository_root: str | Path | None = None,
     overwrite: bool = False,
 ) -> dict[str, Path]:
-    """Persist every candidate before a caller is allowed to render diagnostics."""
+    """Persist every ordered candidate before diagnostics may be rendered.
+
+    Each result is stored with raw-source lineage beneath the sample and canonical
+    region. Bundle creation follows mapping order and stops on the first collision
+    or persistence error; no plotting side effects occur here.
+    """
     if not results:
         raise ValueError("candidate result mapping is empty")
     destination = Path(artifacts_root) / sample / canonical_region(region)

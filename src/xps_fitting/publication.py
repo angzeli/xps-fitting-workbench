@@ -1,4 +1,4 @@
-"""Plotting-only publication exports from calibrated reviewed artifacts."""
+"""Plotting-only publication exports from calibrated, reviewed artifacts."""
 
 from __future__ import annotations
 
@@ -25,6 +25,7 @@ from .spectrum_artifacts import _canonical_region_name, load_spectrum_bundle, va
 
 
 def _repository_root(anchor: Path, explicit: str | Path | None) -> Path | None:
+    """Prefer an explicit root, then discover the nearest project ancestor."""
     if explicit is not None:
         return Path(explicit).resolve()
     for parent in (anchor.resolve(), *anchor.resolve().parents):
@@ -34,6 +35,7 @@ def _repository_root(anchor: Path, explicit: str | Path | None) -> Path | None:
 
 
 def _resolve_link(value: str, anchor: Path, repository_root: Path | None) -> Path:
+    """Resolve recorded lineage by absolute, repository, then manifest location."""
     recorded = Path(value)
     candidates = [recorded] if recorded.is_absolute() else []
     if repository_root is not None and not recorded.is_absolute():
@@ -52,7 +54,12 @@ def load_publication_region(
     *,
     repository_root: str | Path | None = None,
 ) -> tuple[FitResult | Spectrum, Any, dict[str, Any]]:
-    """Load one calibrated reviewed fitted region or Survey and its provenance."""
+    """Load one calibrated reviewed fitted region or Survey with provenance.
+
+    The active manifest, bundle descriptor, and shared calibration record must
+    agree on sample, canonical region, and binding-energy offset before any plot
+    data are returned.
+    """
     path = Path(manifest_path).resolve()
     manifest = load_sample_manifest(path)
     canonical = canonical_region(region)
@@ -112,7 +119,11 @@ def plot_publication_region(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> tuple[Figure, Axes | np.ndarray, dict[str, Path], dict[str, Any]]:
-    """Render PNG/PDF from a stored calibrated result without fitting or mutation."""
+    """Render PNG/PDF from a calibrated stored result without fitting or mutation.
+
+    Recipe validation and provenance collision checks precede rendering. Dry runs
+    return planned figure and provenance paths without writing either artifact.
+    """
     result, report, provenance = load_publication_region(
         manifest_path,
         region,
@@ -195,7 +206,12 @@ def plot_publication_sample(
     overwrite: bool = False,
     dry_run: bool = False,
 ) -> tuple[dict[str, dict[str, Path]], dict[str, Any]]:
-    """Generate all five individual figures and the complete sample panel without fitting."""
+    """Generate five individual figures and a sample panel without fitting.
+
+    All canonical regions must share one active calibration record and offset.
+    Filenames are resolved from the sample-aware recipes, and the panel is built
+    from the same validated stored datasets used by the individual figures.
+    """
     path = Path(manifest_path).resolve()
     manifest = load_sample_manifest(path)
     if manifest.calibration_status != "calibrated" or set(manifest.calibrated) != set(EXPECTED_REGIONS):

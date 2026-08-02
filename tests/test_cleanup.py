@@ -1,3 +1,5 @@
+"""Verify cleanup remains allowlisted and dry runs preserve every file."""
+
 from xps_fitting.cleanup import clean_generated
 
 

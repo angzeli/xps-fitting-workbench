@@ -1,3 +1,5 @@
+"""Verify PDI fit-configuration contracts and workflow dry-run isolation."""
+
 from pathlib import Path
 
 import pytest
@@ -78,6 +80,7 @@ def test_fit_configuration_rejects_unsupported_background() -> None:
 
 def test_fit_region_dry_run_does_not_run_optimizer(monkeypatch) -> None:
     def unexpected_optimizer(*args, **kwargs):
+        """Fail if dry-run planning reaches numerical optimisation."""
         raise AssertionError("dry-run called the optimizer")
 
     monkeypatch.setattr("xps_fitting.project_workflow.compare_models", unexpected_optimizer)

@@ -1,4 +1,4 @@
-"""Repository-aware sample inspection, fitting, and validation workflows."""
+"""Repository-aware discovery, fitting, persistence, and validation workflows."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ from .workflows import persist_candidate_results
 
 
 def find_repository_root(start: str | Path = ".") -> Path:
-    """Find the nearest ancestor containing ``pyproject.toml``."""
+    """Find the nearest ancestor containing the project ``pyproject.toml``."""
     resolved = Path(start).resolve()
     for candidate in (resolved, *resolved.parents):
         if (candidate / "pyproject.toml").is_file():
@@ -45,7 +45,7 @@ def sample_manifest_path(root: str | Path, sample: str) -> Path:
 
 
 def ensure_sample_manifest(root: str | Path, sample: str) -> SampleManifest:
-    """Load a sample manifest or create it from the current raw VGD files."""
+    """Load a sample manifest or hash current raw VGD files to create one."""
     repository = Path(root).resolve()
     path = sample_manifest_path(repository, sample)
     if path.is_file():
@@ -59,7 +59,7 @@ def ensure_sample_manifest(root: str | Path, sample: str) -> SampleManifest:
 
 
 def inspect_sample(root: str | Path, sample: str) -> dict[str, Any]:
-    """Summarise raw regions, hashes, acquisition metadata, and artifact state."""
+    """Summarise raw regions, hashes, energy bounds, and artifact state."""
     repository = Path(root).resolve()
     raw_directory = sample_raw_directory(repository, sample)
     regions = discover_raw_regions(raw_directory)
@@ -113,7 +113,13 @@ def fit_region_candidates(
     overwrite_figures: bool = False,
     dry_run: bool = False,
 ) -> dict[str, Any]:
-    """Fit, persist every candidate, and only then render diagnostic figures."""
+    """Plan candidate fits, persist/validate all results, then render diagnostics.
+
+    Dry runs stop after source/configuration discovery and hashing, so neither the
+    optimiser nor filesystem writers are called. Real runs preserve configuration
+    order, persist every candidate before plotting, and report review as a required
+    scientific gate rather than inferring publication readiness from fit quality.
+    """
     repository = Path(root).resolve()
     canonical = canonical_region(region)
     sources = discover_raw_regions(sample_raw_directory(repository, sample))
@@ -146,6 +152,7 @@ def fit_region_candidates(
     }
     if dry_run:
         return {**plan, "dry_run": True, "optimizer_ran": False, "files_written": False}
+    # Fit the discovered source with configurations in their deterministic order.
     spectrum = read_vgd(sources[canonical])
     results = compare_models(spectrum, configurations)
     for path, config in zip(selected, configurations):
@@ -236,6 +243,7 @@ def fit_region_candidates(
 
 
 def _resolve_manifest_link(value: str, manifest_path: Path, repository: Path) -> Path:
+    """Resolve an active link from absolute, repository, then manifest roots."""
     recorded = Path(value)
     candidates = [recorded] if recorded.is_absolute() else [repository / recorded, manifest_path.parent / recorded]
     for candidate in candidates:
@@ -245,7 +253,13 @@ def _resolve_manifest_link(value: str, manifest_path: Path, repository: Path) ->
 
 
 def validate_sample(root: str | Path, sample: str, *, require_calibrated: bool = False) -> dict[str, Any]:
-    """Validate raw hashes and active reviewed or calibrated artifact links."""
+    """Validate raw hashes and active reviewed or calibrated artifact links.
+
+    Missing regions remain ordered by the manifest contract. Generated next-step
+    commands reflect review/calibration readiness but never execute automatically.
+    Publication readiness requires calibrated active artifacts with no validation
+    errors or unmet gates.
+    """
     repository = Path(root).resolve()
     path = sample_manifest_path(repository, sample)
     manifest = load_sample_manifest(path)

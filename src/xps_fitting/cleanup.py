@@ -1,4 +1,4 @@
-"""Allowlisted cleanup for disposable generated files."""
+"""Allowlist-only cleanup for disposable generated outputs."""
 
 from __future__ import annotations
 
@@ -10,7 +10,11 @@ PROTECTED_DIRECTORIES = (Path("data") / "raw", Path("artifacts") / "reviewed")
 
 
 def generated_cleanup_plan(repository_root: str | Path) -> tuple[Path, ...]:
-    """List files beneath allowlisted generated roots after safety checks."""
+    """List files beneath explicit generated roots after path-safety checks.
+
+    Symlinked targets, paths outside the repository, and protected raw/reviewed
+    trees are rejected before any file list is returned.
+    """
     root = Path(repository_root).resolve()
     protected = tuple((root / path).resolve() for path in PROTECTED_DIRECTORIES)
     files: list[Path] = []
@@ -27,7 +31,7 @@ def generated_cleanup_plan(repository_root: str | Path) -> tuple[Path, ...]:
 
 
 def clean_generated(repository_root: str | Path, *, dry_run: bool = True) -> tuple[Path, ...]:
-    """Delete only explicit disposable roots, returning every affected file."""
+    """Delete only allowlisted roots, or return the identical plan in dry-run mode."""
     root = Path(repository_root).resolve()
     files = generated_cleanup_plan(root)
     if dry_run:
